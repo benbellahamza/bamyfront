@@ -1,1 +1,28 @@
-<p>responsable-visiteur works!</p>
+<div class="responsable-container">
+    <h2>Liste des visiteurs</h2>
+  
+    <table class="visiteur-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Genre</th>
+          <th>Destination</th>
+          <th>Date d'entrée</th>
+          <th>Date de sortie</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of visiteurs">
+          <td>{{ v.nom }}</td>
+          <td>{{ v.prenom }}</td>
+          <td>{{ v.genre }}</td>
+          <td>{{ v.destination }}</td>
+          <td>{{ v.dateEntree | date:'short' }}</td>
+          <td *ngIf="v.dateSortie">{{ v.dateSortie | date:'short' }}</td>
+          <td *ngIf="!v.dateSortie">❌ Non sortie</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

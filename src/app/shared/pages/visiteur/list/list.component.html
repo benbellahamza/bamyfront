@@ -1,1 +1,21 @@
-<p>list works!</p>
+<div class="container-formulaire">
+
+    <!-- Formulaire de visiteur -->
+    <app-form></app-form>
+  
+    <!-- 📋 Liste des visiteurs du jour -->
+    <div class="liste-visiteurs">
+      <h4>Visiteurs ajoutés aujourd’hui</h4>
+      <div class="visiteurs-scroll">
+        <div *ngFor="let v of visiteursDuJour" class="visiteur-item">
+          <span>
+            {{ v.nom }} {{ v.prenom }} – {{ v.dateEntree | date:'shortTime' }}
+          </span>
+          <button *ngIf="!v.dateSortie" (click)="validerSortie(v.id)">Valider sortie</button>
+          <span *ngIf="v.dateSortie">✔ Sortie : {{ v.dateSortie | date:'shortTime' }}</span>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  

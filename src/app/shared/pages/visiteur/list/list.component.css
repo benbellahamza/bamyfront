@@ -1,0 +1,73 @@
+.container-formulaire {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .liste-visiteurs {
+    margin-top: 40px;
+    text-align: left;
+  }
+  
+  .liste-visiteurs h4 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #007bff;
+    text-align: center;
+  }
+  
+  .visiteurs-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+  }
+  
+  /* Pour les navigateurs Webkit (Chrome, Edge, etc.) */
+  .visiteurs-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .visiteurs-scroll::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 3px;
+  }
+  
+  .visiteur-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    transition: background-color 0.2s ease;
+  }
+  
+  .visiteur-item:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .visiteur-item span {
+    flex-grow: 1;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .visiteur-item button {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .visiteur-item button:hover {
+    background-color: #218838;
+  }
+  

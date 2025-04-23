@@ -1,11 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-responsable-visiteur',
   standalone: false,
   templateUrl: './responsable-visiteur.component.html',
-  styleUrl: './responsable-visiteur.component.css'
+  styleUrls: ['./responsable-visiteur.component.css']
 })
-export class ResponsableVisiteurComponent {
+export class ResponsableVisiteurComponent implements OnInit {
+
+  visiteurs: any[] = [];
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.getVisiteurs();
+  }
+
+  getVisiteurs() {
+    this.http.get<any[]>('http://localhost:8085/api/visiteurs')
+      .subscribe(data => {
+        this.visiteurs = data;
+      });
+  }
 
 }

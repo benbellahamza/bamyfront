@@ -1,1 +1,101 @@
-<p>form works!</p>
+<div class="container-formulaire">
+
+  <!-- ⏰ Horloge & Date -->
+  <div class="clock">
+    <h2>{{ currentTime }}</h2>
+  </div>
+
+  <!-- 🔢 Compteur du jour -->
+  <div class="counter-box">
+    <p>Nombre de visiteurs aujourd’hui :</p>
+    <h3>{{ compteur }}</h3>
+  </div>
+
+  <!-- ❌ Message erreur si formulaire invalide -->
+  <div *ngIf="visiteurForm.invalid && visiteurForm.touched" class="error-message">
+    ❌ Veuillez remplir tous les champs obligatoires.
+  </div>
+
+  <!-- ✅ Message succès -->
+  <div *ngIf="confirmationMessage" class="success-message">
+    ✅ {{ confirmationMessage }}
+  </div>
+
+  <!-- 📝 Formulaire Visiteur -->
+  <form [formGroup]="visiteurForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <input type="text" formControlName="nom" placeholder="Nom" required />
+      <input type="text" formControlName="prenom" placeholder="Prénom" required />
+    </div>
+
+    <div class="form-group">
+      <input type="text" formControlName="cin" placeholder="CIN" required />
+      <input type="text" formControlName="telephone" placeholder="Téléphone" required />
+    </div>
+
+    <!-- 👨👩 Icônes genre -->
+    <div class="genre-icons">
+      <div class="genre-icon homme"
+        [class.selected]="visiteurForm.get('genre')?.value === 'Homme'"
+        (click)="visiteurForm.get('genre')?.setValue('Homme')"
+        title="Homme">👨</div>
+
+      <div class="genre-icon femme"
+        [class.selected]="visiteurForm.get('genre')?.value === 'Femme'"
+        (click)="visiteurForm.get('genre')?.setValue('Femme')"
+        title="Femme">👩</div>
+    </div>
+
+    <div class="form-group">
+      <select formControlName="destination" required>
+        <option value="" disabled selected>Destination</option>
+        <option value="atelier">Atelier</option>
+        <option value="administration">Administration</option>
+        <option value="réception">Réception</option>
+        <option value="comptoir">Comptoir</option>
+      </select>
+
+      <select formControlName="typeVisiteur">
+        <option value="">Type de visiteur (facultatif)</option>
+        <option value="Particulier">Particulier</option>
+        <option value="Entreprise">Entreprise</option>
+      </select>
+    </div>
+
+    <div class="form-group" *ngIf="visiteurForm.get('destination')?.value === 'atelier'">
+      <input type="text" formControlName="matricule" placeholder="Numéro de matricule" />
+    </div>
+
+    <!-- 🔘 Bouton dynamique -->
+    <button type="submit" [disabled]="visiteurForm.invalid || loading">
+      {{ selectedVisiteurId ? 'Modifier' : 'Confirmer' }}
+    </button>
+  </form>
+
+  <!-- 📋 Liste visiteurs du jour -->
+  <div class="liste-visiteurs">
+    <h4>Visiteurs ajoutés aujourd’hui</h4>
+    <div class="visiteurs-scroll">
+      <div *ngFor="let v of visiteursDuJour" class="visiteur-item">
+        <div class="visiteur-info">
+          <strong>{{ v.nom }} {{ v.prenom }}</strong><br />
+          CIN : {{ v.cin }}<br />
+          Téléphone : {{ v.telephone }}<br />
+          Type : {{ v.typeVisiteur || 'N/A' }}<br />
+          Destination : {{ v.destination }}<br />
+          Entrée : {{ v.dateEntree | date:'short' }}<br />
+          Sortie : 
+          <span *ngIf="v.dateSortie">✔ {{ v.dateSortie | date:'shortTime' }}</span>
+          <span *ngIf="!v.dateSortie">❌</span>
+        </div>
+
+        <div class="action-buttons">
+          <button *ngIf="!v.dateSortie" class="btn btn-success" (click)="validerSortie(v.id)">Valider sortie</button>
+          <button class="btn btn-primary" (click)="modifierVisiteur(v)">Modifier</button>
+          <button class="btn btn-danger" (click)="supprimerVisiteur(v.id)">Supprimer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
