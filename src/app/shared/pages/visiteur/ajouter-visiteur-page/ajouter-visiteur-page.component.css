@@ -1,0 +1,116 @@
+/* 🎯 Conteneur principal */
+.page-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* 🧭 Séparateur entre le formulaire et la liste */
+hr {
+  margin: 40px auto;
+  border: none;
+  height: 2px;
+  background: #ddd;
+  width: 80%;
+}
+
+/* 🏷️ Titre de la liste (optionnel si utilisé dans form.component) */
+h4.titre-liste {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* 📜 Conteneur scrollable pour la liste */
+.visiteurs-scroll {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+}
+
+/* 📄 Chaque élément de la liste */
+.visiteur-item {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* 🧾 Informations visiteur */
+.visiteur-info {
+  max-width: 70%;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* 🔘 Zone des boutons (Modifier / Supprimer / Sortie) */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* 🎨 Boutons standards */
+button.btn {
+  padding: 8px 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+/* ✅ Bouton sortie */
+.btn-success {
+  background-color: #28a745;
+  color: #fff;
+}
+.btn-success:hover {
+  background-color: #218838;
+}
+
+/* ✏️ Bouton modifier */
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* ❌ Bouton supprimer */
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* 📱 Responsive pour mobiles */
+@media screen and (max-width: 768px) {
+  .visiteur-item {
+    flex-direction: column;
+  }
+
+  .visiteur-info, .action-buttons {
+    max-width: 100%;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+}

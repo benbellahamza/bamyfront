@@ -4,6 +4,12 @@
     padding: 30px;
     font-family: 'Segoe UI', sans-serif;
   }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
   
   .liste-visiteurs {
     margin-top: 40px;

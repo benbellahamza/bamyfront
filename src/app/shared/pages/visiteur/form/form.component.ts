@@ -10,17 +10,15 @@ import { VisiteurService } from 'app/core/services/visiteur/visiteur.service';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit {
-modifierVisiteur(_t89: any) {
-throw new Error('Method not implemented.');
-}
 
   visiteurForm!: FormGroup;
-  visiteursDuJour: any[] = [];
   compteur: number = 0;
   currentTime: string = '';
   confirmationMessage = '';
   loading = false;
-  selectedVisiteurId: number | null = null; // 👈 ID en cours de modification
+
+  // ✅ utilisé pour le mode édition
+  selectedVisiteurId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -30,15 +28,24 @@ throw new Error('Method not implemented.');
 
   ngOnInit(): void {
     this.createForm();
-    this.loadVisiteursDuJour();
     this.loadCompteur();
     this.startClock();
 
-    // 🔁 Écoute les événements de modification depuis list.component.ts
+    // ✅ Écoute un événement CustomEvent depuis list.component
     window.addEventListener('edit-visiteur', (e: any) => {
       const visiteur = e.detail;
       this.selectedVisiteurId = visiteur.id;
-      this.visiteurForm.patchValue(visiteur);
+
+      this.visiteurForm.patchValue({
+        nom: visiteur.nom,
+        prenom: visiteur.prenom,
+        cin: visiteur.cin,
+        genre: visiteur.genre,
+        destination: visiteur.destination,
+        typeVisiteur: visiteur.typeVisiteur,
+        telephone: visiteur.telephone,
+        matricule: visiteur.matricule
+      });
     });
   }
 
@@ -72,14 +79,6 @@ throw new Error('Method not implemented.');
     }, 1000);
   }
 
-  loadVisiteursDuJour() {
-    this.visiteurService.getVisiteursDuJour().subscribe((data: any[]) => {
-      this.visiteursDuJour = data.sort((a, b) =>
-        new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime()
-      );
-    });
-  }
-
   loadCompteur() {
     this.http.get<number>('http://localhost:8085/api/compteur').subscribe(data => {
       this.compteur = data;
@@ -92,16 +91,10 @@ throw new Error('Method not implemented.');
     this.loading = true;
 
     if (this.selectedVisiteurId !== null) {
-      // 🛠️ Modifier visiteur
+      // ✅ Modifier un visiteur
       this.visiteurService.modifierVisiteur(this.selectedVisiteurId, this.visiteurForm.value).subscribe({
         next: () => {
-          this.confirmationMessage = 'Visiteur modifié avec succès !';
-          this.visiteurForm.reset();
-          this.selectedVisiteurId = null;
-          this.loadVisiteursDuJour();
-          this.loadCompteur();
-          this.loading = false;
-          setTimeout(() => this.confirmationMessage = '', 3000);
+          this.showMessage('Visiteur modifié avec succès !');
         },
         error: () => {
           this.loading = false;
@@ -109,15 +102,10 @@ throw new Error('Method not implemented.');
         }
       });
     } else {
-      // ➕ Ajouter nouveau visiteur
+      // ✅ Ajouter un nouveau visiteur
       this.visiteurService.ajouterVisiteur(this.visiteurForm.value).subscribe({
         next: () => {
-          this.confirmationMessage = 'Visiteur ajouté avec succès !';
-          this.visiteurForm.reset();
-          this.loadVisiteursDuJour();
-          this.loadCompteur();
-          this.loading = false;
-          setTimeout(() => this.confirmationMessage = '', 3000);
+          this.showMessage('Visiteur ajouté avec succès !');
         },
         error: () => {
           this.loading = false;
@@ -127,17 +115,30 @@ throw new Error('Method not implemented.');
     }
   }
 
+  showMessage(message: string) {
+    this.confirmationMessage = message;
+    this.visiteurForm.reset();
+    this.selectedVisiteurId = null;
+    this.loading = false;
+    this.loadCompteur();
+
+    setTimeout(() => this.confirmationMessage = '', 3000);
+
+    // 🔁 Notifie les autres composants (ex: ListComponent)
+    window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
+  }
+
   validerSortie(id: number) {
     this.visiteurService.validerSortie(id).subscribe(() => {
-      this.loadVisiteursDuJour();
+      window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
     });
   }
 
   supprimerVisiteur(id: number) {
     if (confirm("Voulez-vous vraiment supprimer ce visiteur ?")) {
       this.visiteurService.supprimer(id).subscribe(() => {
-        this.loadVisiteursDuJour();
         this.loadCompteur();
+        window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
       });
     }
   }

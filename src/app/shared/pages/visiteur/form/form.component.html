@@ -1,5 +1,4 @@
 <div class="container-formulaire">
-
   <!-- ⏰ Horloge & Date -->
   <div class="clock">
     <h2>{{ currentTime }}</h2>
@@ -9,6 +8,11 @@
   <div class="counter-box">
     <p>Nombre de visiteurs aujourd’hui :</p>
     <h3>{{ compteur }}</h3>
+  </div>
+
+  <!-- ℹ️ Mode modification actif -->
+  <div *ngIf="selectedVisiteurId" class="info-message">
+    ✏️ Modification d’un visiteur en cours...
   </div>
 
   <!-- ❌ Message erreur si formulaire invalide -->
@@ -71,31 +75,4 @@
       {{ selectedVisiteurId ? 'Modifier' : 'Confirmer' }}
     </button>
   </form>
-
-  <!-- 📋 Liste visiteurs du jour -->
-  <div class="liste-visiteurs">
-    <h4>Visiteurs ajoutés aujourd’hui</h4>
-    <div class="visiteurs-scroll">
-      <div *ngFor="let v of visiteursDuJour" class="visiteur-item">
-        <div class="visiteur-info">
-          <strong>{{ v.nom }} {{ v.prenom }}</strong><br />
-          CIN : {{ v.cin }}<br />
-          Téléphone : {{ v.telephone }}<br />
-          Type : {{ v.typeVisiteur || 'N/A' }}<br />
-          Destination : {{ v.destination }}<br />
-          Entrée : {{ v.dateEntree | date:'short' }}<br />
-          Sortie : 
-          <span *ngIf="v.dateSortie">✔ {{ v.dateSortie | date:'shortTime' }}</span>
-          <span *ngIf="!v.dateSortie">❌</span>
-        </div>
-
-        <div class="action-buttons">
-          <button *ngIf="!v.dateSortie" class="btn btn-success" (click)="validerSortie(v.id)">Valider sortie</button>
-          <button class="btn btn-primary" (click)="modifierVisiteur(v)">Modifier</button>
-          <button class="btn btn-danger" (click)="supprimerVisiteur(v.id)">Supprimer</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>

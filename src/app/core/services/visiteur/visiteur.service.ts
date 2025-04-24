@@ -20,8 +20,9 @@ export class VisiteurService {
   }
 
   modifierVisiteur(id: number, visiteur: any) {
-    return this.http.put(`${this.apiUrl}/${id}`, visiteur);
+    return this.http.put(`http://localhost:8085/api/visiteurs/${id}`, visiteur);
   }
+  
 
   validerSortie(id: number) {
     return this.http.patch(`${this.apiUrl}/${id}/sortie`, {});
