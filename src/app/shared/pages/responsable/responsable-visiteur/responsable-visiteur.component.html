@@ -1,27 +1,34 @@
 <div class="responsable-container">
-  <h2>Liste des visiteurs</h2>
 
-  <table class="visiteur-table">
-    <thead>
-      <tr>
-        <th>Nom</th>
-        <th>Prénom</th>
-        <th>Genre</th>
-        <th>Destination</th>
-        <th>Date d'entrée</th>
-        <th>Date de sortie</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let v of visiteurs">
-        <td>{{ v.nom }}</td>
-        <td>{{ v.prenom }}</td>
-        <td>{{ v.genre }}</td>
-        <td>{{ v.destination }}</td>
-        <td>{{ v.dateEntree | date:'short' }}</td>
-        <td *ngIf="v.dateSortie">{{ v.dateSortie | date:'short' }}</td>
-        <td *ngIf="!v.dateSortie">❌ Non sortie</td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- 🧭 Barre de recherche -->
+  <div class="search-container">
+    <input type="text" placeholder="🔍 Rechercher nom, prénom ou CIN..." [(ngModel)]="searchTerm" (input)="rechercher()">
+  </div>
+
+  <!-- 🕑 Loader pendant chargement -->
+  <div *ngIf="loading" class="loader">
+    Chargement des visiteurs...
+  </div>
+
+  <!-- 📋 Liste visiteurs affichée sous forme de cartes -->
+  <div class="visiteurs-grid" *ngIf="!loading">
+    <div class="visiteur-card" *ngFor="let v of visiteursFiltres">
+      
+      <div class="visiteur-info">
+        <h3>{{ v.nom }} {{ v.prenom }}</h3>
+        <p><strong>CIN :</strong> {{ v.cin }}</p>
+        <p><strong>Genre :</strong> {{ v.genre }}</p>
+        <p><strong>Destination :</strong> {{ v.destination }}</p>
+        <p><strong>Téléphone :</strong> {{ v.telephone || 'N/A' }}</p>
+        <p><strong>Type de visiteur :</strong> {{ v.typeVisiteur || 'Particulier' }}</p>
+        <p><strong>Date d'entrée :</strong> {{ v.dateEntree | date: 'short' }}</p>
+        <p><strong>Date de sortie :</strong> 
+          <span *ngIf="v.dateSortie">{{ v.dateSortie | date: 'short' }}</span>
+          <span *ngIf="!v.dateSortie">❌ Non sortie</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
 </div>

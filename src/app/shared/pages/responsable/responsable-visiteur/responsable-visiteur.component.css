@@ -1,36 +1,78 @@
 .responsable-container {
-  padding: 40px;
-  max-width: 1000px;
-  margin: 0 auto;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: auto;
   font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fa;
 }
 
-h2 {
+/* 🔍 Barre de recherche */
+.search-container {
   text-align: center;
-  margin-bottom: 30px;
-  color: #007bff;
+  margin-bottom: 25px;
 }
 
-.visiteur-table {
-  width: 100%;
-  border-collapse: collapse;
+.search-container input {
+  padding: 12px 20px;
+  width: 80%;
+  max-width: 500px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: 0.3s ease;
 }
 
-.visiteur-table th, .visiteur-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
+.search-container input:focus {
+  border-color: #007bff;
+}
+
+/* 🕑 Loader */
+.loader {
   text-align: center;
-}
-
-.visiteur-table th {
-  background-color: #f2f2f2;
   font-weight: bold;
+  color: #007bff;
+  margin-top: 20px;
 }
 
-.visiteur-table tr:nth-child(even) {
-  background-color: #f9f9f9;
+/* 🧾 Grille des visiteurs */
+.visiteurs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 25px;
 }
 
-.visiteur-table tr:hover {
-  background-color: #f1f1f1;
+/* 📦 Carte visiteur */
+.visiteur-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-left: 6px solid #007bff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.visiteur-card:hover {
+  transform: scale(1.02);
+}
+
+.visiteur-info h3 {
+  margin-top: 0;
+  color: #007bff;
+  font-size: 20px;
+}
+
+.visiteur-info p {
+  margin: 6px 0;
+  color: #333;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* ✅ Responsive pour mobile */
+@media screen and (max-width: 768px) {
+  .search-container input {
+    width: 95%;
+  }
 }

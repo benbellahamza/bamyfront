@@ -10,6 +10,9 @@ import { HttpClient } from '@angular/common/http';
 export class ResponsableVisiteurComponent implements OnInit {
 
   visiteurs: any[] = [];
+  visiteursFiltres: any[] = [];
+  loading = false;
+  searchTerm: string = '';
 
   constructor(private http: HttpClient) {}
 
@@ -17,11 +20,30 @@ export class ResponsableVisiteurComponent implements OnInit {
     this.getVisiteurs();
   }
 
+  // ✅ Récupération des visiteurs (triés par date d'entrée décroissante)
   getVisiteurs() {
-    this.http.get<any[]>('http://localhost:8085/api/visiteurs')
-      .subscribe(data => {
-        this.visiteurs = data;
-      });
+    this.loading = true;
+    this.http.get<any[]>('http://localhost:8085/api/visiteurs').subscribe({
+      next: (data) => {
+        this.visiteurs = data.sort((a, b) => new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime());
+        this.visiteursFiltres = [...this.visiteurs];
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erreur chargement visiteurs', error);
+        this.loading = false;
+      }
+    });
+  }
+
+  // ✅ Filtrage par recherche sur nom, prénom ou CIN
+  rechercher() {
+    const terme = this.searchTerm.toLowerCase();
+    this.visiteursFiltres = this.visiteurs.filter(v =>
+      v.nom.toLowerCase().includes(terme) ||
+      v.prenom.toLowerCase().includes(terme) ||
+      v.cin.toLowerCase().includes(terme)
+    );
   }
 
 }

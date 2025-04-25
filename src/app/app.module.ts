@@ -30,6 +30,7 @@ import { AjouterUtilisateurComponent } from './shared/pages/admin/ajouter-utilis
 import { ResponsableVisiteurComponent } from './shared/pages/responsable/responsable-visiteur/responsable-visiteur.component';
 import { ResponsableLivraisonComponent } from './shared/pages/responsable/responsable-livraison/responsable-livraison.component';
 
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { ResponsableLivraisonComponent } from './shared/pages/responsable/respon
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule
