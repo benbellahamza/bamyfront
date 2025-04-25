@@ -1,79 +1,119 @@
 .container-formulaire {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 30px;
-    font-family: 'Segoe UI', sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.liste-visiteurs {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.liste-visiteurs h4 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #007bff;
+  text-align: center;
+}
+
+.visiteurs-scroll {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+/* Scrollbar Webkit (Chrome, Edge) */
+.visiteurs-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.visiteurs-scroll::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 3px;
+}
+
+.visiteur-item {
+  background: #f9f9f9;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  transition: background-color 0.3s ease;
+}
+
+.visiteur-item:hover {
+  background-color: #f1f1f1;
+}
+
+.visiteur-info {
+  max-width: 70%;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ✅ Boutons */
+button.btn {
+  padding: 8px 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* ✅ Responsive */
+@media screen and (max-width: 768px) {
+  .visiteur-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .visiteur-info, .action-buttons {
+    width: 100%;
   }
 
   .action-buttons {
-    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px;
-    margin-top: 8px;
+    margin-top: 10px;
   }
-  
-  .liste-visiteurs {
-    margin-top: 40px;
-    text-align: left;
-  }
-  
-  .liste-visiteurs h4 {
-    font-size: 20px;
-    margin-bottom: 15px;
-    color: #007bff;
-    text-align: center;
-  }
-  
-  .visiteurs-scroll {
-    max-height: 300px;
-    overflow-y: auto;
-    padding-right: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #ccc transparent;
-  }
-  
-  /* Pour les navigateurs Webkit (Chrome, Edge, etc.) */
-  .visiteurs-scroll::-webkit-scrollbar {
-    width: 6px;
-  }
-  .visiteurs-scroll::-webkit-scrollbar-thumb {
-    background-color: #aaa;
-    border-radius: 3px;
-  }
-  
-  .visiteur-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f9f9f9;
-    padding: 12px 20px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    transition: background-color 0.2s ease;
-  }
-  
-  .visiteur-item:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .visiteur-item span {
-    flex-grow: 1;
-    font-size: 16px;
-    color: #333;
-  }
-  
-  .visiteur-item button {
-    background-color: #28a745;
-    border: none;
-    color: white;
-    font-weight: bold;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .visiteur-item button:hover {
-    background-color: #218838;
-  }
-  
+}

@@ -24,8 +24,8 @@ export class VisiteurService {
   }
   
 
-  validerSortie(id: number) {
-    return this.http.patch(`${this.apiUrl}/${id}/sortie`, {});
+  validerSortie(id: number): Observable<any> {
+    return this.http.patch(`http://localhost:8085/api/visiteurs/${id}/sortie`, {});
   }
 
   supprimer(id: number) {
