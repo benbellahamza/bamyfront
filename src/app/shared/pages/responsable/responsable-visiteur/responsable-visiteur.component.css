@@ -7,11 +7,11 @@
   background-color: #f0f2f5;
 }
 
-/* 🔎 Recherche + Dates + Boutons */
+/* 🔎 Top Controls (Recherche + Dates + Boutons) */
 .top-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 20px;
   align-items: center;
   justify-content: center;
   margin-bottom: 30px;
@@ -24,7 +24,6 @@
   font-size: 16px;
   border: 2px solid #ccc;
   border-radius: 8px;
-  outline: none;
   background-color: white;
 }
 
@@ -32,11 +31,10 @@
   border-color: #007bff;
 }
 
-/* 📅 Filtres dates */
+/* 📅 Filtres Dates */
 .date-filters {
   display: flex;
   gap: 12px;
-  align-items: center;
 }
 
 .date-filters label {
@@ -47,13 +45,12 @@
 }
 
 .date-filters input {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
+  padding: 8px 14px;
   border-radius: 6px;
-  background-color: white;
+  border: 1px solid #ccc;
 }
 
-/* 🛠️ Boutons */
+/* 🛠️ Boutons Export / Réinitialiser */
 .export-buttons {
   display: flex;
   gap: 10px;
@@ -66,10 +63,10 @@
   font-weight: bold;
   font-size: 14px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: 0.3s ease;
 }
 
-/* 📤 Bouton Exporter tous */
+/* Exporter tous */
 .btn-export {
   background-color: #28a745;
   color: white;
@@ -78,7 +75,7 @@
   background-color: #218838;
 }
 
-/* 📥 Bouton Exporter sélection */
+/* Exporter sélection */
 .btn-selection {
   background-color: #007bff;
   color: white;
@@ -87,7 +84,7 @@
   background-color: #0056b3;
 }
 
-/* 🔄 Bouton Réinitialiser */
+/* Réinitialiser */
 .btn-reset {
   background-color: #ffc107;
   color: #212529;
@@ -104,7 +101,7 @@
   margin-top: 20px;
 }
 
-/* 📋 Grille visiteurs */
+/* 📋 Grille des visiteurs */
 .visiteurs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -119,14 +116,14 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .visiteur-card:hover {
   transform: translateY(-5px);
 }
 
-/* 📝 Header card */
+/* 📝 Header Carte */
 .card-header {
   display: flex;
   align-items: center;
@@ -147,7 +144,7 @@
   cursor: pointer;
 }
 
-/* 📄 Body card */
+/* 🧾 Infos visiteur */
 .card-body p {
   margin: 6px 0;
   color: #444;
@@ -160,7 +157,22 @@
   font-weight: bold;
 }
 
-/* 🚫 Aucune donnée */
+/* ✅ Badge sortie */
+.badge-sortie {
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* 🆕 Badge nouveau visiteur */
+.badge-nouveau {
+  background-color: #28a745;
+  color: white;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 50px;
+}
+
+/* 🚫 Aucun visiteur */
 .no-data {
   text-align: center;
   font-weight: bold;
@@ -169,7 +181,7 @@
   margin-top: 40px;
 }
 
-/* 📱 Responsive Mobile */
+/* 📱 Responsive */
 @media screen and (max-width: 768px) {
   .top-controls {
     flex-direction: column;

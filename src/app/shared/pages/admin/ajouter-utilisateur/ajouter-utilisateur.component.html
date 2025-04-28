@@ -1,1 +1,66 @@
-<p>ajouter-utilisateur works!</p>
+<div class="ajouter-utilisateur-container">
+  <h2>Ajouter un nouvel utilisateur</h2>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+
+    <!-- Nom -->
+    <div class="form-group mb-3">
+      <label>Nom :</label>
+      <input type="text" class="form-control" formControlName="nom" />
+      <div *ngIf="userForm.get('nom')?.invalid && userForm.get('nom')?.touched" class="text-danger">
+        Le nom est obligatoire.
+      </div>
+    </div>
+
+    <!-- Prénom -->
+    <div class="form-group mb-3">
+      <label>Prénom :</label>
+      <input type="text" class="form-control" formControlName="prenom" />
+      <div *ngIf="userForm.get('prenom')?.invalid && userForm.get('prenom')?.touched" class="text-danger">
+        Le prénom est obligatoire.
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group mb-3">
+      <label>Email :</label>
+      <input type="email" class="form-control" formControlName="email" />
+      <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="text-danger">
+        Un email valide est requis.
+      </div>
+    </div>
+
+    <!-- Mot de passe -->
+    <div class="form-group mb-3">
+      <label>Mot de passe :</label>
+      <input type="password" class="form-control" formControlName="password" />
+      <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="text-danger">
+        Le mot de passe doit contenir au moins 6 caractères.
+      </div>
+    </div>
+
+    <!-- Rôle -->
+    <div class="form-group mb-3">
+      <label>Rôle :</label>
+      <select formControlName="role" class="form-control">
+        <option value="">-- Sélectionner un rôle --</option>
+        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+      </select>
+      <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="text-danger">
+        Le rôle est obligatoire.
+      </div>
+    </div>
+
+    <!-- Bouton Ajouter -->
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">
+        Ajouter Utilisateur
+      </button>
+    </div>
+
+  </form>
+
+  <!-- Messages succès/erreur -->
+  <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+</div>

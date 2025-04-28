@@ -4,6 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-ajouter-visiteur-page',
   standalone:false,
   templateUrl: './ajouter-visiteur-page.component.html',
-  styleUrls: ['./ajouter-visiteur-page.component.css'] // ✅ Correction ici : styleUrls avec "s"
+  styleUrls: ['./ajouter-visiteur-page.component.css']
 })
 export class AjouterVisiteurPageComponent {}

@@ -1,1 +1,59 @@
-<p>dashboard-admin works!</p>
+<div class="content-body">
+  <div class="container-fluid">
+
+    <!-- Header -->
+    <div class="page-titles">
+      <h4>Gestion des utilisateurs</h4>
+    </div>
+
+    <!-- Bouton Ajouter -->
+    <div class="mb-4">
+      <button class="btn btn-primary" (click)="allerAjouterUtilisateur()">
+        ➕ Ajouter un nouvel utilisateur
+      </button>
+    </div>
+
+    <!-- Tableau Liste Utilisateurs -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">Liste des utilisateurs</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let utilisateur of utilisateurs">
+                <td>{{ utilisateur.nom }}</td>
+                <td>{{ utilisateur.prenom }}</td>
+                <td>{{ utilisateur.email }}</td>
+                <td>{{ utilisateur.role }}</td>
+                <td>
+                  <button class="btn btn-warning btn-sm" (click)="modifierUtilisateur(utilisateur)">
+                    ✏️ Modifier
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="reinitialiserMotDePasse(utilisateur)">
+                    🔄 Réinitialiser mot de passe
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div *ngIf="utilisateurs.length === 0" class="text-center mt-4">
+            Aucun utilisateur trouvé.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

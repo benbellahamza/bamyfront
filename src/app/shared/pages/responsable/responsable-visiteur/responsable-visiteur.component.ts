@@ -13,13 +13,13 @@ export class ResponsableVisiteurComponent implements OnInit {
 
   visiteurs: any[] = [];
   visiteursFiltres: any[] = [];
-  loading = false;
-  searchTerm: string = '';
-
-  // 🔥 Nouveaux champs nécessaires
   selectedVisiteurs: any[] = [];
+
+  searchTerm: string = '';
   startDate: string = '';
   endDate: string = '';
+
+  loading: boolean = false;
 
   constructor(private http: HttpClient) {}
 
@@ -27,23 +27,24 @@ export class ResponsableVisiteurComponent implements OnInit {
     this.getVisiteurs();
   }
 
-  // ✅ Charger tous les visiteurs (tri décroissant date d'entrée)
+  // 🔵 Charger les visiteurs
   getVisiteurs() {
     this.loading = true;
     this.http.get<any[]>('http://localhost:8085/api/visiteurs').subscribe({
       next: (data) => {
+        // Tri décroissant par date d'entrée
         this.visiteurs = data.sort((a, b) => new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime());
         this.visiteursFiltres = [...this.visiteurs];
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erreur chargement visiteurs', error);
+        console.error('Erreur lors du chargement des visiteurs', error);
         this.loading = false;
       }
     });
   }
 
-  // ✅ Recherche dynamique par nom, prénom ou CIN
+  // 🔵 Recherche dynamique
   rechercher() {
     const terme = this.searchTerm.toLowerCase();
     this.visiteursFiltres = this.visiteurs.filter(v =>
@@ -53,47 +54,7 @@ export class ResponsableVisiteurComponent implements OnInit {
     );
   }
 
-  // ✅ Sélectionner / désélectionner un visiteur
-  toggleSelection(visiteur: any) {
-    if (this.isSelected(visiteur)) {
-      this.selectedVisiteurs = this.selectedVisiteurs.filter(v => v.id !== visiteur.id);
-    } else {
-      this.selectedVisiteurs.push(visiteur);
-    }
-  }
-
-  isSelected(visiteur: any) {
-    return this.selectedVisiteurs.some(v => v.id === visiteur.id);
-  }
-
-  // ✅ Exporter en Excel
-  exporterExcel(tous: boolean) {
-    const dataToExport = tous ? this.visiteursFiltres : this.selectedVisiteurs;
-
-    const formattedData = dataToExport.map(v => ({
-      Nom: v.nom,
-      Prénom: v.prenom,
-      CIN: v.cin,
-      Téléphone: v.telephone,
-      Destination: v.destination,
-      "Type Visiteur": v.typeVisiteur,
-      "Date Entrée": v.dateEntree ? new Date(v.dateEntree).toLocaleString() : '',
-      "Date Sortie": v.dateSortie ? new Date(v.dateSortie).toLocaleString() : 'Non sorti'
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
-    const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-
-    const file = new Blob([excelBuffer], { type: 'application/octet-stream' });
-
-    // 📂 Téléchargement avec nom dynamique
-    const now = new Date();
-    const fileName = `visiteurs-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}.xlsx`;
-    saveAs(file, fileName);
-  }
-
-  // ✅ Filtrer par intervalle de dates
+  // 🔵 Filtrer par dates
   filtrerParDate() {
     if (!this.startDate || !this.endDate) {
       this.visiteursFiltres = [...this.visiteurs];
@@ -102,7 +63,6 @@ export class ResponsableVisiteurComponent implements OnInit {
 
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
-    end.setHours(23, 59, 59, 999); // inclure toute la journée fin
 
     this.visiteursFiltres = this.visiteurs.filter(v => {
       const dateEntree = new Date(v.dateEntree);
@@ -110,7 +70,49 @@ export class ResponsableVisiteurComponent implements OnInit {
     });
   }
 
-  // ✅ Réinitialiser tous les filtres
+  // 🔵 Sélectionner / désélectionner un visiteur
+  toggleSelection(visiteur: any) {
+    if (this.isSelected(visiteur)) {
+      this.selectedVisiteurs = this.selectedVisiteurs.filter(v => v.id !== visiteur.id);
+    } else {
+      this.selectedVisiteurs.push(visiteur);
+    }
+  }
+
+  // 🔵 Vérifier si visiteur est sélectionné
+  isSelected(visiteur: any) {
+    return this.selectedVisiteurs.some(v => v.id === visiteur.id);
+  }
+
+  // 🔵 Exporter Excel
+  exporterExcel(exportAll: boolean) {
+    const dataToExport = exportAll ? this.visiteursFiltres : this.selectedVisiteurs;
+
+    if (dataToExport.length === 0) {
+      alert('Aucun visiteur sélectionné pour l\'exportation.');
+      return;
+    }
+
+    const formattedData = dataToExport.map(v => ({
+      Nom: v.nom,
+      Prénom: v.prenom,
+      CIN: v.cin,
+      Téléphone: v.telephone,
+      Destination: v.destination,
+      "Type Visiteur": v.typeVisiteur || 'Particulier',
+      "Date Entrée": v.dateEntree ? new Date(v.dateEntree).toLocaleString() : '',
+      "Date Sortie": v.dateSortie ? new Date(v.dateSortie).toLocaleString() : 'Non sorti'
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = { Sheets: { 'Visiteurs': worksheet }, SheetNames: ['Visiteurs'] };
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, 'visiteurs_export.xlsx');
+  }
+
+  // 🔵 Réinitialiser tous les filtres
   resetFiltres() {
     this.searchTerm = '';
     this.startDate = '';
@@ -118,5 +120,4 @@ export class ResponsableVisiteurComponent implements OnInit {
     this.selectedVisiteurs = [];
     this.visiteursFiltres = [...this.visiteurs];
   }
-
 }
