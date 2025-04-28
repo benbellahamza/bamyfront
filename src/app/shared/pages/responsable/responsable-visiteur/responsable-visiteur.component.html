@@ -1,34 +1,65 @@
 <div class="responsable-container">
 
-  <!-- 🧭 Barre de recherche -->
-  <div class="search-container">
-    <input type="text" placeholder="🔍 Rechercher nom, prénom ou CIN..." [(ngModel)]="searchTerm" (input)="rechercher()">
+  <!-- 🔍 Barre de recherche + filtres dates + boutons -->
+  <div class="top-controls">
+
+    <div class="search-zone">
+      <input type="text" placeholder="🔎 Rechercher nom, prénom ou CIN..." [(ngModel)]="searchTerm" (input)="rechercher()" class="search-input">
+    </div>
+
+    <div class="date-filters">
+      <label>Date début :
+        <input type="date" [(ngModel)]="startDate" (change)="filtrerParDate()">
+      </label>
+
+      <label>Date fin :
+        <input type="date" [(ngModel)]="endDate" (change)="filtrerParDate()">
+      </label>
+    </div>
+
+    <div class="export-buttons">
+      <button class="btn btn-export" (click)="exporterExcel(true)">📤 Exporter tout</button>
+      <button class="btn btn-selection" (click)="exporterExcel(false)">📥 Exporter sélectionnés</button>
+      <button class="btn btn-reset" (click)="resetFiltres()">🔄 Réinitialiser</button>
+    </div>
+
   </div>
 
-  <!-- 🕑 Loader pendant chargement -->
+  <!-- 🕑 Loading -->
   <div *ngIf="loading" class="loader">
     Chargement des visiteurs...
   </div>
 
-  <!-- 📋 Liste visiteurs affichée sous forme de cartes -->
-  <div class="visiteurs-grid" *ngIf="!loading">
-    <div class="visiteur-card" *ngFor="let v of visiteursFiltres">
-      
-      <div class="visiteur-info">
+  <!-- 🧩 Grille visiteurs -->
+  <div *ngIf="!loading && visiteursFiltres.length > 0" class="visiteurs-grid">
+    <div *ngFor="let v of visiteursFiltres" class="visiteur-card">
+
+      <!-- Header card : case à cocher + nom -->
+      <div class="card-header">
+        <input type="checkbox" [checked]="isSelected(v)" (change)="toggleSelection(v)">
         <h3>{{ v.nom }} {{ v.prenom }}</h3>
+      </div>
+
+      <!-- Body card -->
+      <div class="card-body">
         <p><strong>CIN :</strong> {{ v.cin }}</p>
         <p><strong>Genre :</strong> {{ v.genre }}</p>
         <p><strong>Destination :</strong> {{ v.destination }}</p>
         <p><strong>Téléphone :</strong> {{ v.telephone || 'N/A' }}</p>
-        <p><strong>Type de visiteur :</strong> {{ v.typeVisiteur || 'Particulier' }}</p>
-        <p><strong>Date d'entrée :</strong> {{ v.dateEntree | date: 'short' }}</p>
-        <p><strong>Date de sortie :</strong> 
-          <span *ngIf="v.dateSortie">{{ v.dateSortie | date: 'short' }}</span>
-          <span *ngIf="!v.dateSortie">❌ Non sortie</span>
+        <p><strong>Type :</strong> {{ v.typeVisiteur || 'Particulier' }}</p>
+        <p><strong>Date entrée :</strong> {{ v.dateEntree | date:'short' }}</p>
+        <p><strong>Date sortie :</strong>
+          <span *ngIf="v.dateSortie">{{ v.dateSortie | date:'short' }}</span>
+          <span *ngIf="!v.dateSortie" class="non-sortie">❌ Non sorti</span>
         </p>
       </div>
 
     </div>
+  </div>
+
+  <!-- 🚫 Aucun visiteur trouvé -->
+  <div *ngIf="!loading && visiteursFiltres.length === 0" class="no-data">
+    🚫 Aucun visiteur ne correspond aux critères de recherche.
   </div>
 
 </div>
