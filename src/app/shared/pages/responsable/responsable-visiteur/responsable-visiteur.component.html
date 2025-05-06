@@ -1,86 +1,124 @@
-<div class="responsable-container">
+<div class="flex flex-col h-screen bg-gradient-to-br from-slate-100 to-slate-300">
 
-  <!-- 🔍 Barre de recherche, filtres dates, boutons -->
-  <div class="top-controls">
-    <!-- 🔍 Recherche -->
-    <div class="search-zone">
-      <input
-        type="text"
-        placeholder="🔎 Rechercher nom, prénom ou CIN..."
-        [(ngModel)]="searchTerm"
-        (input)="rechercher()"
-        class="search-input"
-      >
+  <!-- ✅ HEADER FIXÉ -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-700 text-white p-4 border-b-4 border-double border-slate-500 rounded-b-lg flex items-center justify-between">
+    <!-- LOGO + TEXTE -->
+    <div class="flex items-center gap-3">
+      <img src="assets/images/user-icon.png" alt="Logo Renault" class="w-10 h-10 object-contain" />
+      <span class="text-black font-semibold text-lg tracking-wider">BAMY TRUCKS</span>
     </div>
 
-    <!-- 📅 Filtres de date -->
-    <div class="date-filters">
-      <label>
-        Date début :
-        <input
-          type="date"
-          [(ngModel)]="startDate"
-          (change)="filtrerParDate()"
-        >
-      </label>
+    <!-- TITRE CENTRÉ -->
+    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase text-center">
+      Liste des visiteurs
+    </h1>
 
-      <label>
-        Date fin :
-        <input
-          type="date"
-          [(ngModel)]="endDate"
-          (change)="filtrerParDate()"
-        >
-      </label>
-    </div>
-
-    <!-- 📤 Boutons Export / Reset -->
-    <div class="export-buttons">
-      <button class="btn btn-export" (click)="exporterExcel(true)">📤 Exporter tout</button>
-      <button class="btn btn-selection" (click)="exporterExcel(false)">📥 Exporter sélectionnés</button>
-      <button class="btn btn-reset" (click)="resetFiltres()">🔄 Réinitialiser</button>
-    </div>
-  </div>
-
-  <!-- 🕑 Loading -->
-  <div *ngIf="loading" class="loader">
-    Chargement des visiteurs...
-  </div>
-
-  <!-- 🧩 Grille visiteurs -->
-  <div *ngIf="!loading && visiteursFiltres.length > 0" class="visiteurs-grid">
-    <div *ngFor="let v of visiteursFiltres" class="visiteur-card">
-
-      <!-- ✅ Header : Checkbox + Nom -->
-      <div class="card-header">
-        <input
-          type="checkbox"
-          [checked]="isSelected(v)"
-          (change)="toggleSelection(v)"
-        >
-        <h3>{{ v.nom }} {{ v.prenom }}</h3>
+    <!-- MENU UTILISATEUR À DROITE -->
+    <div class="relative" (click)="menuOuvert = !menuOuvert">
+      <div class="w-10 h-10 rounded-full bg-white text-slate-800 flex items-center justify-center font-bold cursor-pointer">
+        {{ utilisateur.nom.charAt(0) }}
       </div>
 
-      <!-- 🧾 Body infos -->
-      <div class="card-body">
-        <p><strong>CIN :</strong> {{ v.cin }}</p>
-        <p><strong>Genre :</strong> {{ v.genre }}</p>
-        <p><strong>Destination :</strong> {{ v.destination }}</p>
-        <p><strong>Téléphone :</strong> {{ v.telephone || 'N/A' }}</p>
-        <p><strong>Type :</strong> {{ v.typeVisiteur || 'Particulier' }}</p>
-        <p><strong>Date d'entrée :</strong> {{ v.dateEntree | date:'short' }}</p>
-        <p><strong>Date de sortie :</strong>
-          <span *ngIf="v.dateSortie">{{ v.dateSortie | date:'short' }}</span>
-          <span *ngIf="!v.dateSortie" class="non-sortie">❌ Non sorti</span>
-        </p>
+      <!-- Menu déroulant -->
+      <div *ngIf="menuOuvert"
+           class="absolute right-0 mt-2 w-64 bg-white text-slate-800 shadow-lg rounded-md p-4 z-50 space-y-2">
+        <div class="font-semibold text-sm flex items-center gap-2"><span>👤</span>{{ utilisateur.nom }}</div>
+        <div class="text-sm flex items-center gap-2"><span>📧</span>{{ utilisateur.email }}</div>
+        <div class="text-sm flex items-center gap-2"><span>🔐</span>{{ utilisateur.role }}</div>
+        <hr>
+        <div class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer flex items-center gap-2" (click)="ouvrirModalePassword()">
+          🔑 Modifier mot de passe
+        </div>
+        <div class="text-sm text-red-600 hover:text-red-800 cursor-pointer flex items-center gap-2" (click)="logout()">
+          🚪 Se déconnecter
+        </div>
       </div>
-
     </div>
-  </div>
+  </header>
 
-  <!-- 🚫 Aucun visiteur trouvé -->
-  <div *ngIf="!loading && visiteursFiltres.length === 0" class="no-data">
-    🚫 Aucun visiteur correspondant aux critères.
-  </div>
+  <!-- ✅ CONTENU SCROLLABLE ENTRE HEADER ET FOOTER -->
+  <main class="flex-grow overflow-y-auto mt-[90px] mb-[80px] px-4">
 
+    <!-- ✅ MODALE -->
+    <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md space-y-4 shadow-lg">
+        <h2 class="text-lg font-bold text-center text-slate-800">Modifier le mot de passe</h2>
+
+        <input type="password" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" class="input input-bordered w-full" />
+        <input type="password" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" class="input input-bordered w-full" />
+
+        <div class="flex justify-end gap-4 mt-4">
+          <button class="btn btn-outline" (click)="fermerModalePassword()">Annuler</button>
+          <button class="btn btn-primary" (click)="changerMotDePasse()">Enregistrer</button>
+        </div>
+
+        <div *ngIf="messageSuccess" class="text-green-600 text-sm text-center">{{ messageSuccess }}</div>
+        <div *ngIf="messageErreur" class="text-red-600 text-sm text-center">{{ messageErreur }}</div>
+      </div>
+    </div>
+
+    <!-- ✅ FILTRES -->
+    <div class="bg-white rounded-xl shadow p-4 my-6 flex flex-col lg:flex-row justify-between items-center gap-4">
+      <input type="text" [(ngModel)]="searchTerm" (input)="rechercher()" placeholder="🔎 Rechercher nom, prénom ou CIN..." class="input input-bordered w-full lg:w-1/3" />
+      <div class="flex flex-wrap gap-4 items-center">
+        <input type="date" [(ngModel)]="startDate" (change)="filtrerParDate()" class="input input-bordered" />
+        <input type="date" [(ngModel)]="endDate" (change)="filtrerParDate()" class="input input-bordered" />
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <button class="btn btn-primary" (click)="exporterExcel(true)">⬇️ Exporter tout</button>
+        <button class="btn btn-success" (click)="exporterExcel(false)">✅ Exporter sélectionnés</button>
+        <button class="btn btn-outline" (click)="resetFiltres()">🔄 Réinitialiser</button>
+      </div>
+    </div>
+
+    <!-- Chargement -->
+    <div *ngIf="loading" class="text-center text-blue-600 font-medium text-lg">⏳ Chargement des visiteurs...</div>
+
+    <!-- ✅ LISTE DES VISITEURS -->
+    <div *ngIf="!loading && visiteursFiltres.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+      <div *ngFor="let v of visiteursPage" class="bg-white shadow-md rounded-lg hover:shadow-xl transition-all w-72 mx-auto flex flex-col justify-between">
+        <div class="h-2 rounded-t-lg bg-slate-400 opacity-30"></div>
+        <div class="p-4 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" class="checkbox checkbox-sm" [checked]="isSelected(v)" (change)="toggleSelection(v)" />
+              <h2 class="font-semibold text-slate-700">{{ v.nom }} {{ v.prenom }}</h2>
+            </label>
+          </div>
+          <div class="text-sm space-y-1 text-slate-600">
+            <p><strong>CIN :</strong> {{ v.cin }}</p>
+            <p><strong>Genre :</strong> {{ v.genre }}</p>
+            <p><strong>Destination :</strong> {{ v.destination }}</p>
+            <p><strong>Téléphone :</strong> {{ v.telephone || 'N/A' }}</p>
+            <p><strong>Type :</strong> {{ v.typeVisiteur || 'Particulier' }}</p>
+            <p><strong>Date entrée :</strong> {{ v.dateEntree | date:'short' }}</p>
+            <p><strong>Date sortie :</strong>
+              <span *ngIf="v.dateSortie">{{ v.dateSortie | date:'short' }}</span>
+              <span *ngIf="!v.dateSortie" class="text-red-500 font-bold">❌ Non sorti</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="pages.length > 1" class="mt-6 flex justify-center gap-2">
+      <button *ngFor="let page of pages; let i = index"
+              (click)="setPage(i + 1)"
+              [ngClass]="{ 'btn-primary': (i + 1) === currentPage, 'btn-outline': (i + 1) !== currentPage }"
+              class="btn btn-sm rounded-full w-8 h-8 text-sm">
+        {{ i + 1 }}
+      </button>
+    </div>
+
+    <!-- Aucun résultat -->
+    <div *ngIf="!loading && visiteursFiltres.length === 0" class="text-center text-red-600 mt-10 text-lg">
+      🚫 Aucun visiteur trouvé.
+    </div>
+  </main>
+
+  <!-- ✅ FOOTER FIXÉ EN BAS -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-slate-700 text-white p-4 text-center rounded-t-lg border-t-4 border-double border-slate-500">
+    <p class="text-xs font-mono">&copy; Renault Trucks | BamyGuest</p>
+  </footer>
 </div>

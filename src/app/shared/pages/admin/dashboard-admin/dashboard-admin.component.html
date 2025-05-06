@@ -1,59 +1,141 @@
-<div class="content-body">
-  <div class="container-fluid">
+<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-300 overflow-hidden">
 
-    <!-- Header -->
-    <div class="page-titles">
-      <h4>Gestion des utilisateurs</h4>
+  <!-- ✅ HEADER -->
+  <header class="bg-slate-700 text-white p-4 border-b-4 border-double border-slate-500 rounded-lg relative flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <img src="assets/images/user-icon.png" alt="Logo" class="w-10 h-10 object-contain" />
+      <span class="text-black font-bold text-lg">BAMY TRUCKS</span>
     </div>
-
-    <!-- Bouton Ajouter -->
-    <div class="mb-4">
-      <button class="btn btn-primary" (click)="allerAjouterUtilisateur()">
-        ➕ Ajouter un nouvel utilisateur
-      </button>
-    </div>
-
-    <!-- Tableau Liste Utilisateurs -->
-    <div class="card">
-      <div class="card-header">
-        <h5 class="card-title">Liste des utilisateurs</h5>
+    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase text-center">
+      Dashboard Admin
+    </h1>
+    <div class="relative" (click)="menuOuvert = !menuOuvert">
+      <div class="w-10 h-10 rounded-full bg-white text-slate-800 flex items-center justify-center font-bold cursor-pointer">
+        {{ utilisateur.nom.charAt(0) }}
       </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover">
-            <thead class="thead-light">
+      <div *ngIf="menuOuvert" class="absolute right-0 mt-2 w-64 bg-white text-slate-800 shadow-lg rounded-md p-4 z-50 space-y-2">
+        <div class="font-semibold text-sm flex items-center gap-2"><span>👤</span>{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
+        <div class="text-sm flex items-center gap-2"><span>📧</span>{{ utilisateur.email }}</div>
+        <div class="text-sm flex items-center gap-2"><span>🔐</span>{{ utilisateur.role }}</div>
+        <hr>
+        <div class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer flex items-center gap-2" (click)="ouvrirModalePassword()">
+          🔑 Modifier mot de passe
+        </div>
+        <div class="text-sm text-red-600 hover:text-red-800 cursor-pointer flex items-center gap-2" (click)="logout()">
+          🚪 Se déconnecter
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ✅ MODALE -->
+  <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md space-y-4 shadow-lg">
+      <h2 class="text-lg font-bold text-center text-slate-800">Modifier le mot de passe</h2>
+      <input type="password" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" class="input input-bordered w-full" />
+      <input type="password" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" class="input input-bordered w-full" />
+      <div class="flex justify-end gap-4 mt-4">
+        <button class="btn btn-outline" (click)="fermerModalePassword()">Annuler</button>
+        <button class="btn btn-primary" (click)="changerMotDePasse()">Enregistrer</button>
+      </div>
+      <div *ngIf="messageSuccess" class="text-green-600 text-sm text-center">{{ messageSuccess }}</div>
+      <div *ngIf="messageErreur" class="text-red-600 text-sm text-center">{{ messageErreur }}</div>
+    </div>
+  </div>
+
+  <!-- ✅ CONTENU -->
+  <main class="flex-1 mt-6 px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-230px)]">
+
+      <!-- ✅ Liste utilisateurs (scroll local) -->
+      <div class="col-span-2 bg-white shadow-lg rounded-xl p-4 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">👥 Liste des utilisateurs</h2>
+          <a routerLink="/ajouterUtilisateur" class="btn btn-primary">➕ Ajouter</a>
+        </div>
+        <div class="overflow-y-auto flex-1">
+          <table class="table w-full text-sm text-center">
+            <thead class="bg-base-200 text-base font-semibold">
               <tr>
+                <th>Avatar</th>
                 <th>Nom</th>
-                <th>Prénom</th>
                 <th>Email</th>
                 <th>Rôle</th>
+                <th>Statut</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let utilisateur of utilisateurs">
-                <td>{{ utilisateur.nom }}</td>
-                <td>{{ utilisateur.prenom }}</td>
-                <td>{{ utilisateur.email }}</td>
-                <td>{{ utilisateur.role }}</td>
+              <tr *ngFor="let user of utilisateurs">
                 <td>
-                  <button class="btn btn-warning btn-sm" (click)="modifierUtilisateur(utilisateur)">
-                    ✏️ Modifier
-                  </button>
-                  <button class="btn btn-danger btn-sm" (click)="reinitialiserMotDePasse(utilisateur)">
-                    🔄 Réinitialiser mot de passe
+                  <div class="avatar placeholder">
+                    <div class="bg-primary text-white rounded-full w-10">
+                      <span class="text-sm">{{ user.nom[0] }}{{ user.prenom[0] }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ user.nom }} {{ user.prenom }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <div class="badge"
+                    [ngClass]="{
+                      'badge-primary': user.role === 'ADMIN',
+                      'badge-info': user.role === 'AGENT',
+                      'badge-warning text-black': user.role === 'RESPONSABLE'
+                    }">
+                    {{ user.role }}
+                  </div>
+                </td>
+                <td>
+                  <div class="badge"
+                    [ngClass]="{
+                      'badge-success text-white': user.actif,
+                      'badge-error text-white': !user.actif
+                    }">
+                    {{ user.actif ? 'Actif' : 'Inactif' }}
+                  </div>
+                </td>
+                <td class="flex gap-1 justify-center">
+                  <button class="btn btn-xs btn-warning" (click)="ouvrirFormModification(user)">✏️</button>
+                  <button class="btn btn-xs btn-error" (click)="ouvrirFormReset(user)">🔐</button>
+                  <button class="btn btn-xs text-white"
+                          [ngClass]="{
+                            'btn-neutral': user.role === 'ADMIN',
+                            'btn-error': user.role !== 'ADMIN' && user.actif,
+                            'btn-success': user.role !== 'ADMIN' && !user.actif
+                          }"
+                          [disabled]="user.role === 'ADMIN'"
+                          (click)="toggleActivation(user)">
+                    {{ user.role === 'ADMIN' ? '🔒' : (user.actif ? '🛑' : '🟢') }}
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
-
-          <div *ngIf="utilisateurs.length === 0" class="text-center mt-4">
-            Aucun utilisateur trouvé.
-          </div>
         </div>
       </div>
-    </div>
 
-  </div>
+      <!-- ✅ Historique (24h uniquement) -->
+      <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">📌 Historique des actions</h2>
+          <a routerLink="/admin/historique" class="btn btn-primary btn-sm">🕓 Voir l'historique</a>
+        </div>
+        <div class="space-y-2 overflow-y-auto flex-1">
+          <div *ngFor="let action of historiqueDashboard" class="text-sm border-b pb-2">
+            <p><span class="font-bold">{{ action.nomAgent }}</span> ➜ <span class="italic">{{ action.action }}</span></p>
+            <p class="text-gray-500 text-xs">🕒 {{ action.dateAction | date: 'short' }}</p>
+          </div>
+          <div *ngIf="historiqueDashboard.length === 0" class="text-center text-gray-400">Aucune action récente</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ✅ FOOTER FIXE -->
+  <footer class="bg-slate-700 text-white p-4 text-center mt-auto border-t-4 border-double border-slate-500">
+    <p class="text-xs font-mono">&copy; Renault Trucks | BamyGuest</p>
+  </footer>
+
 </div>

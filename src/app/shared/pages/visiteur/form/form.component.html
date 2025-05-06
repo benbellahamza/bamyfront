@@ -1,78 +1,184 @@
-<div class="container-formulaire">
-  <!-- ⏰ Horloge & Date -->
-  <div class="clock">
-    <h2>{{ currentTime }}</h2>
-  </div>
-
-  <!-- 🔢 Compteur du jour -->
-  <div class="counter-box">
-    <p>Nombre de visiteurs aujourd’hui :</p>
-    <h3>{{ compteur }}</h3>
-  </div>
-
-  <!-- ℹ️ Mode modification actif -->
-  <div *ngIf="selectedVisiteurId" class="info-message">
-    ✏️ Modification d’un visiteur en cours...
-  </div>
-
-  <!-- ❌ Message erreur si formulaire invalide -->
-  <div *ngIf="visiteurForm.invalid && visiteurForm.touched" class="error-message">
-    ❌ Veuillez remplir tous les champs obligatoires.
-  </div>
-
-  <!-- ✅ Message succès -->
-  <div *ngIf="confirmationMessage" class="success-message">
-    ✅ {{ confirmationMessage }}
-  </div>
-
-  <!-- 📝 Formulaire Visiteur -->
-  <form [formGroup]="visiteurForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <input type="text" formControlName="nom" placeholder="Nom" required />
-      <input type="text" formControlName="prenom" placeholder="Prénom" required />
+<div class="container mx-auto p-6 bg-base-100 shadow-xl rounded-lg max-w-4xl">
+  <!-- En-tête avec horloge et compteur -->
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+    <!-- Horloge & Date -->
+    <div class="clock text-center md:text-left mb-4 md:mb-0">
+      <h2 class="text-2xl font-bold text-primary">{{ currentTime }}</h2>
     </div>
 
-    <div class="form-group">
-      <input type="text" formControlName="cin" placeholder="CIN" required />
-      <input type="text" formControlName="telephone" placeholder="Téléphone" required />
+    <!-- Compteur du jour -->
+    <div class="stats shadow bg-base-200">
+      <div class="stat">
+        <div class="stat-title">Visiteurs aujourd'hui</div>
+        <div class="stat-value text-primary">{{ compteur }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages d'alerte -->
+  <div class="mb-6 space-y-3">
+    <!-- Message de modification -->
+    <div *ngIf="selectedVisiteurId" class="alert alert-warning shadow-lg">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <span>✏️ Modification d'un visiteur en cours...</span>
+      </div>
     </div>
 
-    <!-- 👨👩 Icônes genre -->
-    <div class="genre-icons">
-      <div class="genre-icon homme"
-        [class.selected]="visiteurForm.get('genre')?.value === 'Homme'"
-        (click)="visiteurForm.get('genre')?.setValue('Homme')"
-        title="Homme">👨</div>
-
-      <div class="genre-icon femme"
-        [class.selected]="visiteurForm.get('genre')?.value === 'Femme'"
-        (click)="visiteurForm.get('genre')?.setValue('Femme')"
-        title="Femme">👩</div>
+    <!-- Message d'erreur -->
+    <div *ngIf="visiteurForm.invalid && visiteurForm.touched" class="alert alert-error shadow-lg">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span>Veuillez remplir tous les champs obligatoires.</span>
+      </div>
     </div>
 
-    <div class="form-group">
-      <select formControlName="destination" required>
-        <option value="" disabled selected>Destination</option>
-        <option value="atelier">Atelier</option>
-        <option value="administration">Administration</option>
-        <option value="réception">Réception</option>
-        <option value="comptoir">Comptoir</option>
-      </select>
-
-      <select formControlName="typeVisiteur">
-        <option value="">Type de visiteur (facultatif)</option>
-        <option value="Particulier">Particulier</option>
-        <option value="Entreprise">Entreprise</option>
-      </select>
+    <!-- Message de succès -->
+    <div *ngIf="confirmationMessage" class="alert alert-success shadow-lg">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span>{{ confirmationMessage }}</span>
+      </div>
     </div>
+  </div>
 
-    <div class="form-group" *ngIf="visiteurForm.get('destination')?.value === 'atelier'">
-      <input type="text" formControlName="matricule" placeholder="Numéro de matricule" />
-    </div>
+  <!-- Formulaire -->
+  <div class="bg-base-200 p-6 rounded-lg shadow-md">
+    <form [formGroup]="visiteurForm" (ngSubmit)="onSubmit()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Première ligne -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Nom</span>
+            <span class="label-text-alt text-error">*</span>
+          </label>
+          <input type="text" formControlName="nom" placeholder="Nom" class="input input-bordered w-full" required />
+          <label *ngIf="visiteurForm.get('nom')?.invalid && visiteurForm.get('nom')?.touched" class="label">
+            <span class="label-text-alt text-error">Ce champ est requis</span>
+          </label>
+        </div>
 
-    <!-- 🔘 Bouton dynamique -->
-    <button type="submit" [disabled]="visiteurForm.invalid || loading">
-      {{ selectedVisiteurId ? 'Modifier' : 'Confirmer' }}
-    </button>
-  </form>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Prénom</span>
+            <span class="label-text-alt text-error">*</span>
+          </label>
+          <input type="text" formControlName="prenom" placeholder="Prénom" class="input input-bordered w-full" required />
+          <label *ngIf="visiteurForm.get('prenom')?.invalid && visiteurForm.get('prenom')?.touched" class="label">
+            <span class="label-text-alt text-error">Ce champ est requis</span>
+          </label>
+        </div>
+
+        <!-- Deuxième ligne -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">CIN</span>
+            <span class="label-text-alt text-error">*</span>
+          </label>
+          <input type="text" formControlName="cin" placeholder="CIN" class="input input-bordered w-full" required />
+          <label *ngIf="visiteurForm.get('cin')?.invalid && visiteurForm.get('cin')?.touched" class="label">
+            <span class="label-text-alt text-error">Minimum 5 caractères requis</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Téléphone</span>
+            <span class="label-text-alt text-error">*</span>
+          </label>
+          <input type="text" formControlName="telephone" placeholder="Téléphone" class="input input-bordered w-full" required />
+          <label *ngIf="visiteurForm.get('telephone')?.invalid && visiteurForm.get('telephone')?.touched" class="label">
+            <span class="label-text-alt text-error">Ce champ est requis</span>
+          </label>
+        </div>
+
+        <!-- Genre -->
+        <div class="form-control md:col-span-2">
+          <label class="label">
+            <span class="label-text">Genre</span>
+            <span class="label-text-alt text-error">*</span>
+          </label>
+          <div class="flex justify-center space-x-8">
+            <div 
+              class="cursor-pointer p-4 rounded-full flex flex-col items-center transition-all duration-300"
+              [class.bg-primary]="visiteurForm.get('genre')?.value === 'Homme'"
+              [class.text-primary-content]="visiteurForm.get('genre')?.value === 'Homme'"
+              [class.bg-base-300]="visiteurForm.get('genre')?.value !== 'Homme'"
+              (click)="visiteurForm.get('genre')?.setValue('Homme')"
+            >
+              <div class="text-3xl">👨</div>
+              <span class="mt-2">Homme</span>
+            </div>
+
+            <div 
+              class="cursor-pointer p-4 rounded-full flex flex-col items-center transition-all duration-300"
+              [class.bg-primary]="visiteurForm.get('genre')?.value === 'Femme'"
+              [class.text-primary-content]="visiteurForm.get('genre')?.value === 'Femme'"
+              [class.bg-base-300]="visiteurForm.get('genre')?.value !== 'Femme'"
+              (click)="visiteurForm.get('genre')?.setValue('Femme')"
+            >
+              <div class="text-3xl">👩</div>
+              <span class="mt-2">Femme</span>
+            </div>
+          </div>
+          <label *ngIf="visiteurForm.get('genre')?.invalid && visiteurForm.get('genre')?.touched" class="label flex justify-center">
+            <span class="label-text-alt text-error">Veuillez sélectionner un genre</span>
+          </label>
+        </div>
+
+        <!-- Troisième ligne -->
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Destination</span>
+            <span class="label-text-alt text-error">*</span>
+          </label>
+          <select formControlName="destination" class="select select-bordered w-full" required>
+            <option value="" disabled selected>Sélectionnez une destination</option>
+            <option value="atelier">Atelier</option>
+            <option value="administration">Administration</option>
+            <option value="réception">Réception</option>
+            <option value="comptoir">Comptoir</option>
+          </select>
+          <label *ngIf="visiteurForm.get('destination')?.invalid && visiteurForm.get('destination')?.touched" class="label">
+            <span class="label-text-alt text-error">Ce champ est requis</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Type de visiteur</span>
+          </label>
+          <select formControlName="typeVisiteur" class="select select-bordered w-full">
+            <option value="">Type de visiteur (facultatif)</option>
+            <option value="Particulier">Particulier</option>
+            <option value="Entreprise">Entreprise</option>
+          </select>
+        </div>
+
+        <!-- Champ conditionnel pour matricule -->
+        <div class="form-control md:col-span-2" *ngIf="visiteurForm.get('destination')?.value === 'atelier'">
+          <label class="label">
+            <span class="label-text">Numéro de matricule</span>
+            <span class="label-text-alt text-error">*</span>
+          </label>
+          <input type="text" formControlName="matricule" placeholder="Numéro de matricule" class="input input-bordered w-full" />
+          <label *ngIf="visiteurForm.get('matricule')?.invalid && visiteurForm.get('matricule')?.touched" class="label">
+            <span class="label-text-alt text-error">Ce champ est requis pour l'atelier</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Bouton de soumission -->
+      <div class="mt-8 flex justify-center">
+        <button 
+          type="submit" 
+          [disabled]="visiteurForm.invalid || loading"
+          class="btn btn-primary btn-lg min-w-[200px]"
+        >
+          <span *ngIf="loading" class="loading loading-spinner loading-sm mr-2"></span>
+          {{ selectedVisiteurId ? 'Modifier' : 'Confirmer' }}
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

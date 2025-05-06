@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -30,7 +31,8 @@ import { AjouterUtilisateurComponent } from './shared/pages/admin/ajouter-utilis
 import { ResponsableVisiteurComponent } from './shared/pages/responsable/responsable-visiteur/responsable-visiteur.component';
 import { ResponsableLivraisonComponent } from './shared/pages/responsable/responsable-livraison/responsable-livraison.component';
 
-import { FormsModule } from '@angular/forms';
+// ✅ Historique Activité
+import { HistoriqueActiviteComponent } from './shared/pages/admin/historique-activite/historique-activite.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,7 @@ import { FormsModule } from '@angular/forms';
     FooterComponent,
     FormComponent,
     ListComponent,
-    AjouterVisiteurPageComponent, // 💡 Wrapper
+    AjouterVisiteurPageComponent,
     LoginComponent,
     LivraisonFormComponent,
     LivraisonListComponent,
@@ -47,14 +49,16 @@ import { FormsModule } from '@angular/forms';
     DashboardAdminComponent,
     AjouterUtilisateurComponent,
     ResponsableVisiteurComponent,
-    ResponsableLivraisonComponent
+    ResponsableLivraisonComponent,
+    HistoriqueActiviteComponent 
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    CommonModule, 
+    AppRoutingModule
   ],
   providers: [
     {

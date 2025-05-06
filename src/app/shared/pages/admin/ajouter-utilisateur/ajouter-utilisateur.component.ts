@@ -29,13 +29,12 @@ export class AjouterUtilisateurComponent {
     if (this.userForm.invalid) {
       return;
     }
-
+  
     this.adminService.ajouterUtilisateur(this.userForm.value).subscribe({
       next: (res) => {
         this.successMessage = 'Utilisateur ajouté avec succès !';
         this.errorMessage = '';
-        this.userForm.reset();
-        this.router.navigate(['/admin/dashboard']); // Redirection après ajout
+        this.router.navigate(['/admin/dashboard']); // ✅ Rediriger immédiatement
       },
       error: (err) => {
         this.errorMessage = err.error.message || 'Erreur lors de l\'ajout de l\'utilisateur';

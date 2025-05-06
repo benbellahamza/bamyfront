@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css'] // ✅ (correction "styleUrl" => "styleUrls")
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -27,26 +27,27 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
+
       this.authService.login(email, password).subscribe({
-        next: () => {
-          const role = this.authService.getRole();
-          switch (role) {
-            case 'ADMIN':
-              this.router.navigate(['admin/dashboard']);
-              break;
-            case 'RESPONSABLE':
-              this.router.navigate(['responsable/visiteur']);
-              break;
-            case 'AGENT':
-              this.router.navigate(['agent/dashboard']);
-              break;
-            default:
-              this.errorMessage = 'Rôle inconnu. Veuillez contacter l\'administrateur.';
+        next: (res) => {
+          const role = res.role?.toUpperCase(); // 🔥 rôle retourné par le backend
+          localStorage.setItem('role', role); // 🔁 facultatif mais clair
+
+          // Redirection selon le rôle
+          if (role === 'ADMIN') {
+            this.router.navigate(['/admin/dashboard']);
+          } else if (role === 'AGENT') {
+            this.router.navigate(['/agent/dashboard']);
+          } else if (role === 'RESPONSABLE') {
+            this.router.navigate(['/responsable/visiteur']);
+          } else {
+            this.errorMessage = 'Rôle inconnu. Veuillez contacter l\'administrateur.';
           }
         },
-        error: () => this.errorMessage = 'Email ou mot de passe incorrect'
+        error: () => {
+          this.errorMessage = 'Email ou mot de passe incorrect.';
+        }
       });
     }
   }
-  
 }

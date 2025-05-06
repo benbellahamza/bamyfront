@@ -1,196 +1,46 @@
-/* 📦 Conteneur principal */
-.responsable-container {
-  padding: 40px 20px;
-  max-width: 1400px;
-  margin: auto;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f0f2f5;
+.card, .hover\:shadow-xl {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover, .hover\:shadow-xl:hover {
+  transform: translateY(-4px);
 }
 
-/* 🔎 Top Controls (Recherche + Dates + Boutons) */
-.top-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 30px;
-}
-
-/* 🔍 Barre de recherche */
-.search-input {
-  padding: 12px 20px;
-  width: 300px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  background-color: white;
-}
-
-.search-input:focus {
-  border-color: #007bff;
-}
-
-/* 📅 Filtres Dates */
-.date-filters {
-  display: flex;
-  gap: 12px;
-}
-
-.date-filters label {
-  font-size: 14px;
-  color: #333;
-  display: flex;
-  flex-direction: column;
-}
-
-.date-filters input {
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-/* 🛠️ Boutons Export / Réinitialiser */
-.export-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
+.text-red-500 {
   font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.3s ease;
 }
 
-/* Exporter tous */
-.btn-export {
-  background-color: #28a745;
-  color: white;
-}
-.btn-export:hover {
-  background-color: #218838;
+input[type="checkbox"] {
+  accent-color: #2563eb;
+  width: 16px;
+  height: 16px;
 }
 
-/* Exporter sélection */
-.btn-selection {
-  background-color: #007bff;
-  color: white;
-}
-.btn-selection:hover {
-  background-color: #0056b3;
+.card-top-bar {
+  height: 8px;
+  background-color: #e2e8f0;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
 }
 
-/* Réinitialiser */
-.btn-reset {
-  background-color: #ffc107;
-  color: #212529;
-}
-.btn-reset:hover {
-  background-color: #e0a800;
+@media (max-width: 400px) {
+  .card-body p {
+    font-size: 0.85rem;
+  }
+  .card-title {
+    font-size: 1rem;
+  }
+  .btn, input {
+    font-size: 0.9rem;
+  }
 }
 
-/* 🕑 Loader */
-.loader {
+/* ✅ Centrer le titre */
+nav span {
+  display: block;
   text-align: center;
-  font-weight: bold;
-  color: #007bff;
-  margin-top: 20px;
 }
 
-/* 📋 Grille des visiteurs */
-.visiteurs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 25px;
-}
-
-/* 📦 Carte visiteur */
-.visiteur-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-left: 6px solid #007bff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-  transition: 0.3s ease;
-}
-
-.visiteur-card:hover {
-  transform: translateY(-5px);
-}
-
-/* 📝 Header Carte */
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.card-header h3 {
-  font-size: 20px;
-  color: #007bff;
-  margin: 0;
-}
-
-.card-header input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #007bff;
-  cursor: pointer;
-}
-
-/* 🧾 Infos visiteur */
-.card-body p {
-  margin: 6px 0;
-  color: #444;
-  font-size: 15px;
-}
-
-/* ❌ Non sortie */
-.non-sortie {
-  color: #dc3545;
-  font-weight: bold;
-}
-
-/* ✅ Badge sortie */
-.badge-sortie {
-  color: #28a745;
-  font-weight: bold;
-}
-
-/* 🆕 Badge nouveau visiteur */
-.badge-nouveau {
-  background-color: #28a745;
-  color: white;
-  padding: 2px 8px;
-  font-size: 12px;
-  border-radius: 50px;
-}
-
-/* 🚫 Aucun visiteur */
-.no-data {
-  text-align: center;
-  font-weight: bold;
-  font-size: 18px;
-  color: #888;
-  margin-top: 40px;
-}
-
-/* 📱 Responsive */
-@media screen and (max-width: 768px) {
-  .top-controls {
-    flex-direction: column;
-    gap: 20px;
-  }
-  .date-filters {
-    flex-direction: column;
-  }
-  .visiteurs-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
+/* ✅ Réduction espace entre cartes */
+.grid-cols-1.sm\:grid-cols-2.xl\:grid-cols-3 {
+  gap: 1.25rem; /* 20px */
 }

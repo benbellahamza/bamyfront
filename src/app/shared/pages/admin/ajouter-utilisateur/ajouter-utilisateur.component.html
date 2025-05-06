@@ -1,66 +1,89 @@
-<div class="ajouter-utilisateur-container">
-  <h2>Ajouter un nouvel utilisateur</h2>
-
-  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-
-    <!-- Nom -->
-    <div class="form-group mb-3">
-      <label>Nom :</label>
-      <input type="text" class="form-control" formControlName="nom" />
-      <div *ngIf="userForm.get('nom')?.invalid && userForm.get('nom')?.touched" class="text-danger">
-        Le nom est obligatoire.
-      </div>
+<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-300">
+  <!-- HEADER -->
+  <header class="bg-slate-700 text-white p-4 border-b-4 border-double border-slate-500 rounded-lg relative flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <img src="assets/images/user-icon.png" alt="Logo Renault" class="w-10 h-10 object-contain" />
+      <span class="text-black font-bold text-lg">BAMY TRUCKS</span>
     </div>
+    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase text-center">
+      Ajouter un utilisateur
+    </h1>
+  </header>
 
-    <!-- Prénom -->
-    <div class="form-group mb-3">
-      <label>Prénom :</label>
-      <input type="text" class="form-control" formControlName="prenom" />
-      <div *ngIf="userForm.get('prenom')?.invalid && userForm.get('prenom')?.touched" class="text-danger">
-        Le prénom est obligatoire.
-      </div>
+  <!-- FORMULAIRE CENTRÉ -->
+  <main class="flex-grow flex items-center justify-center">
+    <div class="w-full max-w-2xl bg-white p-10 rounded-lg shadow-xl animate-fade-in">
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        
+        <!-- NOM -->
+        <div>
+          <label class="block text-slate-600 font-semibold mb-1">Nom</label>
+          <input type="text" formControlName="nom" placeholder="Veuillez saisir le nom"
+                 class="input input-bordered w-full text-black placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 transition" />
+          <div *ngIf="userForm.get('nom')?.invalid && userForm.get('nom')?.touched" class="text-red-600 text-xs mt-1">
+            Le nom est obligatoire.
+          </div>
+        </div>
+
+        <!-- PRÉNOM -->
+        <div>
+          <label class="block text-slate-600 font-semibold mb-1">Prénom</label>
+          <input type="text" formControlName="prenom" placeholder="Veuillez saisir le prénom"
+                 class="input input-bordered w-full text-black placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 transition" />
+          <div *ngIf="userForm.get('prenom')?.invalid && userForm.get('prenom')?.touched" class="text-red-600 text-xs mt-1">
+            Le prénom est obligatoire.
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div>
+          <label class="block text-slate-600 font-semibold mb-1">Email</label>
+          <input type="email" formControlName="email" placeholder="Veuillez saisir un email valide"
+                 class="input input-bordered w-full text-black placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 transition" />
+          <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="text-red-600 text-xs mt-1">
+            Un email valide est requis.
+          </div>
+        </div>
+
+        <!-- MOT DE PASSE -->
+        <div>
+          <label class="block text-slate-600 font-semibold mb-1">Mot de passe</label>
+          <input type="password" formControlName="password" placeholder="Veuillez choisir un mot de passe"
+                 class="input input-bordered w-full text-black placeholder:text-gray-400 focus:ring-2 focus:ring-blue-400 transition" />
+          <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="text-red-600 text-xs mt-1">
+            Le mot de passe doit contenir au moins 6 caractères.
+          </div>
+        </div>
+
+        <!-- RÔLE -->
+        <div>
+          <label class="block text-slate-600 font-semibold mb-1">Rôle</label>
+          <select formControlName="role"
+                  class="select select-bordered w-full text-black focus:ring-2 focus:ring-blue-400 transition">
+            <option value="">-- Sélectionner un rôle --</option>
+            <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+          </select>
+          <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="text-red-600 text-xs mt-1">
+            Le rôle est obligatoire.
+          </div>
+        </div>
+
+        <!-- BOUTON AJOUTER -->
+        <div class="flex justify-end">
+          <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">
+            ✅ Ajouter
+          </button>
+        </div>
+      </form>
+
+      <!-- MESSAGES -->
+      <div *ngIf="successMessage" class="text-green-600 text-sm text-center mt-4">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="text-red-600 text-sm text-center mt-4">{{ errorMessage }}</div>
     </div>
+  </main>
 
-    <!-- Email -->
-    <div class="form-group mb-3">
-      <label>Email :</label>
-      <input type="email" class="form-control" formControlName="email" />
-      <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="text-danger">
-        Un email valide est requis.
-      </div>
-    </div>
-
-    <!-- Mot de passe -->
-    <div class="form-group mb-3">
-      <label>Mot de passe :</label>
-      <input type="password" class="form-control" formControlName="password" />
-      <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="text-danger">
-        Le mot de passe doit contenir au moins 6 caractères.
-      </div>
-    </div>
-
-    <!-- Rôle -->
-    <div class="form-group mb-3">
-      <label>Rôle :</label>
-      <select formControlName="role" class="form-control">
-        <option value="">-- Sélectionner un rôle --</option>
-        <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
-      </select>
-      <div *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched" class="text-danger">
-        Le rôle est obligatoire.
-      </div>
-    </div>
-
-    <!-- Bouton Ajouter -->
-    <div class="form-group">
-      <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">
-        Ajouter Utilisateur
-      </button>
-    </div>
-
-  </form>
-
-  <!-- Messages succès/erreur -->
-  <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
-  <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+  <!-- FOOTER FIXÉ EN BAS -->
+  <footer class="bg-slate-700 text-white p-4 text-center border-t-4 border-double border-slate-500 mt-auto">
+    <p class="text-xs font-mono">&copy; Renault Trucks | BamyGuest</p>
+  </footer>
 </div>

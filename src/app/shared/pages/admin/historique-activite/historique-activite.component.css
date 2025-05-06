@@ -1,0 +1,48 @@
+.content-body {
+    padding: 20px;
+  }
+  
+  h3 {
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .table {
+    margin-top: 20px;
+  }
+  
+  thead th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  tbody td {
+    text-align: center;
+  }
+  
+  .alert {
+    margin-top: 20px;
+  }
+  
+  .text-center {
+    margin-top: 20px;
+    font-style: italic;
+    color: grey;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  button {
+    margin-top: 15px;
+  }
+  

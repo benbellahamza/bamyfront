@@ -10,14 +10,13 @@ import { VisiteurService } from 'app/core/services/visiteur/visiteur.service';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit {
-
   visiteurForm!: FormGroup;
   compteur: number = 0;
   currentTime: string = '';
   confirmationMessage = '';
   loading = false;
-
-  // ✅ utilisé pour le mode édition
+  
+  // Utilisé pour le mode édition
   selectedVisiteurId: number | null = null;
 
   constructor(
@@ -31,7 +30,7 @@ export class FormComponent implements OnInit {
     this.loadCompteur();
     this.startClock();
 
-    // ✅ Écoute un événement CustomEvent depuis list.component
+    // Écoute un événement CustomEvent depuis list.component
     window.addEventListener('edit-visiteur', (e: any) => {
       const visiteur = e.detail;
       this.selectedVisiteurId = visiteur.id;
@@ -73,15 +72,36 @@ export class FormComponent implements OnInit {
   }
 
   startClock() {
+    // Mise à jour immédiate
+    this.updateTime();
+    
+    // Puis mise à jour toutes les secondes
     setInterval(() => {
-      const now = new Date();
-      this.currentTime = now.toLocaleTimeString() + ' - ' + now.toLocaleDateString();
+      this.updateTime();
     }, 1000);
   }
 
+  updateTime() {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric'
+    };
+    const timeStr = now.toLocaleTimeString();
+    const dateStr = now.toLocaleDateString(undefined, options);
+    this.currentTime = `${timeStr} - ${dateStr}`;
+  }
+
   loadCompteur() {
-    this.http.get<number>('http://localhost:8085/api/compteur').subscribe(data => {
-      this.compteur = data;
+    this.http.get<number>('http://localhost:8085/api/compteur').subscribe({
+      next: (data) => {
+        this.compteur = data;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement du compteur', err);
+        this.compteur = 0; // Valeur par défaut en cas d'erreur
+      }
     });
   }
 
@@ -91,25 +111,27 @@ export class FormComponent implements OnInit {
     this.loading = true;
 
     if (this.selectedVisiteurId !== null) {
-      // ✅ Modifier un visiteur
+      // Modifier un visiteur
       this.visiteurService.modifierVisiteur(this.selectedVisiteurId, this.visiteurForm.value).subscribe({
         next: () => {
           this.showMessage('Visiteur modifié avec succès !');
         },
-        error: () => {
+        error: (err) => {
+          console.error('Erreur lors de la modification', err);
           this.loading = false;
           this.confirmationMessage = 'Erreur lors de la modification';
         }
       });
     } else {
-      // ✅ Ajouter un nouveau visiteur
+      // Ajouter un nouveau visiteur
       this.visiteurService.ajouterVisiteur(this.visiteurForm.value).subscribe({
         next: () => {
           this.showMessage('Visiteur ajouté avec succès !');
         },
-        error: () => {
+        error: (err) => {
+          console.error('Erreur lors de l\'ajout', err);
           this.loading = false;
-          this.confirmationMessage = 'Erreur lors de l’ajout';
+          this.confirmationMessage = 'Erreur lors de l\'ajout';
         }
       });
     }
@@ -124,21 +146,31 @@ export class FormComponent implements OnInit {
 
     setTimeout(() => this.confirmationMessage = '', 3000);
 
-    // 🔁 Notifie les autres composants (ex: ListComponent)
+    // Notifie les autres composants
     window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
   }
 
   validerSortie(id: number) {
-    this.visiteurService.validerSortie(id).subscribe(() => {
-      window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
+    this.visiteurService.validerSortie(id).subscribe({
+      next: () => {
+        window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
+      },
+      error: (err) => {
+        console.error('Erreur lors de la validation de sortie', err);
+      }
     });
   }
 
   supprimerVisiteur(id: number) {
     if (confirm("Voulez-vous vraiment supprimer ce visiteur ?")) {
-      this.visiteurService.supprimer(id).subscribe(() => {
-        this.loadCompteur();
-        window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
+      this.visiteurService.supprimer(id).subscribe({
+        next: () => {
+          this.loadCompteur();
+          window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
+        },
+        error: (err) => {
+          console.error('Erreur lors de la suppression', err);
+        }
       });
     }
   }

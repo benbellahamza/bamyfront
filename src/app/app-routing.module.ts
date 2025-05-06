@@ -18,6 +18,7 @@ import { LivraisonListComponent } from './shared/pages/livraison/livraison-list/
 // ⚙️ Admin
 import { DashboardAdminComponent } from './shared/pages/admin/dashboard-admin/dashboard-admin.component';
 import { AjouterUtilisateurComponent } from './shared/pages/admin/ajouter-utilisateur/ajouter-utilisateur.component';
+import { HistoriqueActiviteComponent } from './shared/pages/admin/historique-activite/historique-activite.component'; // ✅ NOUVELLE IMPORTATION
 
 // 📊 Responsable
 import { ResponsableVisiteurComponent } from './shared/pages/responsable/responsable-visiteur/responsable-visiteur.component';
@@ -41,9 +42,14 @@ const routes: Routes = [
   { path: 'ajouterLivraison', component: LivraisonFormComponent },
   { path: 'livraisons', component: LivraisonListComponent },
 
+
+  // ✅ Gestion des historiques chez l'admin
+  { path: 'admin/historique', component: HistoriqueActiviteComponent },
+
   // ✅ Gestion admin
   { path: 'admin/dashboard', component: DashboardAdminComponent },
   { path: 'ajouterUtilisateur', component: AjouterUtilisateurComponent },
+  { path: 'admin/historique', component: HistoriqueActiviteComponent }, // ✅ NOUVELLE ROUTE
 
   // ✅ Pages responsables
   { path: 'responsable/visiteur', component: ResponsableVisiteurComponent },
