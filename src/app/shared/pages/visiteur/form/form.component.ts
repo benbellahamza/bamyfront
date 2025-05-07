@@ -15,9 +15,23 @@ export class FormComponent implements OnInit {
   currentTime: string = '';
   confirmationMessage = '';
   loading = false;
-  
-  // Utilisé pour le mode édition
   selectedVisiteurId: number | null = null;
+
+  // ✅ Utilisateur connecté
+  utilisateur = {
+    nom: '',
+    prenom: '',
+    email: '',
+    role: ''
+  };
+  menuOuvert = false;
+
+  // 🔐 Pour changement de mot de passe
+  modalePasswordVisible = false;
+  ancienMotDePasse = '';
+  nouveauMotDePasse = '';
+  messageErreur = '';
+  messageSuccess = '';
 
   constructor(
     private fb: FormBuilder,
@@ -26,11 +40,12 @@ export class FormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.decodeToken();
     this.createForm();
     this.loadCompteur();
     this.startClock();
 
-    // Écoute un événement CustomEvent depuis list.component
+    // Événement de modification
     window.addEventListener('edit-visiteur', (e: any) => {
       const visiteur = e.detail;
       this.selectedVisiteurId = visiteur.id;
@@ -46,6 +61,25 @@ export class FormComponent implements OnInit {
         matricule: visiteur.matricule
       });
     });
+  }
+
+  decodeToken() {
+    const token = localStorage.getItem('access-token');
+    if (!token) return;
+
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+
+      this.utilisateur = {
+        nom: decoded.nom || '',
+        prenom: decoded.prenom || '',
+        email: decoded.sub || '',
+        role: decoded.scope || ''
+      };
+    } catch (e) {
+      console.error('❌ Erreur de décodage JWT', e);
+    }
   }
 
   createForm() {
@@ -72,21 +106,14 @@ export class FormComponent implements OnInit {
   }
 
   startClock() {
-    // Mise à jour immédiate
     this.updateTime();
-    
-    // Puis mise à jour toutes les secondes
-    setInterval(() => {
-      this.updateTime();
-    }, 1000);
+    setInterval(() => this.updateTime(), 1000);
   }
 
   updateTime() {
     const now = new Date();
-    const options: Intl.DateTimeFormatOptions = { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric'
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit', month: '2-digit', year: 'numeric'
     };
     const timeStr = now.toLocaleTimeString();
     const dateStr = now.toLocaleDateString(undefined, options);
@@ -95,12 +122,10 @@ export class FormComponent implements OnInit {
 
   loadCompteur() {
     this.http.get<number>('http://localhost:8085/api/compteur').subscribe({
-      next: (data) => {
-        this.compteur = data;
-      },
+      next: (data) => this.compteur = data,
       error: (err) => {
-        console.error('Erreur lors du chargement du compteur', err);
-        this.compteur = 0; // Valeur par défaut en cas d'erreur
+        console.error('Erreur chargement compteur', err);
+        this.compteur = 0;
       }
     });
   }
@@ -110,31 +135,18 @@ export class FormComponent implements OnInit {
 
     this.loading = true;
 
-    if (this.selectedVisiteurId !== null) {
-      // Modifier un visiteur
-      this.visiteurService.modifierVisiteur(this.selectedVisiteurId, this.visiteurForm.value).subscribe({
-        next: () => {
-          this.showMessage('Visiteur modifié avec succès !');
-        },
-        error: (err) => {
-          console.error('Erreur lors de la modification', err);
-          this.loading = false;
-          this.confirmationMessage = 'Erreur lors de la modification';
-        }
-      });
-    } else {
-      // Ajouter un nouveau visiteur
-      this.visiteurService.ajouterVisiteur(this.visiteurForm.value).subscribe({
-        next: () => {
-          this.showMessage('Visiteur ajouté avec succès !');
-        },
-        error: (err) => {
-          console.error('Erreur lors de l\'ajout', err);
-          this.loading = false;
-          this.confirmationMessage = 'Erreur lors de l\'ajout';
-        }
-      });
-    }
+    const serviceCall = this.selectedVisiteurId !== null
+      ? this.visiteurService.modifierVisiteur(this.selectedVisiteurId, this.visiteurForm.value)
+      : this.visiteurService.ajouterVisiteur(this.visiteurForm.value);
+
+    serviceCall.subscribe({
+      next: () => this.showMessage(this.selectedVisiteurId !== null ? 'Visiteur modifié !' : 'Visiteur ajouté !'),
+      error: (err) => {
+        console.error('Erreur soumission', err);
+        this.loading = false;
+        this.confirmationMessage = 'Erreur lors de la soumission';
+      }
+    });
   }
 
   showMessage(message: string) {
@@ -145,19 +157,13 @@ export class FormComponent implements OnInit {
     this.loadCompteur();
 
     setTimeout(() => this.confirmationMessage = '', 3000);
-
-    // Notifie les autres composants
     window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
   }
 
   validerSortie(id: number) {
     this.visiteurService.validerSortie(id).subscribe({
-      next: () => {
-        window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
-      },
-      error: (err) => {
-        console.error('Erreur lors de la validation de sortie', err);
-      }
+      next: () => window.dispatchEvent(new CustomEvent('refresh-visiteurs')),
+      error: (err) => console.error('Erreur validation sortie', err)
     });
   }
 
@@ -168,10 +174,49 @@ export class FormComponent implements OnInit {
           this.loadCompteur();
           window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
         },
-        error: (err) => {
-          console.error('Erreur lors de la suppression', err);
-        }
+        error: (err) => console.error('Erreur suppression', err)
       });
     }
+  }
+
+  // ✅ Gestion du menu utilisateur
+  toggleMenu() {
+    this.menuOuvert = !this.menuOuvert;
+  }
+
+  logout() {
+    localStorage.clear();
+    window.location.href = '/';
+  }
+
+  // ✅ Changement mot de passe
+  ouvrirModalePassword() {
+    this.ancienMotDePasse = '';
+    this.nouveauMotDePasse = '';
+    this.messageErreur = '';
+    this.messageSuccess = '';
+    this.modalePasswordVisible = true;
+  }
+
+  fermerModalePassword() {
+    this.modalePasswordVisible = false;
+  }
+
+  changerMotDePasse() {
+    const payload = {
+      ancienPassword: this.ancienMotDePasse,
+      nouveauPassword: this.nouveauMotDePasse
+    };
+
+    this.http.post('http://localhost:8085/auth/update-password', payload).subscribe({
+      next: () => {
+        this.messageSuccess = "Mot de passe modifié avec succès.";
+        this.messageErreur = "";
+      },
+      error: () => {
+        this.messageErreur = "Ancien mot de passe incorrect.";
+        this.messageSuccess = "";
+      }
+    });
   }
 }

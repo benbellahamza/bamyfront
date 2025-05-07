@@ -1,40 +1,27 @@
 /* 🎯 Conteneur principal */
 .page-container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f9f9f9;
+  background: linear-gradient(to bottom right, #f3f4f6, #d1d5db); /* from-slate-100 to-slate-300 */
+  padding-top: 100px; /* espace pour le header global */
+  padding-bottom: 80px; /* espace pour le footer fixe */
 }
 
 /* 🧭 Séparateur entre le formulaire et la liste */
-hr {
+.separator {
   margin: 40px auto;
   border: none;
   height: 2px;
-  background: #ddd;
-  width: 80%;
-}
-
-/* 🏷️ Titre de la liste (optionnel si utilisé dans form.component) */
-h4.titre-liste {
-  color: #2c3e50;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-/* 📜 Conteneur scrollable pour la liste */
-.visiteurs-scroll {
-  max-height: 350px;
-  overflow-y: auto;
-  padding-right: 10px;
-  scrollbar-width: thin;
+  background: #cbd5e1; /* gris clair */
+  width: 85%;
 }
 
 /* 📄 Chaque élément de la liste */
 .visiteur-item {
   background-color: #ffffff;
-  border: 1px solid #ddd;
+  border: 1px solid #e2e8f0;
   padding: 15px;
   margin-bottom: 10px;
   border-radius: 8px;
@@ -47,7 +34,7 @@ h4.titre-liste {
 .visiteur-info {
   max-width: 70%;
   font-size: 15px;
-  color: #333;
+  color: #1f2937;
   line-height: 1.6;
 }
 
@@ -71,29 +58,29 @@ button.btn {
 
 /* ✅ Bouton sortie */
 .btn-success {
-  background-color: #28a745;
+  background-color: #16a34a;
   color: #fff;
 }
 .btn-success:hover {
-  background-color: #218838;
+  background-color: #15803d;
 }
 
 /* ✏️ Bouton modifier */
 .btn-primary {
-  background-color: #007bff;
+  background-color: #2563eb;
   color: white;
 }
 .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #1e40af;
 }
 
 /* ❌ Bouton supprimer */
 .btn-danger {
-  background-color: #dc3545;
+  background-color: #dc2626;
   color: white;
 }
 .btn-danger:hover {
-  background-color: #c82333;
+  background-color: #b91c1c;
 }
 
 /* 📱 Responsive pour mobiles */
@@ -102,7 +89,8 @@ button.btn {
     flex-direction: column;
   }
 
-  .visiteur-info, .action-buttons {
+  .visiteur-info,
+  .action-buttons {
     max-width: 100%;
   }
 

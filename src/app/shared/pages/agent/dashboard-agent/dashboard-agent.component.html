@@ -1,16 +1,42 @@
-<div class="container-dashboard">
-    <h2 class="title">Bienvenue Agent</h2>
-  
-    <div class="content-box">
-      <div class="card">
-        <img src="assets/images/visiteur.png" alt="Visiteur" />
-        <button (click)="goTo('ajouterVisiteur')" class="btn-action">BamyGuest</button>
-      </div>
-  
-      <div class="card">
-        <img src="assets/images/livraison.png" alt="Livraison" />
-        <button (click)="goTo('ajouterLivraison')" class="btn-action">BamyLivraison</button>
-      </div>
+<div class="min-h-screen flex flex-col bg-gradient-to-br from-slate-100 to-slate-300">
+
+  <!-- ✅ HEADER -->
+  <header class="bg-slate-700 text-white p-4 border-b-4 border-double border-slate-500 rounded-lg flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <img src="assets/images/user-icon.png" alt="Logo" class="w-10 h-10 object-contain" />
+      <span class="text-black font-bold text-lg">BAMY TRUCKS</span>
     </div>
-  </div>
-  
+    <h1 class="text-xl font-bold font-mono tracking-widest uppercase text-center">
+      Dashboard Agent
+    </h1>
+    <div class="w-10 h-10"></div> <!-- Espace vide à droite -->
+  </header>
+
+  <!-- ✅ CONTENU -->
+  <main class="flex-grow flex flex-col items-center justify-center py-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+      
+     <!-- BamyGuest -->
+    <div class="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center hover:shadow-2xl transition-all">
+      <img src="assets/images/visiteur.png" alt="Visiteur" class="w-52 h-52 mb-6" />
+      <button (click)="goTo('ajouterVisiteur')" class="btn btn-primary btn-lg text-lg py-3 px-8">
+      BamyGuest
+      </button>
+    </div>
+
+<!-- BamyLivraison -->
+    <div class="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center hover:shadow-2xl transition-all">
+      <img src="assets/images/livraison.png" alt="Livraison" class="w-52 h-52 mb-6" />
+    <button (click)="goTo('ajouterLivraison')" class="btn btn-secondary btn-lg text-lg py-3 px-8">
+    BamyLivraison
+    </button>
+    </div>
+    </div>
+  </main>
+
+  <!-- ✅ FOOTER -->
+  <footer class="bg-slate-700 text-white p-4 text-center mt-auto rounded-t-lg border-t-4 border-double border-slate-500">
+    <p class="text-xs font-mono">&copy; Bamy Trucks | BamyGuest</p>
+  </footer>
+
+</div>

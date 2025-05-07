@@ -4,6 +4,19 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { Router } from '@angular/router';
 
+interface Visiteur {
+  id: number;
+  nom: string;
+  prenom: string;
+  cin: string;
+  genre: string;
+  destination: string;
+  telephone?: string;
+  typeVisiteur?: string;
+  dateEntree: string;
+  dateSortie?: string;
+}
+
 @Component({
   selector: 'app-responsable-visiteur',
   standalone: false,
@@ -12,9 +25,9 @@ import { Router } from '@angular/router';
 })
 export class ResponsableVisiteurComponent implements OnInit {
 
-  visiteurs: any[] = [];
-  visiteursFiltres: any[] = [];
-  selectedVisiteurs: any[] = [];
+  visiteurs: Visiteur[] = [];
+  visiteursFiltres: Visiteur[] = [];
+  selectedVisiteurs: Visiteur[] = [];
 
   searchTerm: string = '';
   startDate: string = '';
@@ -36,6 +49,8 @@ export class ResponsableVisiteurComponent implements OnInit {
   messageSuccess: string = '';
   messageErreur: string = '';
 
+  erreurExport: boolean = false;
+
   currentPage: number = 1;
   itemsPerPage: number = 10;
 
@@ -44,6 +59,10 @@ export class ResponsableVisiteurComponent implements OnInit {
   ngOnInit(): void {
     this.recupererInfosUtilisateur();
     this.getVisiteurs();
+  }
+
+  get nomComplet(): string {
+    return `${this.utilisateur.nom} ${this.utilisateur.prenom}`.trim();
   }
 
   recupererInfosUtilisateur() {
@@ -111,7 +130,7 @@ export class ResponsableVisiteurComponent implements OnInit {
 
   getVisiteurs() {
     this.loading = true;
-    this.http.get<any[]>('http://localhost:8085/api/visiteurs').subscribe({
+    this.http.get<Visiteur[]>('http://localhost:8085/api/visiteurs').subscribe({
       next: (data) => {
         this.visiteurs = data.sort((a, b) => new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime());
         this.visiteursFiltres = [...this.visiteurs];
@@ -144,7 +163,7 @@ export class ResponsableVisiteurComponent implements OnInit {
     });
   }
 
-  toggleSelection(visiteur: any) {
+  toggleSelection(visiteur: Visiteur) {
     if (this.isSelected(visiteur)) {
       this.selectedVisiteurs = this.selectedVisiteurs.filter(v => v.id !== visiteur.id);
     } else {
@@ -152,14 +171,16 @@ export class ResponsableVisiteurComponent implements OnInit {
     }
   }
 
-  isSelected(visiteur: any) {
+  isSelected(visiteur: Visiteur) {
     return this.selectedVisiteurs.some(v => v.id === visiteur.id);
   }
 
   exporterExcel(exportAll: boolean) {
+    this.erreurExport = false;
     const dataToExport = exportAll ? this.visiteursFiltres : this.selectedVisiteurs;
+
     if (dataToExport.length === 0) {
-      alert("Aucun visiteur sélectionné pour l'exportation.");
+      this.erreurExport = true;
       return;
     }
 
@@ -189,7 +210,7 @@ export class ResponsableVisiteurComponent implements OnInit {
     this.visiteursFiltres = [...this.visiteurs];
   }
 
-  get visiteursPage(): any[] {
+  get visiteursPage(): Visiteur[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     return this.visiteursFiltres.slice(start, start + this.itemsPerPage);
   }
