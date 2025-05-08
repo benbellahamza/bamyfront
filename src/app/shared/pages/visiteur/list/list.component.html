@@ -1,85 +1,89 @@
-<!-- LISTE DES VISITEURS DU JOUR -->
-<section class="w-full px-4 pb-10">
-  <div class="container mx-auto px-6 py-8 bg-white rounded-lg shadow-xl">
+<section class="w-full px-4 py-10 flex justify-center bg-gradient-to-br from-slate-100 to-slate-300">
+  <div class="w-full max-w-6xl bg-white rounded-2xl shadow-xl p-8 space-y-6">
 
     <!-- En-tête -->
-    <div class="flex items-center justify-between mb-6">
-      <h3 class="text-2xl font-bold text-primary flex items-center">
-        <span class="inline-block mr-2">📋</span> Visiteurs du jour
-      </h3>
-      <div class="badge badge-lg badge-primary">{{ visiteursDuJour.length }} visiteur(s)</div>
+    <div class="flex items-center justify-between border-b pb-4">
+      <h2 class="text-xl font-bold text-slate-700 tracking-wide flex items-center gap-2">
+        <span class="inline-block w-2 h-6 bg-blue-500 rounded"></span>
+        Visiteurs du jour
+      </h2>
+      <div class="badge badge-primary badge-lg text-white font-semibold shadow">
+        {{ visiteursDuJour.length }} visiteur(s)
+      </div>
     </div>
 
-    <!-- Message si vide -->
-    <div *ngIf="visiteursDuJour.length === 0" class="text-center py-10">
-      <div class="text-5xl mb-4">🕵️</div>
-      <p class="text-xl text-gray-500">Aucun visiteur enregistré aujourd'hui</p>
+    <!-- Message si liste vide -->
+    <div *ngIf="visiteursDuJour.length === 0" class="text-center py-20 text-slate-500">
+      <div class="text-5xl font-light mb-4">Aucun visiteur</div>
+      <p class="text-md">Aucune entrée enregistrée aujourd'hui.</p>
     </div>
 
     <!-- Liste scrollable -->
-    <div *ngIf="visiteursDuJour.length > 0" class="max-h-[60vh] overflow-y-auto rounded-lg">
-      <!-- Loading -->
+    <div *ngIf="visiteursDuJour.length > 0" class="max-h-[65vh] overflow-y-auto pr-2">
+      
+      <!-- Loading spinner -->
       <div *ngIf="loading" class="flex justify-center py-10">
         <span class="loading loading-spinner loading-lg text-primary"></span>
       </div>
 
-      <!-- Cartes -->
-      <div *ngFor="let v of visiteursDuJour" class="mb-4">
-        <div class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow duration-300">
+      <!-- Cartes visiteurs -->
+      <div *ngFor="let v of visiteursDuJour" class="mb-4 last:mb-0">
+        <div class="card bg-base-100 shadow-md hover:shadow-lg transition duration-300 border border-slate-200">
           <div class="card-body p-5">
-            <div class="flex flex-col md:flex-row justify-between gap-4">
+            <div class="flex flex-col md:flex-row justify-between gap-6">
 
               <!-- Infos visiteur -->
               <div class="flex-grow space-y-2">
-                <div class="flex items-center gap-2">
-                  <div class="avatar placeholder">
-                    <div class="bg-primary text-primary-content rounded-full w-12">
-                      <span class="text-xl">{{ v.prenom[0] }}{{ v.nom[0] }}</span>
+                <div class="flex items-center gap-4">
+                  <div class="avatar">
+                    <div class="bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center text-lg font-semibold">
+                      {{ v.prenom[0] }}{{ v.nom[0] }}
                     </div>
                   </div>
-                  <h4 class="card-title text-xl">{{ v.nom }} {{ v.prenom }}</h4>
+                  <h4 class="text-lg font-bold text-slate-700">
+                    {{ v.nom }} {{ v.prenom }}
+                  </h4>
 
-                  <div *ngIf="v.dateSortie" class="badge badge-success gap-1">
-                    <span class="text-xs">✓ Sorti</span>
-                  </div>
-                  <div *ngIf="!v.dateSortie" class="badge badge-warning gap-1">
-                    <span class="text-xs">⌛ Présent</span>
-                  </div>
+                  <span *ngIf="v.dateSortie"
+                        class="badge badge-success text-xs px-2 py-1 rounded-md shadow-sm">
+                    Sorti
+                  </span>
+                  <span *ngIf="!v.dateSortie"
+                        class="badge badge-warning text-xs px-2 py-1 rounded-md shadow-sm">
+                    Présent
+                  </span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-slate-600">
                   <div><span class="font-semibold">CIN:</span> {{ v.cin }}</div>
                   <div><span class="font-semibold">Téléphone:</span> {{ v.telephone }}</div>
                   <div><span class="font-semibold">Type:</span> {{ v.typeVisiteur || 'N/A' }}</div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-600">
                   <div><span class="font-semibold">Destination:</span> {{ v.destination | titlecase }}</div>
                   <div><span class="font-semibold">Entrée:</span> {{ v.dateEntree | date:'short' }}</div>
                 </div>
 
-                <div *ngIf="v.dateSortie" class="text-sm">
+                <div *ngIf="v.dateSortie" class="text-sm text-slate-600">
                   <span class="font-semibold">Sortie:</span> {{ v.dateSortie | date:'short' }}
                 </div>
               </div>
 
               <!-- Actions -->
-              <div class="flex flex-row md:flex-col justify-end gap-2">
-                <button 
-                  *ngIf="!v.dateSortie" 
-                  class="btn btn-success btn-sm" 
-                  (click)="validerSortie(v.id)">
-                  ✅ Sortie
+              <div class="flex flex-row md:flex-col justify-end gap-2 min-w-fit">
+                <button *ngIf="!v.dateSortie"
+                        class="btn btn-success btn-sm"
+                        (click)="validerSortie(v.id)">
+                  Sortie
                 </button>
-                <button 
-                  class="btn btn-primary btn-sm" 
-                  (click)="modifierVisiteur(v)">
-                  ✏️ Modifier
+                <button class="btn btn-primary btn-sm"
+                        (click)="modifierVisiteur(v)">
+                  Modifier
                 </button>
-                <button 
-                  class="btn btn-error btn-sm" 
-                  (click)="supprimerVisiteur(v.id)">
-                  🗑️ Supprimer
+                <button class="btn btn-error btn-sm"
+                        (click)="supprimerVisiteur(v.id)">
+                  Supprimer
                 </button>
               </div>
 

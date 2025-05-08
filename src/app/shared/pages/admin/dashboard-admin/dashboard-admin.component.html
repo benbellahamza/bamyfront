@@ -1,7 +1,7 @@
 <div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-300 overflow-hidden">
 
-  <!-- ✅ HEADER -->
-  <header class="bg-slate-700 text-white p-4 border-b-4 border-double border-slate-500 rounded-lg relative flex items-center justify-between">
+  <!-- ✅ HEADER FIXE -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-700 text-white p-4 shadow flex items-center justify-between">
     <div class="flex items-center gap-4">
       <img src="assets/images/user-icon.png" alt="Logo" class="w-10 h-10 object-contain" />
       <span class="text-black font-bold text-lg">BAMY TRUCKS</span>
@@ -9,27 +9,29 @@
     <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase text-center">
       Dashboard Admin
     </h1>
-    <div class="relative" (click)="menuOuvert = !menuOuvert">
-      <div class="w-10 h-10 rounded-full bg-white text-slate-800 flex items-center justify-center font-bold cursor-pointer">
+    <div class="relative">
+      <div class="w-10 h-10 rounded-full bg-white text-slate-800 flex items-center justify-center font-bold cursor-pointer"
+           (click)="menuOuvert = !menuOuvert">
         {{ utilisateur.nom.charAt(0) }}
-      </div>
-      <div *ngIf="menuOuvert" class="absolute right-0 mt-2 w-64 bg-white text-slate-800 shadow-lg rounded-md p-4 z-50 space-y-2">
-        <div class="font-semibold text-sm flex items-center gap-2"><span>👤</span>{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
-        <div class="text-sm flex items-center gap-2"><span>📧</span>{{ utilisateur.email }}</div>
-        <div class="text-sm flex items-center gap-2"><span>🔐</span>{{ utilisateur.role }}</div>
-        <hr>
-        <div class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer flex items-center gap-2" (click)="ouvrirModalePassword()">
-          🔑 Modifier mot de passe
-        </div>
-        <div class="text-sm text-red-600 hover:text-red-800 cursor-pointer flex items-center gap-2" (click)="logout()">
-          🚪 Se déconnecter
-        </div>
       </div>
     </div>
   </header>
 
-  <!-- ✅ MODALE -->
-  <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <!-- ✅ MENU UTILISATEUR -->
+  <div *ngIf="menuOuvert"
+       class="fixed top-16 right-4 w-64 bg-white text-slate-800 shadow-lg rounded-md p-4 z-[100] space-y-2">
+    <div class="font-semibold text-sm flex items-center gap-2"><span>👤</span>{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
+    <div class="text-sm flex items-center gap-2"><span>📧</span>{{ utilisateur.email }}</div>
+    <div class="text-sm flex items-center gap-2"><span>🔐</span>{{ utilisateur.role }}</div>
+    <hr>
+    <div class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer flex items-center gap-2"
+         (click)="ouvrirModalePassword()">🔑 Modifier mot de passe</div>
+    <div class="text-sm text-red-600 hover:text-red-800 cursor-pointer flex items-center gap-2"
+         (click)="logout()">🚪 Se déconnecter</div>
+  </div>
+
+  <!-- ✅ MODALE MOT DE PASSE -->
+  <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[200]">
     <div class="bg-white rounded-lg p-6 w-full max-w-md space-y-4 shadow-lg">
       <h2 class="text-lg font-bold text-center text-slate-800">Modifier le mot de passe</h2>
       <input type="password" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" class="input input-bordered w-full" />
@@ -43,11 +45,11 @@
     </div>
   </div>
 
-  <!-- ✅ CONTENU -->
-  <main class="flex-1 mt-6 px-4">
+  <!-- ✅ CONTENU PRINCIPAL -->
+  <main class="flex-1 mt-[90px] px-4 pb-28">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-230px)]">
 
-      <!-- ✅ Liste utilisateurs (scroll local) -->
+      <!-- ✅ Liste des utilisateurs -->
       <div class="col-span-2 bg-white shadow-lg rounded-xl p-4 flex flex-col">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-bold">👥 Liste des utilisateurs</h2>
@@ -78,20 +80,20 @@
                 <td>{{ user.email }}</td>
                 <td>
                   <div class="badge"
-                    [ngClass]="{
-                      'badge-primary': user.role === 'ADMIN',
-                      'badge-info': user.role === 'AGENT',
-                      'badge-warning text-black': user.role === 'RESPONSABLE'
-                    }">
+                       [ngClass]="{
+                         'badge-primary': user.role === 'ADMIN',
+                         'badge-info': user.role === 'AGENT',
+                         'badge-warning text-black': user.role === 'RESPONSABLE'
+                       }">
                     {{ user.role }}
                   </div>
                 </td>
                 <td>
                   <div class="badge"
-                    [ngClass]="{
-                      'badge-success text-white': user.actif,
-                      'badge-error text-white': !user.actif
-                    }">
+                       [ngClass]="{
+                         'badge-success text-white': user.actif,
+                         'badge-error text-white': !user.actif
+                       }">
                     {{ user.actif ? 'Actif' : 'Inactif' }}
                   </div>
                 </td>
@@ -115,7 +117,7 @@
         </div>
       </div>
 
-      <!-- ✅ Historique (24h uniquement) -->
+      <!-- ✅ Historique -->
       <div class="bg-white shadow-lg rounded-xl p-4 flex flex-col">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-bold">📌 Historique des actions</h2>
@@ -131,11 +133,44 @@
       </div>
 
     </div>
+
+    <!-- ✅ FORMULAIRE MODIF / RESET -->
+    <div *ngIf="formulaireActif" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-[300]">
+      <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg space-y-4">
+        <h2 class="text-lg font-bold text-center text-slate-700" *ngIf="modeForm === 'modifier'">✏️ Modifier l'utilisateur</h2>
+        <h2 class="text-lg font-bold text-center text-slate-700" *ngIf="modeForm === 'reset'">🔐 Réinitialiser mot de passe</h2>
+
+        <!-- Formulaire de modification -->
+        <form *ngIf="modeForm === 'modifier'" [formGroup]="formModif" (ngSubmit)="soumettreModification()" class="space-y-3">
+          <input type="text" formControlName="nom" placeholder="Nom" class="input input-bordered w-full" />
+          <input type="text" formControlName="prenom" placeholder="Prénom" class="input input-bordered w-full" />
+          <input type="email" formControlName="email" placeholder="Email" class="input input-bordered w-full" />
+          <select formControlName="role" class="select select-bordered w-full">
+            <option value="">-- Sélectionner un rôle --</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="AGENT">AGENT</option>
+            <option value="RESPONSABLE">RESPONSABLE</option>
+          </select>
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" class="btn btn-outline" (click)="fermerFormulaire()">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formModif.invalid">✅ Enregistrer</button>
+          </div>
+        </form>
+
+        <!-- Formulaire de reset -->
+        <form *ngIf="modeForm === 'reset'" [formGroup]="formReset" (ngSubmit)="soumettreReset()" class="space-y-3">
+          <input type="password" formControlName="newPassword" placeholder="Nouveau mot de passe" class="input input-bordered w-full" />
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" class="btn btn-outline" (click)="fermerFormulaire()">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formReset.invalid">🔁 Réinitialiser</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </main>
 
-  <!-- ✅ FOOTER FIXE -->
-  <footer class="bg-slate-700 text-white p-4 text-center mt-auto border-t-4 border-double border-slate-500">
-    <p class="text-xs font-mono">&copy; Bamy Trucks | BamyGuest</p>
+  <!-- ✅ FOOTER -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-slate-700 text-white p-3 text-center text-xs tracking-widest">
+    &copy; BAMY TRUCKS | BamyGuest
   </footer>
-
 </div>
