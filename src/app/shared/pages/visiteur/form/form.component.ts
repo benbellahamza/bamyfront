@@ -17,7 +17,6 @@ export class FormComponent implements OnInit {
   loading = false;
   selectedVisiteurId: number | null = null;
 
-  // ✅ Utilisateur connecté
   utilisateur = {
     nom: '',
     prenom: '',
@@ -26,7 +25,6 @@ export class FormComponent implements OnInit {
   };
   menuOuvert = false;
 
-  // 🔐 Pour changement de mot de passe
   modalePasswordVisible = false;
   ancienMotDePasse = '';
   nouveauMotDePasse = '';
@@ -45,7 +43,6 @@ export class FormComponent implements OnInit {
     this.loadCompteur();
     this.startClock();
 
-    // Événement de modification
     window.addEventListener('edit-visiteur', (e: any) => {
       const visiteur = e.detail;
       this.selectedVisiteurId = visiteur.id;
@@ -91,18 +88,10 @@ export class FormComponent implements OnInit {
       destination: ['', Validators.required],
       typeVisiteur: [''],
       telephone: ['', Validators.required],
-      matricule: ['']
+      matricule: [''] // ✅ Optionnel, même si destination = atelier
     });
 
-    this.visiteurForm.get('destination')?.valueChanges.subscribe(value => {
-      const matriculeControl = this.visiteurForm.get('matricule');
-      if (value === 'atelier') {
-        matriculeControl?.setValidators([Validators.required]);
-      } else {
-        matriculeControl?.clearValidators();
-      }
-      matriculeControl?.updateValueAndValidity();
-    });
+    // ❌ SUPPRIMÉ : La logique qui rendait matricule obligatoire en fonction de la destination
   }
 
   startClock() {
@@ -179,7 +168,6 @@ export class FormComponent implements OnInit {
     }
   }
 
-  // ✅ Gestion du menu utilisateur
   toggleMenu() {
     this.menuOuvert = !this.menuOuvert;
   }
@@ -189,7 +177,6 @@ export class FormComponent implements OnInit {
     window.location.href = '/';
   }
 
-  // ✅ Changement mot de passe
   ouvrirModalePassword() {
     this.ancienMotDePasse = '';
     this.nouveauMotDePasse = '';

@@ -1,66 +1,75 @@
-<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-300">
+<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans">
 
-  <!-- ✅ HEADER comme dans ajouterUtilisateur -->
-  <header class="bg-slate-700 text-white p-4 border-b-4 border-double border-slate-500 rounded-lg relative flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <img src="assets/images/user-icon.png" alt="Logo Renault" class="w-10 h-10 object-contain" />
-      <span class="text-black font-bold text-lg">BAMY TRUCKS</span>
+  <!-- ✅ HEADER FIXE UNIFIÉ -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg flex items-center justify-between p-4">
+    <div class="flex items-center gap-3">
+      <div class="bg-white p-2 rounded-lg shadow-md">
+        <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-8 h-8 object-contain" />
+      </div>
+      <span class="text-white font-bold text-xl tracking-wide">BAMY TRUCKS</span>
     </div>
-    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase text-center">
+    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
       Historique des actions
     </h1>
   </header>
 
-  <!-- ✅ CONTENU PRINCIPAL -->
-  <main class="flex-grow p-6">
-    <!-- Filtres -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <input type="text" placeholder="🔍 Rechercher par agent ou action"
-             class="input input-bordered w-full"
-             [(ngModel)]="filtreTexte" />
+  <!-- ✅ CONTENU -->
+  <main class="flex-grow pt-24 px-6 pb-28">
 
-      <input type="month"
-             class="input input-bordered w-full"
-             [(ngModel)]="filtreDate" />
+    <!-- 🔍 Filtres -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="form-control w-full">
+        <input type="text" placeholder="🔍 Rechercher par agent ou action"
+               [(ngModel)]="filtreTexte"
+               class="input input-bordered bg-white shadow w-full" />
+      </div>
+      <div class="form-control w-full">
+        <input type="month" [(ngModel)]="filtreDate"
+               class="input input-bordered bg-white shadow w-full" />
+      </div>
     </div>
 
-    <!-- Statistiques -->
+    <!-- 📊 Statistiques -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="stats shadow">
+      <div class="stats bg-white shadow border border-slate-200">
         <div class="stat">
-          <div class="stat-title">Nombre total d'actions</div>
-          <div class="stat-value text-primary">{{ historiqueFiltre().length }}</div>
+          <div class="stat-title text-slate-500">Nombre total d'actions</div>
+          <div class="stat-value text-blue-600">{{ historiqueFiltre().length }}</div>
         </div>
       </div>
     </div>
 
-    <!-- Tableau -->
-    <div class="overflow-x-auto bg-white p-4 rounded-xl shadow">
-      <table class="table table-zebra w-full">
-        <thead class="bg-base-200 text-base font-semibold text-center">
+    <!-- 📋 Tableau -->
+    <div class="overflow-x-auto bg-white p-4 rounded-xl shadow border border-slate-100">
+      <table class="table w-full text-sm">
+        <thead class="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider text-center">
           <tr>
             <th>👤 Agent</th>
             <th>📝 Action</th>
             <th>📅 Date</th>
           </tr>
         </thead>
-        <tbody class="text-center">
-          <tr *ngFor="let action of historiqueFiltre()">
-            <td>{{ action.agent }}</td>
-            <td class="text-left">{{ action.action }}</td>
-            <td>{{ action.dateAction | date: 'short' }}</td>
+        <tbody class="text-center divide-y divide-slate-100">
+          <tr *ngFor="let action of historiqueFiltre()" class="hover:bg-slate-50 transition">
+            <td class="font-semibold text-slate-800">{{ action.agent }}</td>
+            <td class="text-left text-slate-700">{{ action.action }}</td>
+            <td class="text-slate-500">{{ action.dateAction | date: 'dd/MM/yyyy à HH:mm' }}</td>
           </tr>
         </tbody>
       </table>
 
-      <div *ngIf="historiqueFiltre().length === 0" class="text-center text-gray-500 mt-4">
-        Aucun résultat trouvé.
+      <div *ngIf="historiqueFiltre().length === 0"
+           class="flex flex-col items-center justify-center h-40 text-slate-400 mt-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p>Aucun résultat trouvé</p>
       </div>
     </div>
   </main>
 
-  <!-- ✅ FOOTER identique -->
-  <footer class="bg-slate-700 text-white p-4 text-center border-t-4 border-double border-slate-500 mt-auto">
-    <p class="text-xs font-mono">&copy; Bamy Trucks | BamyGuest</p>
+  <!-- ✅ FOOTER FIXE UNIFIÉ -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
+    &copy; BamyGuest
   </footer>
 </div>

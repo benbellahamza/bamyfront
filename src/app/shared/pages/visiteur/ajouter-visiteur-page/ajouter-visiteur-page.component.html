@@ -1,60 +1,98 @@
-<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-300">
+<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans">
 
-  <!-- ✅ HEADER GLOBAL -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-800 text-white p-4 shadow flex items-center justify-between">
+  <!-- ✅ HEADER UNIFIÉ -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg flex items-center justify-between p-4">
     <div class="flex items-center gap-3">
-      <img src="assets/images/user-icon.png" alt="Logo" class="w-10 h-10" />
-      <span class="text-white font-semibold text-lg">BAMY TRUCKS</span>
+      <div class="bg-white p-2 rounded-lg shadow-md">
+        <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-8 h-8 object-contain" />
+      </div>
+      <span class="text-white font-bold text-xl tracking-wide">BAMY TRUCKS</span>
     </div>
 
-    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-lg font-bold uppercase tracking-widest">
+    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
       Ajouter un visiteur
     </h1>
 
-    <div class="relative" (click)="menuOuvert = !menuOuvert">
-      <div class="w-10 h-10 rounded-full bg-white text-slate-800 flex items-center justify-center font-bold cursor-pointer shadow">
+    <div class="relative">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold cursor-pointer shadow-md hover:shadow-lg transition-all"
+           (click)="menuOuvert = !menuOuvert">
         {{ utilisateur.nom.charAt(0) }}
-      </div>
-      <div *ngIf="menuOuvert"
-           class="absolute right-0 mt-2 w-64 bg-white text-slate-800 shadow-lg rounded-lg p-4 z-50">
-        <p class="font-semibold text-sm">👤 {{ utilisateur.nom }}</p>
-        <p class="text-sm">📧 {{ utilisateur.email }}</p>
-        <p class="text-sm">🔐 {{ utilisateur.role }}</p>
-        <hr class="my-2">
-        <div class="text-sm text-blue-600 hover:text-blue-800 cursor-pointer" (click)="ouvrirModalePassword()">
-          🔑 Modifier mot de passe
-        </div>
-        <div class="text-sm text-red-600 hover:text-red-800 cursor-pointer mt-1" (click)="logout()">
-          🚪 Se déconnecter
-        </div>
       </div>
     </div>
   </header>
 
-  <!-- ✅ MODALE MDP -->
-  <div *ngIf="modalePasswordVisible" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md space-y-4">
-      <h2 class="text-lg font-semibold text-center">Modifier le mot de passe</h2>
-      <input type="password" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" class="input input-bordered w-full" />
-      <input type="password" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" class="input input-bordered w-full" />
-      <div class="flex justify-end gap-2">
-        <button class="btn btn-outline" (click)="fermerModalePassword()">Annuler</button>
-        <button class="btn btn-primary" (click)="changerMotDePasse()">Enregistrer</button>
+  <!-- ✅ MENU UTILISATEUR -->
+  <div *ngIf="menuOuvert"
+       class="fixed top-16 right-4 w-72 bg-white text-slate-800 shadow-xl rounded-lg p-4 z-[100] animate-fadeIn border border-slate-200">
+    <div class="flex items-center gap-3 pb-3 border-b border-slate-200">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold text-lg">
+        {{ utilisateur.nom.charAt(0) }}
       </div>
-      <div *ngIf="messageSuccess" class="text-green-600 text-sm text-center">{{ messageSuccess }}</div>
-      <div *ngIf="messageErreur" class="text-red-600 text-sm text-center">{{ messageErreur }}</div>
+      <div>
+        <div class="font-semibold">{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
+        <div class="text-sm text-slate-600">{{ utilisateur.role }}</div>
+      </div>
+    </div>
+    <div class="py-3 space-y-2">
+      <div class="text-sm flex items-center gap-2 text-slate-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        {{ utilisateur.email }}
+      </div>
+    </div>
+    <div class="pt-3 border-t border-slate-200 space-y-2">
+      <button class="w-full text-left py-2 px-3 rounded-md hover:bg-slate-100 text-blue-600 flex items-center gap-2 transition-colors"
+              (click)="ouvrirModalePassword()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+        </svg>
+        Modifier mot de passe
+      </button>
+      <button class="w-full text-left py-2 px-3 rounded-md hover:bg-slate-100 text-red-600 flex items-center gap-2 transition-colors"
+              (click)="logout()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        Se déconnecter
+      </button>
+    </div>
+  </div>
+
+  <!-- ✅ MODALE MOT DE PASSE -->
+  <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100">
+      <h2 class="text-xl font-bold text-center text-slate-800 mb-6 flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+        </svg>
+        Modifier le mot de passe
+      </h2>
+      <div class="space-y-4">
+        <input type="password" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe"
+               class="input input-bordered w-full bg-slate-50 focus:bg-white transition" />
+        <input type="password" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe"
+               class="input input-bordered w-full bg-slate-50 focus:bg-white transition" />
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button class="btn btn-outline border-slate-300 hover:bg-slate-100" (click)="fermerModalePassword()">Annuler</button>
+        <button class="btn bg-blue-600 text-white hover:bg-blue-700" (click)="changerMotDePasse()">Enregistrer</button>
+      </div>
+      <div *ngIf="messageSuccess" class="mt-4 bg-green-50 text-green-700 p-3 rounded-lg text-sm">{{ messageSuccess }}</div>
+      <div *ngIf="messageErreur" class="mt-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm">{{ messageErreur }}</div>
     </div>
   </div>
 
   <!-- ✅ CONTENU PRINCIPAL -->
-  <main class="flex-grow mt-[90px] px-4 pb-28">
-    <app-form></app-form>
-    <hr class="my-6 border-dashed border-gray-300" />
-    <app-list></app-list>
+  <main class="flex-grow mt-24 px-6 pb-28">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <app-form></app-form>
+      <app-list></app-list>
+    </div>
   </main>
 
-  <!-- ✅ FOOTER FIXE -->
-  <footer class="fixed bottom-0 left-0 right-0 bg-slate-800 text-white p-3 text-center text-xs tracking-widest">
+  <!-- ✅ FOOTER FIXE UNIFIÉ -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
     &copy; BAMY TRUCKS | BamyGuest
   </footer>
 </div>

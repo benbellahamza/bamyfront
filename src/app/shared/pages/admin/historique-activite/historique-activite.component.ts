@@ -12,6 +12,7 @@ export class HistoriqueActiviteComponent implements OnInit {
 
   filtreTexte: string = '';
   filtreDate: string = ''; // format : 'YYYY-MM'
+utilisateur: any;
 
   constructor(private historiqueService: HistoriqueService) {}
 
