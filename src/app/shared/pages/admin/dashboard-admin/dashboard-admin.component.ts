@@ -96,25 +96,30 @@ export class DashboardAdminComponent implements OnInit {
     this.modalePasswordVisible = false;
   }
 
-  changerMotDePasse() {
-    const payload = {
-      ancienPassword: this.ancienMotDePasse,
-      nouveauPassword: this.nouveauMotDePasse
-    };
-
-    this.http.post('http://localhost:8085/auth/update-password', payload).subscribe({
-      next: () => {
-        this.messageSuccess = "✅ Mot de passe modifié avec succès.";
-        this.messageErreur = "";
-        this.ancienMotDePasse = '';
-        this.nouveauMotDePasse = '';
-      },
-      error: () => {
-        this.messageErreur = "❌ Ancien mot de passe incorrect.";
-        this.messageSuccess = "";
-      }
-    });
+ changerMotDePasse(): void {
+  if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
+    this.messageErreur = '❌ Veuillez remplir les deux champs.';
+    this.messageSuccess = '';
+    return;
   }
+
+  this.adminService.changerMotDePasseActuel(
+    this.utilisateur.email,               // ✅ Ajout obligatoire
+    this.ancienMotDePasse,
+    this.nouveauMotDePasse
+  ).subscribe({
+    next: () => {
+      this.messageSuccess = '✅ Mot de passe changé avec succès.';
+      this.messageErreur = '';
+      this.ancienMotDePasse = '';
+      this.nouveauMotDePasse = '';
+    },
+    error: (err) => {
+      this.messageErreur = err.error?.message || '❌ Erreur lors de la mise à jour.';
+      this.messageSuccess = '';
+    }
+  });
+}
 
   chargerUtilisateurs() {
     this.adminService.getUtilisateurs().subscribe({

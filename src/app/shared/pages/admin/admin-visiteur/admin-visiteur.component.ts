@@ -18,12 +18,12 @@ interface Visiteur {
 }
 
 @Component({
-  selector: 'app-responsable-visiteur',
+  selector: 'app-admin-visiteur',
   standalone: false,
-  templateUrl: './responsable-visiteur.component.html',
-  styleUrls: ['./responsable-visiteur.component.css']
+  templateUrl: './admin-visiteur.component.html',
+  styleUrls: ['./admin-visiteur.component.css']
 })
-export class ResponsableVisiteurComponent implements OnInit {
+export class AdminVisiteurComponent implements OnInit {
 
   visiteurs: Visiteur[] = [];
   visiteursFiltres: Visiteur[] = [];
@@ -78,7 +78,7 @@ export class ResponsableVisiteurComponent implements OnInit {
         nom: decoded.nom || '',
         prenom: decoded.prenom || '',
         email: decoded.sub || '',
-        role: decoded.scope || 'RESPONSABLE'
+        role: decoded.scope || 'ADMIN'
       };
     } catch (e) {
       console.error('Erreur de décodage du JWT :', e);

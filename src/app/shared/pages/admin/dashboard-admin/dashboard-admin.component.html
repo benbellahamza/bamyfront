@@ -1,5 +1,43 @@
-<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans">
+<div class="flex min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans">
+  <!-- ✅ SIDEBAR UNIFIÉE -->
+<div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white shadow-xl z-50">
+  <div class="flex items-center justify-center py-6 border-b border-slate-700">
+    <div class="bg-white p-2 rounded-lg shadow-md mr-3">
+      <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-8 h-8 object-contain" />
+    </div>
+    <span class="text-white font-bold text-xl tracking-wide">BAMY TRUCKS</span>
+  </div>
 
+  <nav class="px-4 py-6">
+    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 px-3">Navigation principale</h3>
+    <ul class="space-y-2">
+      <li>
+        <a routerLink="/admin/dashboard" routerLinkActive="bg-blue-600 text-white"
+           class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+          Tableau de bord
+        </a>
+      </li>
+      <li>
+        <a routerLink="/admin/historique" routerLinkActive="bg-blue-600 text-white"
+           class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+          Historique des actions
+        </a>
+      </li>
+      <li>
+        <a routerLink="/admin/visiteur" routerLinkActive="bg-blue-600 text-white"
+           class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+          Gestion des visiteurs
+        </a>
+      </li>
+      <li>
+        <a routerLink="/responsable/livraison" routerLinkActive="bg-blue-600 text-white"
+           class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+          Gestion des livraisons
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
   <!-- HEADER AMÉLIORÉ -->
   <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg flex items-center justify-between p-4">
     <div class="flex items-center gap-3">
@@ -110,7 +148,7 @@
   </div>
 
   <!-- CONTENU PRINCIPAL AMÉLIORÉ -->
-  <main class="flex-1 mt-20 px-6 pb-28 pt-4">
+  <main class="flex-1 mt-20 px-6 pb-28 pt-4 ml-64">
     <div class="mb-6">
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-240px)]">
@@ -363,7 +401,7 @@
   </main>
 
 <!-- ✅ FOOTER FINAL UNIFIÉ -->
-<footer class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
+<footer class="fixed bottom-0 left-0 right-0 ml-64 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
   &copy; BamyGuest
 </footer>
 </div>

@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 // 🔐 Auth
 import { LoginComponent } from './core/auth/login/login.component';
 
+
 // 👨‍💼 Agent
 import { DashboardAgentComponent } from './shared/pages/agent/dashboard-agent/dashboard-agent.component';
 
@@ -23,6 +24,7 @@ import { HistoriqueActiviteComponent } from './shared/pages/admin/historique-act
 // 📊 Responsable
 import { ResponsableVisiteurComponent } from './shared/pages/responsable/responsable-visiteur/responsable-visiteur.component';
 import { ResponsableLivraisonComponent } from './shared/pages/responsable/responsable-livraison/responsable-livraison.component';
+import { AdminVisiteurComponent } from './shared/pages/admin/admin-visiteur/admin-visiteur.component';
 
 const routes: Routes = [
 
@@ -49,7 +51,11 @@ const routes: Routes = [
   // ✅ Gestion admin
   { path: 'admin/dashboard', component: DashboardAdminComponent },
   { path: 'ajouterUtilisateur', component: AjouterUtilisateurComponent },
-  { path: 'admin/historique', component: HistoriqueActiviteComponent }, // ✅ NOUVELLE ROUTE
+  { path: 'admin/historique', component: HistoriqueActiviteComponent },
+
+  //Le nouveau ajouté
+  { path: 'admin/visiteur', component: AdminVisiteurComponent},
+
 
   // ✅ Pages responsables
   { path: 'responsable/visiteur', component: ResponsableVisiteurComponent },

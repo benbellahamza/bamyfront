@@ -83,11 +83,20 @@
     </div>
   </div>
 
-  <!-- ✅ CONTENU PRINCIPAL -->
+  <!-- ✅ CONTENU PRINCIPAL ALIGNÉ -->
   <main class="flex-grow mt-24 px-6 pb-28">
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-      <app-form></app-form>
-      <app-list></app-list>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+      
+      <!-- 📝 Bloc Formulaire -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
+        <app-form></app-form>
+      </div>
+
+      <!-- 📋 Bloc Liste visiteurs -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
+        <app-list></app-list>
+      </div>
+
     </div>
   </main>
 

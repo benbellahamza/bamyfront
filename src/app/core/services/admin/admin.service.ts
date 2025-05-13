@@ -32,7 +32,7 @@ export class AdminService {
   }
 
   /**
-   * ✅ Réinitialiser le mot de passe d’un utilisateur
+   * ✅ Réinitialiser le mot de passe d’un utilisateur (admin vers autre utilisateur)
    */
   reinitialiserMotDePasse(id: number, newPassword: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/reinitialiser-motdepasse/${id}`, {
@@ -52,5 +52,16 @@ export class AdminService {
    */
   getHistoriqueActions(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/historique`);
+  }
+
+  /**
+   * ✅ Changer le mot de passe de l’utilisateur connecté (par lui-même)
+   */
+  changerMotDePasseActuel(email: string, ancienMotDePasse: string, nouveauMotDePasse: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/changer-motdepasse`, {
+      email,
+      ancienMotDePasse,
+      nouveauMotDePasse
+    });
   }
 }

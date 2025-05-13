@@ -33,6 +33,7 @@ import { ResponsableLivraisonComponent } from './shared/pages/responsable/respon
 
 // ✅ Historique Activité
 import { HistoriqueActiviteComponent } from './shared/pages/admin/historique-activite/historique-activite.component';
+import { AdminVisiteurComponent } from './shared/pages/admin/admin-visiteur/admin-visiteur.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { HistoriqueActiviteComponent } from './shared/pages/admin/historique-act
     AjouterUtilisateurComponent,
     ResponsableVisiteurComponent,
     ResponsableLivraisonComponent,
-    HistoriqueActiviteComponent 
+    HistoriqueActiviteComponent,
+    AdminVisiteurComponent,
   ],
   imports: [
     BrowserModule,
