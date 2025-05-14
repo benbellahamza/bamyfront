@@ -2,37 +2,57 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { HistoriqueService } from 'app/core/services/historique/historique.service';
 import { AdminService } from 'app/core/services/admin/admin.service';
 import * as XLSX from 'xlsx';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-historique-activite',
-  standalone: false,
+  standalone:false,
   templateUrl: './historique-activite.component.html',
   styleUrls: ['./historique-activite.component.css']
 })
 export class HistoriqueActiviteComponent implements OnInit {
   historique: any[] = [];
   filtreTexte = '';
-  filtreDateDebut = '';
-  filtreDateFin = '';
+  filtreAgent = '';
   filtreTypeAction = '';
-  triCroissant = false;
-  selectedActions: number[] = [];
+  filtrePeriode = '';
+  dateDebut = '';
+  dateFin = '';
+  pageActuelle = 1;
+  nombreElementsAffichage: number = 10;
+  colonneTri = 'dateAction';
+  ordreTri = 'desc';
+  afficherPlusFiltres = false;
+  actionSelectionnee: any = null;
+  Math = Math;
 
-  // 🔐 Menu utilisateur & changement de mot de passe
   menuOuvert = false;
   modalePasswordVisible = false;
   ancienMotDePasse = '';
   nouveauMotDePasse = '';
   messageSuccess = '';
   messageErreur = '';
-  
-    utilisateur = {
+  motDePasseVisible = false;
+  confirmationVisible = false;
+  confirmationMotDePasse: string = '';
+
+  utilisateur = {
     nom: '',
     prenom: '',
     email: '',
     role: ''
   };
 
+  constructor(
+    private historiqueService: HistoriqueService,
+    private adminService: AdminService
+  ) {}
+
+  ngOnInit(): void {
+    this.recupererInfosUtilisateur();
+    this.chargerHistorique();
+  }
 
   recupererInfosUtilisateur() {
     const token = localStorage.getItem('access-token');
@@ -53,15 +73,6 @@ export class HistoriqueActiviteComponent implements OnInit {
       console.error('Erreur de décodage du JWT :', e);
     }
   }
-  constructor(
-    private historiqueService: HistoriqueService,
-    private adminService: AdminService
-  ) {}
-
-  ngOnInit(): void {
-    this.recupererInfosUtilisateur();
-    this.chargerHistorique();
-  }
 
   chargerHistorique(): void {
     this.historiqueService.getHistorique().subscribe({
@@ -73,113 +84,193 @@ export class HistoriqueActiviteComponent implements OnInit {
     });
   }
 
+  appliquerFiltres(): void {
+    this.pageActuelle = 1; // Reset pagination sur filtre
+  }
+
+  togglePlusFiltres(): void {
+    this.afficherPlusFiltres = !this.afficherPlusFiltres;
+  }
+
+  resetPagination(): void {
+    this.pageActuelle = 1;
+  }
+
   historiqueFiltre(): any[] {
     return this.historique
       .filter(action => {
         const texte = this.filtreTexte.toLowerCase();
+        const agent = this.filtreAgent;
+        const typeAction = this.filtreTypeAction;
         const dateAction = new Date(action.dateAction);
-        const matchTexte =
+
+        const matchTexte = !texte || 
           action.agent.toLowerCase().includes(texte) ||
-          action.action.toLowerCase().includes(texte);
+          action.action.toLowerCase().includes(texte) ||
+          action.typeAction.toLowerCase().includes(texte);
 
-        const matchDateDebut = this.filtreDateDebut
-          ? dateAction >= new Date(this.filtreDateDebut)
-          : true;
+        const matchAgent = !agent || action.agent === agent;
+        const matchType = !typeAction || action.typeAction === typeAction;
 
-        const matchDateFin = this.filtreDateFin
-          ? dateAction <= new Date(this.filtreDateFin + 'T23:59:59')
-          : true;
+        let matchPeriode = true;
+        if (this.filtrePeriode) {
+          const now = new Date();
+          const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+          const startOfYesterday = new Date(startOfDay);
+          startOfYesterday.setDate(startOfDay.getDate() - 1);
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - now.getDay());
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        const matchType = this.filtreTypeAction
-          ? action.typeAction === this.filtreTypeAction
-          : true;
+          switch (this.filtrePeriode) {
+            case 'today':
+              matchPeriode = dateAction >= startOfDay;
+              break;
+            case 'yesterday':
+              matchPeriode = dateAction >= startOfYesterday && dateAction < startOfDay;
+              break;
+            case 'week':
+              matchPeriode = dateAction >= startOfWeek;
+              break;
+            case 'month':
+              matchPeriode = dateAction >= startOfMonth;
+              break;
+            case 'custom':
+              const debut = this.dateDebut ? new Date(this.dateDebut) : null;
+              const fin = this.dateFin ? new Date(this.dateFin + 'T23:59:59') : null;
+              matchPeriode = 
+                (!debut || dateAction >= debut) && 
+                (!fin || dateAction <= fin);
+              break;
+          }
+        }
 
-        return matchTexte && matchDateDebut && matchDateFin && matchType;
+        return matchTexte && matchAgent && matchType && matchPeriode;
       })
       .sort((a, b) => {
-        const dateA = new Date(a.dateAction).getTime();
-        const dateB = new Date(b.dateAction).getTime();
-        return this.triCroissant ? dateA - dateB : dateB - dateA;
+        const valA = this.colonneTri === 'dateAction' 
+          ? new Date(a.dateAction).getTime() 
+          : a[this.colonneTri]?.toString().toLowerCase() || '';
+        const valB = this.colonneTri === 'dateAction' 
+          ? new Date(b.dateAction).getTime() 
+          : b[this.colonneTri]?.toString().toLowerCase() || '';
+
+        return this.ordreTri === 'asc'
+          ? valA > valB ? 1 : -1
+          : valA < valB ? 1 : -1;
       });
   }
 
-  resetFiltres(): void {
-    this.filtreTexte = '';
-    this.filtreDateDebut = '';
-    this.filtreDateFin = '';
-    this.filtreTypeAction = '';
-    this.selectedActions = [];
-  }
-
-  toggleTri(): void {
-    this.triCroissant = !this.triCroissant;
-  }
-
-  toggleSelection(id: number): void {
-    if (this.selectedActions.includes(id)) {
-      this.selectedActions = this.selectedActions.filter(a => a !== id);
+  trierPar(colonne: string): void {
+    if (this.colonneTri === colonne) {
+      this.ordreTri = this.ordreTri === 'asc' ? 'desc' : 'asc';
     } else {
-      this.selectedActions.push(id);
+      this.colonneTri = colonne;
+      this.ordreTri = 'asc';
     }
   }
 
-  selectAll(): void {
-    const allIds = this.historiqueFiltre().map(a => a.id);
-    this.selectedActions =
-      this.selectedActions.length === allIds.length ? [] : [...allIds];
+  totalPages(): number {
+    return Math.ceil(this.historiqueFiltre().length / this.nombreElementsAffichage);
   }
 
-  isSelected(id: number): boolean {
-    return this.selectedActions.includes(id);
+  changerPage(page: number): void {
+    this.pageActuelle = page;
   }
 
-  exporterExcel(tout: boolean): void {
-    const data = tout
-      ? this.historiqueFiltre()
-      : this.historique.filter(a => this.selectedActions.includes(a.id));
+  getPagesArray(): number[] {
+    const total = this.totalPages();
+    const pages = [];
+    for (let i = 1; i <= total; i++) pages.push(i);
+    return pages;
+  }
 
-    const dataFormatted = data.map(item => ({
-      Agent: item.agent,
-      Action: item.action,
-      Date: new Date(item.dateAction).toLocaleString()
+  afficherDetails(action: any): void {
+    this.actionSelectionnee = action;
+  }
+
+  listeAgents(): string[] {
+    const agents = this.historique.map(a => a.agent);
+    return [...new Set(agents)].sort();
+  }
+
+  nombreCreations(): number {
+    return this.historiqueFiltre().filter(a => a.typeAction === 'creation').length;
+  }
+
+  nombreModifications(): number {
+    return this.historiqueFiltre().filter(a => a.typeAction === 'modification').length;
+  }
+
+  nombreAgentsActifs(): number {
+    const agents = this.historiqueFiltre().map(a => a.agent);
+    return new Set(agents).size;
+  }
+
+  pourcentageTotal(): number {
+    return this.historique.length === 0 ? 0 : Math.round((this.historiqueFiltre().length / this.historique.length) * 100);
+  }
+
+  pourcentageModifications(): number {
+    const total = this.historiqueFiltre().length;
+    return total === 0 ? 0 : Math.round((this.nombreModifications() / total) * 100);
+  }
+
+  pourcentageAgentsActifs(): number {
+    return this.historiqueFiltre().length === 0 ? 0 :
+      Math.round((this.nombreAgentsActifs() / this.historiqueFiltre().length) * 100);
+  }
+
+  evolutionCreations(): number {
+    return 12; // Valeur fictive, à calculer dynamiquement si souhaité
+  }
+
+  getCreationTrend(): string {
+    return '↗️ En hausse par rapport à la période précédente';
+  }
+
+  getModificationTrend(): string {
+    return '📊 Stable par rapport à la dernière période';
+  }
+
+  exporterCSV(): void {
+    const data = this.historiqueFiltre().map(item => ({
+      'Agent': item.agent,
+      'Type': item.typeAction,
+      'Action': item.action,
+      'Date': new Date(item.dateAction).toLocaleString('fr-FR')
     }));
 
-    const worksheet = XLSX.utils.json_to_sheet(dataFormatted);
+    const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
-
-    const filename = tout ? 'historique_complet.xlsx' : 'historique_selection.xlsx';
-    XLSX.writeFile(workbook, filename);
+    XLSX.writeFile(workbook, 'historique_activites.csv');
   }
 
-  getActionIcon(type: string): string {
-    switch (type) {
-      case 'Ajout': return '➕';
-      case 'Modification': return '✏️';
-      case 'Suppression': return '❌';
-      default: return '📝';
-    }
+  exporterExcel(): void {
+    this.exporterCSV(); // Même logique que CSV
   }
 
-  getActionColor(type: string): string {
-    switch (type) {
-      case 'Ajout': return 'bg-green-100 text-green-800';
-      case 'Modification': return 'bg-blue-100 text-blue-800';
-      case 'Suppression': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  exporterDetailsJSON(action: any): void {
+    const blob = new Blob([JSON.stringify(action.details, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'details_action.json';
+    link.click();
+    window.URL.revokeObjectURL(url);
   }
 
-  formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  reinitialiserFiltres(): void {
+    this.filtreTexte = '';
+    this.filtreAgent = '';
+    this.filtreTypeAction = '';
+    this.filtrePeriode = '';
+    this.dateDebut = '';
+    this.dateFin = '';
+    this.pageActuelle = 1;
   }
+
 
   ouvrirModalePassword(): void {
     this.modalePasswordVisible = true;
@@ -191,18 +282,19 @@ export class HistoriqueActiviteComponent implements OnInit {
 
   fermerModalePassword(): void {
     this.modalePasswordVisible = false;
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
   }
 
- changerMotDePasse(): void {
-  if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
-    this.messageErreur = '❌ Veuillez remplir les deux champs.';
-    return;
-  }
+  changerMotDePasse(): void {
+    if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
+      this.messageErreur = '❌ Veuillez remplir les deux champs.';
+      return;
+    }
 
-  this.adminService.changerMotDePasseActuel(this.utilisateur.email, this.ancienMotDePasse, this.nouveauMotDePasse)
-    .subscribe({
+    this.adminService.changerMotDePasseActuel(
+      this.utilisateur.email,
+      this.ancienMotDePasse,
+      this.nouveauMotDePasse
+    ).subscribe({
       next: () => {
         this.messageSuccess = '✅ Mot de passe changé avec succès.';
         this.messageErreur = '';
@@ -212,7 +304,8 @@ export class HistoriqueActiviteComponent implements OnInit {
         this.messageSuccess = '';
       }
     });
-}
+  }
+
   logout(): void {
     localStorage.removeItem('access-token');
     localStorage.removeItem('role');

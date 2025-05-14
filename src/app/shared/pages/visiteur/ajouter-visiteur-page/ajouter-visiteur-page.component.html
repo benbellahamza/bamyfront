@@ -85,23 +85,24 @@
 
   <!-- ✅ CONTENU PRINCIPAL ALIGNÉ -->
   <main class="flex-grow mt-24 px-6 pb-28">
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-      
-      <!-- 📝 Bloc Formulaire -->
-      <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
-        <app-form></app-form>
-      </div>
-
-      <!-- 📋 Bloc Liste visiteurs -->
-      <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
-        <app-list></app-list>
-      </div>
-
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+    
+    <!-- 📝 Bloc Formulaire (même style que la liste) -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 h-full">
+      <app-form></app-form>
     </div>
-  </main>
+
+    <!-- 📋 Bloc Liste (même style que le formulaire) -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 h-full">
+      <app-list></app-list>
+    </div>
+
+  </div>
+</main>
 
   <!-- ✅ FOOTER FIXE UNIFIÉ -->
+     <!-- ✅ FOOTER FINAL UNIFIÉ -->
   <footer class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
-    &copy; BAMY TRUCKS | BamyGuest
+    &copy; BamyGuest
   </footer>
 </div>

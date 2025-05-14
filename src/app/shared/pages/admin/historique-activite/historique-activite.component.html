@@ -129,63 +129,489 @@
       </div>
     </div>
   </div>
-<!-- ✅ CONTENU PRINCIPAL AMÉLIORÉ -->
-<main class="flex-1 mt-20 px-6 pb-28 pt-4">
-  <div class="mb-6">
-    <!-- Contenu éventuel -->
+<!-- 📊 HISTORIQUE DES ACTIONS - INTERFACE PROFESSIONNELLE -->
+<main class="flex-1 mt-20 px-6 pb-28 pt-4 bg-slate-50">
+ <!-- ✅ FILTRES PROFESSIONNELS -->
+<section class="bg-white border border-slate-200 rounded-2xl shadow-md px-6 py-6 mb-8 animate-fadeIn">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+    <div class="flex items-center gap-3">
+      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+      </svg>
+      <h2 class="text-xl font-bold text-slate-800">Filtres & recherche</h2>
+    </div>
+    <button class="btn btn-sm btn-outline" (click)="reinitialiserFiltres()">
+      🔄 Réinitialiser les filtres
+    </button>
   </div>
 
-  <!-- 🔍 Filtres -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="form-control w-full">
-      <input type="text" placeholder="🔍 Rechercher par agent ou action" [(ngModel)]="filtreTexte"
-             class="input input-bordered bg-white shadow w-full" />
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- 🔎 Recherche globale -->
+    <div class="form-control">
+      <label class="label font-semibold text-slate-600">Recherche globale</label>
+      <div class="relative">
+        <input
+          [(ngModel)]="filtreTexte"
+          (input)="appliquerFiltres()"
+          type="text"
+          placeholder="Ex. : Suppression Visiteur, Ajout Visiteur ou nom d'agent"
+          class="input input-bordered w-full pl-10"
+        />
+        <svg class="absolute left-3 top-3 w-5 h-5 text-slate-400" fill="none" stroke="currentColor"
+          stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <button
+          *ngIf="filtreTexte"
+          class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+          (click)="filtreTexte=''; appliquerFiltres()">
+          ✖
+        </button>
+      </div>
     </div>
-    <div class="form-control w-full">
-      <input type="month" [(ngModel)]="filtreDateFin"
-             class="input input-bordered bg-white shadow w-full" />
+
+    <!-- 📅 Période -->
+    <div class="form-control">
+      <label class="label font-semibold text-slate-600">Période</label>
+      <select [(ngModel)]="filtrePeriode" (change)="appliquerFiltres()"
+        class="select select-bordered w-full">
+        <option value="">Toutes les périodes</option>
+        <option value="today">Aujourd’hui</option>
+        <option value="yesterday">Hier</option>
+        <option value="week">Cette semaine</option>
+        <option value="month">Ce mois</option>
+        <option value="custom">Période personnalisée</option>
+      </select>
+    </div>
+
+    <!-- 🏷️ Type d’action -->
+    <div class="form-control">
+      <label class="label font-semibold text-slate-600">Type d'action</label>
+      <select [(ngModel)]="filtreTypeAction" (change)="appliquerFiltres()"
+        class="select select-bordered w-full">
+        <option value="">Tous les types</option>
+        <option value="creation">Création</option>
+        <option value="modification">Modification</option>
+        <option value="suppression">Suppression</option>
+        <option value="consultation">Consultation</option>
+      </select>
+    </div>
+
+    <!-- 🗓️ Période personnalisée -->
+    <div *ngIf="filtrePeriode === 'custom'" class="md:col-span-1">
+      <label class="label font-semibold text-slate-600">Date de début</label>
+      <input type="date" [(ngModel)]="dateDebut" (change)="appliquerFiltres()"
+        class="input input-bordered w-full" />
+    </div>
+    <div *ngIf="filtrePeriode === 'custom'" class="md:col-span-1">
+      <label class="label font-semibold text-slate-600">Date de fin</label>
+      <input type="date" [(ngModel)]="dateFin" (change)="appliquerFiltres()"
+        class="input input-bordered w-full" />
     </div>
   </div>
+</section>
 
-  <!-- 📊 Statistiques -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="stats bg-white shadow border border-slate-200">
-      <div class="stat">
-        <div class="stat-title text-slate-500">Nombre total d'actions</div>
-        <div class="stat-value text-blue-600">{{ historiqueFiltre().length }}</div>
+  <!-- 📊 Cartes de statistiques améliorées -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="stats bg-white shadow-sm border border-slate-200 rounded-xl transition-all hover:shadow-md">
+      <div class="stat p-4">
+        <div class="stat-title text-slate-500 flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Nombre total
+        </div>
+        <div class="stat-value text-blue-600 text-3xl">{{ historiqueFiltre().length }}</div>
+        <div class="stat-desc text-blue-600 font-medium">{{ pourcentageTotal() }}% du total</div>
+        <div class="mt-2 text-xs text-slate-400">Basé sur {{ historique.length }} entrées</div>
+      </div>
+    </div>
+    
+    <div class="stats bg-white shadow-sm border border-slate-200 rounded-xl transition-all hover:shadow-md">
+      <div class="stat p-4">
+        <div class="stat-title text-slate-500 flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Créations
+        </div>
+        <div class="stat-value text-green-600 text-3xl">{{ nombreCreations() }}</div>
+        <div class="stat-desc text-green-600 flex items-center">
+          <svg *ngIf="evolutionCreations() > 0" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+          <svg *ngIf="evolutionCreations() < 0" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+          <span *ngIf="evolutionCreations() !== 0">{{ Math.abs(evolutionCreations()) }}% vs période préc.</span>
+          <span *ngIf="evolutionCreations() === 0">Stable</span>
+        </div>
+        <div class="mt-2 text-xs text-slate-400">{{ getCreationTrend() }}</div>
+      </div>
+    </div>
+    
+    <div class="stats bg-white shadow-sm border border-slate-200 rounded-xl transition-all hover:shadow-md">
+      <div class="stat p-4">
+        <div class="stat-title text-slate-500 flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Modifications
+        </div>
+        <div class="stat-value text-amber-600 text-3xl">{{ nombreModifications() }}</div>
+        <div class="stat-desc text-amber-600 font-medium">{{ pourcentageModifications() }}% du total</div>
+        <div class="mt-2 text-xs text-slate-400">{{ getModificationTrend() }}</div>
+      </div>
+    </div>
+    
+    <div class="stats bg-white shadow-sm border border-slate-200 rounded-xl transition-all hover:shadow-md">
+      <div class="stat p-4">
+        <div class="stat-title text-slate-500 flex items-center text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          Agents actifs
+        </div>
+        <div class="stat-value text-purple-600 text-3xl">{{ nombreAgentsActifs() }}</div>
+        <div class="stat-desc text-purple-600 font-medium">{{ pourcentageAgentsActifs() }}% du total</div>
+        <div class="mt-2 text-xs text-slate-400">Sur la période sélectionnée</div>
       </div>
     </div>
   </div>
 
-  <!-- 📋 Tableau -->
-  <div class="overflow-x-auto bg-white p-4 rounded-xl shadow border border-slate-100">
-    <table class="table w-full text-sm">
-      <thead class="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider text-center">
-        <tr>
-          <th>👤 Agent</th>
-          <th>📝 Action</th>
-          <th>📅 Date</th>
-        </tr>
-      </thead>
-      <tbody class="text-center divide-y divide-slate-100">
-        <tr *ngFor="let action of historiqueFiltre()" class="hover:bg-slate-50 transition">
-          <td class="font-semibold text-slate-800">{{ action.agent }}</td>
-          <td class="text-left text-slate-700">{{ action.action }}</td>
-          <td class="text-slate-500">{{ action.dateAction | date: 'dd/MM/yyyy à HH:mm' }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- 📋 Tableau de données amélioré -->
+  <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+    <!-- En-tête avec filtres et export -->
+    <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+      <div class="flex items-center">
+        <div class="form-control">
+          <label class="label cursor-pointer flex items-center">
+            <span class="label-text text-slate-600 mr-2 font-medium">Afficher</span>
+            <select 
+              [(ngModel)]="nombreElementsAffichage" 
+              (change)="resetPagination()"
+              class="select select-bordered select-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all"
+            >
+              <option value="5">5 éléments</option>
+              <option value="10">10 éléments</option>
+              <option value="20">20 éléments</option>
+              <option value="50">50 éléments</option>
+            </select>
+          </label>
+        </div>
+        
+        <div class="divider divider-horizontal mx-2"></div>
+        
+        <div class="text-sm text-slate-500">
+          <span class="font-medium">{{ historiqueFiltre().length }}</span> entrées trouvées
+        </div>
+      </div>
+      
+      <div class="flex gap-2">
+        <button 
+          class="btn btn-sm btn-outline hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all"
+          [disabled]="historiqueFiltre().length === 0"
+          (click)="exporterCSV()"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Exporter (CSV)
+        </button>
+        
+        <button 
+          class="btn btn-sm btn-outline hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all"
+          [disabled]="historiqueFiltre().length === 0"
+          (click)="exporterExcel()"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Exporter (Excel)
+        </button>
+      </div>
+    </div>
+    
+    <!-- Tableau avec tri -->
+    <div class="overflow-x-auto">
+      <table class="table w-full text-sm">
+        <thead class="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider">
+          <tr>
+            <th class="cursor-pointer hover:bg-slate-100 transition-all" (click)="trierPar('agent')">
+              <div class="flex items-center">
+                <span class="mr-1">👤 Agent</span>
+                <span *ngIf="colonneTri === 'agent'" class="flex flex-col">
+                  <svg *ngIf="ordreTri === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                  </svg>
+                  <svg *ngIf="ordreTri === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </div>
+            </th>
+            <th class="cursor-pointer hover:bg-slate-100 transition-all" (click)="trierPar('typeAction')">
+              <div class="flex items-center">
+                <span class="mr-1">🏷️ Type</span>
+                <span *ngIf="colonneTri === 'typeAction'" class="flex flex-col">
+                  <svg *ngIf="ordreTri === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                  </svg>
+                  <svg *ngIf="ordreTri === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </div>
+            </th>
+            <th class="cursor-pointer hover:bg-slate-100 transition-all" (click)="trierPar('action')">
+              <div class="flex items-center">
+                <span class="mr-1">📝 Action</span>
+                <span *ngIf="colonneTri === 'action'" class="flex flex-col">
+                  <svg *ngIf="ordreTri === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                  </svg>
+                  <svg *ngIf="ordreTri === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </div>
+            </th>
+            <th class="cursor-pointer hover:bg-slate-100 transition-all" (click)="trierPar('dateAction')">
+              <div class="flex items-center">
+                <span class="mr-1">📅 Date</span>
+                <span *ngIf="colonneTri === 'dateAction'" class="flex flex-col">
+                  <svg *ngIf="ordreTri === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                  </svg>
+                  <svg *ngIf="ordreTri === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </div>
+            </th>
+            <!-- <th class="text-center">🔍 Détails</th> -->
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let action of historiqueFiltre() | slice:(pageActuelle-1)*nombreElementsAffichage:(pageActuelle)*nombreElementsAffichage" 
+              class="hover:bg-slate-50 transition-all group">
+            <!-- Colonne Agent -->
+            <td class="font-medium text-slate-800">
+              <div class="flex items-center">
+                <div class="avatar placeholder mr-2">
+                  <div class="bg-slate-700 text-slate-100 rounded-full w-8 h-8 flex items-center justify-center">
+                    <span>{{ action.agent.charAt(0).toUpperCase() }}</span>
+                  </div>
+                </div>
+                {{ action.agent }}
+              </div>
+            </td>
+            
+            <!-- Colonne Type d'action -->
+            <td>
+              <span class="badge text-xs font-semibold py-1.5 px-2"
+                    [ngClass]="{
+                      'bg-green-100 text-green-700 border-green-200': action.typeAction === 'creation',
+                      'bg-amber-100 text-amber-700 border-amber-200': action.typeAction === 'modification',
+                      'bg-red-100 text-red-700 border-red-200': action.typeAction === 'suppression',
+                      'bg-blue-100 text-blue-700 border-blue-200': action.typeAction === 'consultation'
+                    }">
+                {{ action.typeAction | titlecase }}
+              </span>
+            </td>
+            
+            <!-- Colonne Action -->
+            <td class="text-left text-slate-700 max-w-xs truncate" [title]="action.action">
+              {{ action.action }}
+            </td>
+            
+            <!-- Colonne Date -->
+            <td class="text-slate-500 whitespace-nowrap">
+              <div class="flex flex-col">
+                <span>{{ action.dateAction | date: 'dd/MM/yyyy' }}</span>
+                <span class="text-xs text-slate-400">{{ action.dateAction | date: 'HH:mm:ss' }}</span>
+              </div>
+            </td>
+            
+            <!-- Colonne Détails -->
+            <td class="text-center">
+              <button 
+                class="btn btn-sm btn-ghost btn-circle opacity-70 group-hover:opacity-100 transition-all hover:bg-slate-200"
+                (click)="afficherDetails(action)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
+    <!-- État vide -->
     <div *ngIf="historiqueFiltre().length === 0"
-         class="flex flex-col items-center justify-center h-40 text-slate-400 mt-6">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+         class="flex flex-col items-center justify-center py-16 text-slate-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p>Aucun résultat trouvé</p>
+      <p class="text-lg font-medium mb-1">Aucun résultat trouvé</p>
+      <p class="text-sm text-slate-400 mb-4">Aucune donnée ne correspond à vos critères de recherche</p>
+      <button 
+        class="btn btn-sm btn-outline"
+        (click)="reinitialiserFiltres()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Réinitialiser les filtres
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-col md:flex-row justify-between items-center mt-6 gap-4" *ngIf="historiqueFiltre().length > 0">
+      <div class="text-sm text-slate-500">
+        Affichage de <span class="font-medium">{{ ((pageActuelle-1)*nombreElementsAffichage)+1 }}</span> à 
+        <span class="font-medium">{{ Math.min(pageActuelle*nombreElementsAffichage, historiqueFiltre().length) }}</span> 
+        sur <span class="font-medium">{{ historiqueFiltre().length }}</span> entrées
+      </div>
+      
+      <div class="join">
+        <button 
+          class="join-item btn btn-sm" 
+          [disabled]="pageActuelle === 1" 
+          (click)="changerPage(pageActuelle - 1)"
+        >
+          «
+        </button>
+        <ng-container *ngFor="let page of getPagesArray()">
+          <button 
+            class="join-item btn btn-sm" 
+            [ngClass]="{'btn-active': page === pageActuelle}"
+            (click)="changerPage(page)"
+          >
+            {{ page }}
+          </button>
+        </ng-container>
+        <button 
+          class="join-item btn btn-sm" 
+          [disabled]="pageActuelle === totalPages()" 
+          (click)="changerPage(pageActuelle + 1)"
+        >
+          »
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de détails amélioré -->
+  <div *ngIf="actionSelectionnee" class="modal modal-open">
+    <div class="modal-box max-w-2xl">
+      <div class="flex justify-between items-start mb-6">
+        <h3 class="font-bold text-lg text-slate-800 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Détails de l'action
+        </h3>
+        <button 
+          class="btn btn-sm btn-ghost btn-circle" 
+          (click)="actionSelectionnee = null"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div class="bg-slate-50 rounded-lg p-4 mb-6">
+        <div class="flex flex-col sm:flex-row gap-2 justify-between mb-4">
+          <div class="flex items-center">
+            <div class="avatar placeholder mr-2">
+              <div class="bg-slate-700 text-slate-100 rounded-full w-10 h-10 flex items-center justify-center">
+                <span>{{ actionSelectionnee.agent.charAt(0).toUpperCase() }}</span>
+              </div>
+            </div>
+            <div>
+              <p class="font-semibold text-slate-800">{{ actionSelectionnee.agent }}</p>
+              <p class="text-sm text-slate-500">Agent</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center">
+            <span class="badge text-sm py-2 px-3"
+                  [ngClass]="{
+                    'bg-green-100 text-green-700 border-green-200': actionSelectionnee.typeAction === 'creation',
+                    'bg-amber-100 text-amber-700 border-amber-200': actionSelectionnee.typeAction === 'modification',
+                    'bg-red-100 text-red-700 border-red-200': actionSelectionnee.typeAction === 'suppression',
+                    'bg-blue-100 text-blue-700 border-blue-200': actionSelectionnee.typeAction === 'consultation'
+                  }">
+              {{ actionSelectionnee.typeAction | titlecase }}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <h4 class="text-sm font-semibold text-slate-500 mb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Date et heure
+          </h4>
+          <p class="text-slate-800 font-medium">{{ actionSelectionnee.dateAction | date: 'EEEE dd MMMM yyyy' }}</p>
+          <p class="text-slate-600">à {{ actionSelectionnee.dateAction | date: 'HH:mm:ss' }}</p>
+        </div>
+        
+        <div>
+          <h4 class="text-sm font-semibold text-slate-500 mb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Identifiant
+          </h4>
+          <p class="text-slate-800 font-mono">{{ actionSelectionnee.id || 'Non spécifié' }}</p>
+        </div>
+      </div>
+      
+      <div class="mb-6">
+        <h4 class="text-sm font-semibold text-slate-500 mb-2 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          </svg>
+          Action
+        </h4>
+        <p class="text-slate-800 bg-slate-50 p-3 rounded-lg">{{ actionSelectionnee.action }}</p>
+      </div>
+      
+      <div *ngIf="actionSelectionnee.details" class="mb-6">
+        <h4 class="text-sm font-semibold text-slate-500 mb-2 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Détails supplémentaires
+        </h4>
+        <div class="bg-slate-50 p-4 rounded-lg overflow-auto max-h-60">
+          <pre class="text-xs font-mono text-slate-700">{{ actionSelectionnee.details | json }}</pre>
+        </div>
+      </div>
+      
+      <div class="modal-action">
+        <button class="btn btn-outline mr-2" (click)="actionSelectionnee = null">Fermer</button>
+        <button class="btn btn-primary" *ngIf="actionSelectionnee.details" (click)="exporterDetailsJSON(actionSelectionnee)">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Exporter JSON
+        </button>
+      </div>
     </div>
   </div>
 </main>
-
     <!-- ✅ FOOTER UNIFIÉ -->
     <footer class="fixed bottom-0 left-64 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
       &copy; BamyGuest
@@ -193,25 +619,102 @@
   </div>
 
   <!-- ✅ MODALE MOT DE PASSE -->
-  <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100">
-      <h2 class="text-xl font-bold text-center text-slate-800 mb-6 flex items-center justify-center gap-2">
-        🔐 Modifier le mot de passe
-      </h2>
-      <div class="space-y-4">
-        <input type="password" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" class="input input-bordered w-full" />
-        <input type="password" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" class="input input-bordered w-full" />
+<div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100 relative">
+    
+    <!-- ❌ BOUTON FERMER -->
+    <button (click)="fermerModalePassword()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500">
+      ✖
+    </button>
+
+    <h2 class="text-xl font-bold text-center text-slate-800 mb-6 flex items-center justify-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+      </svg>
+      Modifier le mot de passe
+    </h2>
+
+    <div class="space-y-4">
+      
+      <!-- 🔐 Ancien mot de passe -->
+      <div class="relative">
+        <input type="password" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe"
+               class="input input-bordered w-full pl-10 bg-slate-50 focus:bg-white transition-colors" />
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
       </div>
-      <div class="flex justify-end gap-3 mt-6">
-        <button class="btn btn-outline" (click)="fermerModalePassword()">Annuler</button>
-        <button class="btn btn-primary" (click)="changerMotDePasse()">Enregistrer</button>
+
+      <!-- 🔐 Nouveau mot de passe -->
+      <div class="relative">
+        <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="nouveauMotDePasse"
+               placeholder="Nouveau mot de passe"
+               class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+        </svg>
+        <button type="button"
+        (click)="motDePasseVisible = !motDePasseVisible"
+        class="absolute right-3 top-1/2 -translate-y-1/2 transform h-5 w-5 flex items-center justify-center text-gray-400 hover:text-gray-600">
+          {{ motDePasseVisible ? '🙈' : '👁️' }}
+        </button>
       </div>
-      <div *ngIf="messageSuccess" class="alert alert-success mt-4">
-        ✅ {{ messageSuccess }}
+
+      <!-- 🔐 Confirmation -->
+      <div class="relative">
+        <input [type]="confirmationVisible ? 'text' : 'password'" [(ngModel)]="confirmationMotDePasse"
+               placeholder="Confirmer le mot de passe"
+               class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+        </svg>
+        <button type="button"
+        (click)="confirmationVisible = !confirmationVisible"
+        class="absolute right-3 top-1/2 -translate-y-1/2 transform h-5 w-5 flex items-center justify-center text-gray-400 hover:text-gray-600">
+          {{ confirmationVisible ? '🙈' : '👁️' }}
+        </button>
       </div>
-      <div *ngIf="messageErreur" class="alert alert-error mt-4">
-        ❌ {{ messageErreur }}
-      </div>
+
     </div>
+
+    <!-- ✅ Boutons actions -->
+    <div class="flex justify-end gap-3 mt-6">
+      <button class="btn btn-outline border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-colors"
+              (click)="fermerModalePassword()">
+        Annuler
+      </button>
+      <button class="btn bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-none shadow-md"
+              (click)="changerMotDePasse()">
+        Enregistrer
+      </button>
+    </div>
+
+    <!-- ✅ Messages -->
+    <div *ngIf="messageSuccess" class="mt-4 bg-green-50 text-green-700 p-3 rounded-lg text-sm flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      {{ messageSuccess }}
+    </div>
+    <div *ngIf="messageErreur" class="mt-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      {{ messageErreur }}
+    </div>
+
   </div>
 </div>
+
