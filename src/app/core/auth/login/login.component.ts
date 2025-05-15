@@ -7,11 +7,14 @@ import { Router } from '@angular/router';
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'] // ✅ (correction "styleUrl" => "styleUrls")
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   loginForm: FormGroup;
   errorMessage = '';
+
+  // ✅ Variable pour afficher ou cacher le mot de passe
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -24,16 +27,20 @@ export class LoginComponent {
     });
   }
 
+  // ✅ Méthode pour inverser la visibilité du mot de passe
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
   onSubmit() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
 
       this.authService.login(email, password).subscribe({
         next: (res) => {
-          const role = res.role?.toUpperCase(); // 🔥 rôle retourné par le backend
-          localStorage.setItem('role', role); // 🔁 facultatif mais clair
+          const role = res.role?.toUpperCase();
+          localStorage.setItem('role', role);
 
-          // Redirection selon le rôle
           if (role === 'ADMIN') {
             this.router.navigate(['/admin/dashboard']);
           } else if (role === 'AGENT') {

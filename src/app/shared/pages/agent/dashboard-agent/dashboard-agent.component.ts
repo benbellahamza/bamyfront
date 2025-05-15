@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -28,10 +28,10 @@ export class DashboardAgentComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
-        this.recupererInfosUtilisateur();
+    this.recupererInfosUtilisateur();
   }
 
-    recupererInfosUtilisateur() {
+  recupererInfosUtilisateur() {
     const token = localStorage.getItem('access-token');
     if (!token) return;
 
@@ -67,7 +67,7 @@ export class DashboardAgentComponent implements OnInit {
     this.modalePasswordVisible = false;
   }
 
-    changerMotDePasse() {
+  changerMotDePasse() {
     if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
       this.messageErreur = "Veuillez remplir les deux champs.";
       this.messageSuccess = "";
@@ -96,5 +96,14 @@ export class DashboardAgentComponent implements OnInit {
   logout() {
     localStorage.clear();
     this.router.navigate(['/']);
+  }
+
+  // ✅ Fermer le menu si clic extérieur
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    const clickedInside = (event.target as HTMLElement).closest('.relative');
+    if (!clickedInside) {
+      this.menuOuvert = false;
+    }
   }
 }
