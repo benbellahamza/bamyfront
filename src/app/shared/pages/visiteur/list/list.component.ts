@@ -21,7 +21,14 @@ interface Visiteur {
 })
 export class ListComponent implements OnInit, OnDestroy {
   visiteursDuJour: Visiteur[] = [];
+  filteredVisiteurs: Visiteur[] = [];
   loading: boolean = false;
+  
+  // Variables pour les filtres
+  searchText: string = '';
+  typeFilter: string = 'all';
+  statusFilter: string = 'all';
+  
   private refreshListener: any;
 
   constructor(private visiteurService: VisiteurService) {}
@@ -48,11 +55,16 @@ export class ListComponent implements OnInit, OnDestroy {
    */
   loadVisiteurs() {
     this.loading = true;
+    
+    // Réinitialise les filtres à chaque actualisation
+    this.resetFilters();
+    
     this.visiteurService.getVisiteursDuJour().subscribe({
       next: (data) => {
         this.visiteursDuJour = data.sort((a, b) =>
           new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime()
         );
+        this.filterVisiteurs(); // Applique les filtres sur les données chargées
         console.log("✅ Visiteurs du jour mis à jour :", this.visiteursDuJour);
         this.loading = false;
       },
@@ -61,6 +73,44 @@ export class ListComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
+  }
+
+  /**
+   * Filtre les visiteurs selon les critères
+   */
+  filterVisiteurs() {
+    const searchLower = this.searchText ? this.searchText.toLowerCase() : '';
+    
+    this.filteredVisiteurs = this.visiteursDuJour.filter(v => {
+      // Filtre de recherche textuelle
+      const matchSearch = !searchLower || 
+                          v.nom.toLowerCase().includes(searchLower) || 
+                          v.prenom.toLowerCase().includes(searchLower) ||
+                          v.cin.toLowerCase().includes(searchLower) ||
+                          v.telephone.toLowerCase().includes(searchLower) ||
+                          (v.destination && v.destination.toLowerCase().includes(searchLower));
+      
+      // Filtre par type de visiteur
+      const matchType = this.typeFilter === 'all' || 
+                        (v.typeVisiteur && v.typeVisiteur.toLowerCase() === this.typeFilter.toLowerCase());
+      
+      // Filtre par statut (présent/sorti)
+      const matchStatus = this.statusFilter === 'all' ||
+                         (this.statusFilter === 'present' && !v.dateSortie) ||
+                         (this.statusFilter === 'sorti' && v.dateSortie);
+      
+      return matchSearch && matchType && matchStatus;
+    });
+  }
+
+  /**
+   * Réinitialise tous les filtres
+   */
+  resetFilters() {
+    this.searchText = '';
+    this.typeFilter = 'all';
+    this.statusFilter = 'all';
+    this.filterVisiteurs();
   }
 
   /**
@@ -101,5 +151,24 @@ export class ListComponent implements OnInit, OnDestroy {
   modifierVisiteur(visiteur: Visiteur) {
     const event = new CustomEvent('edit-visiteur', { detail: visiteur });
     window.dispatchEvent(event);
+  }
+  
+  /**
+   * Calcule la durée de présence du visiteur
+   */
+  calculerDuree(dateEntree: string | Date): string {
+    const entree = new Date(dateEntree);
+    const maintenant = new Date();
+    const diff = maintenant.getTime() - entree.getTime();
+    
+    // Calcul des heures et minutes
+    const heures = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (heures === 0) {
+      return `${minutes} min`;
+    } else {
+      return `${heures}h ${minutes}min`;
+    }
   }
 }

@@ -83,26 +83,34 @@
     </div>
   </div>
 
-  <!-- ✅ CONTENU PRINCIPAL ALIGNÉ -->
+  <!-- ✅ CONTENU PRINCIPAL -->
   <main class="flex-grow mt-24 px-6 pb-28">
-  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-    
-    <!-- 📝 Bloc Formulaire (même style que la liste) -->
-    <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 h-full">
-      <app-form></app-form>
-    </div>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+      
+      <!-- 📝 Bloc Formulaire -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 h-[calc(100vh-200px)] overflow-hidden">
+        <app-form></app-form>
+      </div>
 
-    <!-- 📋 Bloc Liste (même style que le formulaire) -->
-    <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 h-full">
-      <app-list></app-list>
-    </div>
+      <!-- 📋 Bloc Liste -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 h-[calc(100vh-200px)] overflow-hidden">
+        <app-list></app-list>
+      </div>
 
-  </div>
-</main>
+    </div>
+  </main>
 
   <!-- ✅ FOOTER FIXE UNIFIÉ -->
-     <!-- ✅ FOOTER FINAL UNIFIÉ -->
   <footer class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
     &copy; BamyGuest
   </footer>
 </div>
+
+<style>
+  /* Empêcher le défilement horizontal */
+  body, html {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+</style>

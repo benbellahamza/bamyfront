@@ -1,195 +1,188 @@
-.container-formulaire {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 30px;
-  text-align: center;
-  font-family: 'Segoe UI', sans-serif;
+/* Animations de base */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.clock h2 {
-  font-size: 24px;
-  margin-bottom: 15px;
-  color: #333;
+@keyframes slideInRight {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
-.counter-box {
-  background-color: #f0f4f8;
-  padding: 15px;
-  margin-bottom: 25px;
-  border-radius: 12px;
-  font-size: 18px;
-  color: #333;
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
-.counter-box h3 {
-  font-size: 30px;
-  color: #007bff;
-  margin-top: 5px;
+/* Classes d'animation */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
-.success-message {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  font-weight: bold;
+.animate-slide-in {
+  animation: slideInRight 0.4s ease-out forwards;
 }
 
-.error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  font-weight: bold;
+.animate-pulse-once {
+  animation: pulse 0.6s ease-in-out;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+/* Styles pour les formulaires */
+.form-control input:focus,
+.form-control select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  border-color: #3b82f6;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.form-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
+/* Style des boutons de genre */
+.genre-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-input, select {
-  padding: 10px;
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
+.genre-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease;
 }
 
-button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-  font-weight: bold;
-  padding: 12px 30px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s;
+.genre-button:active::after {
+  width: 200px;
+  height: 200px;
 }
 
-button[type="submit"]:hover {
-  background-color: #0056b3;
+/* Personnalisation des messages de confirmation */
+.alert {
+  overflow: hidden;
+  position: relative;
 }
 
-/* 👨👩 genre icons */
-.genre-icons {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-bottom: 10px;
+.alert::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
 }
 
-.genre-icon {
-  font-size: 48px;
-  cursor: pointer;
-  opacity: 0.3;
-  transition: transform 0.2s, opacity 0.2s;
+.alert.alert-success::before {
+  background-color: #10b981;
 }
 
-.genre-icon.selected {
-  opacity: 1;
-  transform: scale(1.3);
+.alert.alert-error::before {
+  background-color: #ef4444;
 }
 
-.genre-icon:hover {
-  opacity: 0.6;
+/* Personnalisation du compteur */
+.compteur-badge {
+  position: relative;
+  overflow: hidden;
 }
 
-.liste-visiteurs {
-  margin-top: 40px;
-  text-align: left;
+.compteur-badge::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  transform: translateX(-100%);
 }
 
-.liste-visiteurs h4 {
-  margin-bottom: 10px;
-  color: #444;
+.compteur-badge.highlight::before {
+  transition: transform 1.2s ease;
+  transform: translateX(100%);
 }
 
-.visiteurs-scroll {
-  max-height: 300px;
-  overflow-y: auto;
-  padding-right: 10px;
-  scrollbar-width: thin;
+/* Personnalisation du champ matricule */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.visiteur-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f9f9f9;
-  padding: 10px 15px;
-  margin-bottom: 8px;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
+.matricule-field {
+  animation: fadeInDown 0.4s ease-out;
 }
 
-.visiteur-item button {
-  background-color: #28a745;
-  border: none;
-  color: white;
-  font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+/* Amélioration des effets de survol */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.visiteur-item button:hover {
-  background-color: #218838;
-}
-/* Zone d'action dans chaque carte */
-.action-buttons {
-  display: flex;
-  gap: 10px;
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Bouton : Valider sortie (vert) */
-.visiteur-item button {
-  background-color: #28a745;
-  border: none;
-  color: white;
-  font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+/* Effet de remplissage du bouton submit */
+.btn-submit {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: color 0.3s ease;
 }
 
-.visiteur-item button:hover {
-  background-color: #218838;
+.btn-submit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: -1;
+  transition: width 0.3s ease;
 }
 
-/* Bouton : Modifier (bleu) */
-.visiteur-item .modifier-btn {
-  background-color: #007bff;
+.btn-submit:hover::before {
+  width: 100%;
 }
 
-.visiteur-item .modifier-btn:hover {
-  background-color: #0056b3;
+/* Personnalisation du spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* Bouton : Supprimer (rouge) */
-.visiteur-item .supprimer-btn {
-  background-color: #dc3545;
+.loading-spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
 }
 
-.visiteur-item .supprimer-btn:hover {
-  background-color: #c82333;
+/* Amélioration de l'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
-/* Infos visiteur dans la carte */
-.visiteur-info {
-  flex: 1;
-  font-size: 14px;
-  line-height: 1.5;
+/* Optimisations pour les écrans de petite taille */
+@media screen and (max-width: 640px) {
+  .genre-button-text {
+    font-size: 0.875rem;
+  }
+  
+  .compteur-value {
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+  }
 }
