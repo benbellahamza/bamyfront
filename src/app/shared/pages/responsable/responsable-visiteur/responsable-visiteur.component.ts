@@ -44,13 +44,16 @@ export class ResponsableVisiteurComponent implements OnInit {
   menuOuvert: boolean = false;
   modalePasswordVisible = false;
 
+    motDePasseVisible = false;
+  confirmationVisible = false;
+  confirmationMotDePasse: string = '';
+
   ancienMotDePasse: string = '';
   nouveauMotDePasse: string = '';
   messageSuccess: string = '';
   messageErreur: string = '';
 
   erreurExport: boolean = false;
-
   currentPage: number = 1;
   itemsPerPage: number = 10;
 
@@ -67,7 +70,10 @@ export class ResponsableVisiteurComponent implements OnInit {
 
   recupererInfosUtilisateur() {
     const token = localStorage.getItem('access-token');
-    if (!token) return;
+    if (!token) {
+      this.router.navigate(['/']);
+      return;
+    }
 
     try {
       const payload = token.split('.')[1];
@@ -82,6 +88,7 @@ export class ResponsableVisiteurComponent implements OnInit {
       };
     } catch (e) {
       console.error('Erreur de décodage du JWT :', e);
+      this.logout();
     }
   }
 
@@ -89,6 +96,7 @@ export class ResponsableVisiteurComponent implements OnInit {
     this.modalePasswordVisible = true;
     this.messageErreur = '';
     this.messageSuccess = '';
+    this.menuOuvert = false;
   }
 
   fermerModalePassword() {
@@ -111,13 +119,14 @@ export class ResponsableVisiteurComponent implements OnInit {
 
     this.http.post('http://localhost:8085/auth/update-password', payload).subscribe({
       next: (res: any) => {
-        this.messageSuccess = res.message;
+        this.messageSuccess = res.message || "✅ Mot de passe mis à jour avec succès.";
         this.messageErreur = "";
         this.ancienMotDePasse = '';
         this.nouveauMotDePasse = '';
+        setTimeout(() => this.fermerModalePassword(), 3000);
       },
       error: (err) => {
-        this.messageErreur = err.error?.error || "❌ Erreur lors de la mise à jour.";
+        this.messageErreur = err.error?.error || "❌ Erreur lors de la mise à jour du mot de passe.";
         this.messageSuccess = "";
       }
     });
@@ -136,28 +145,67 @@ export class ResponsableVisiteurComponent implements OnInit {
         this.visiteursFiltres = [...this.visiteurs];
         this.loading = false;
       },
-      error: () => this.loading = false
+      error: (err) => {
+        console.error('Erreur lors du chargement des visiteurs', err);
+        this.loading = false;
+      }
     });
   }
 
   rechercher() {
-    const terme = this.searchTerm.toLowerCase();
-    this.visiteursFiltres = this.visiteurs.filter(v =>
-      v.nom.toLowerCase().includes(terme) ||
-      v.prenom.toLowerCase().includes(terme) ||
-      v.cin.toLowerCase().includes(terme)
-    );
+  const terme = this.searchTerm.toLowerCase().trim();
+  
+  if (!terme) {
+    this.visiteursFiltres = [...this.visiteurs];
+    this.appliquerFiltresDate();
+    return;
   }
+  
+  // Diviser les termes de recherche pour permettre la recherche par nom ET prénom
+  const termes = terme.split(' ').filter(t => t.length > 0);
+  
+  this.visiteursFiltres = this.visiteurs.filter(visiteur => {
+    const nomComplet = (visiteur.nom + ' ' + visiteur.prenom).toLowerCase();
+    const prenomNom = (visiteur.prenom + ' ' + visiteur.nom).toLowerCase();
+    const cin = visiteur.cin.toLowerCase();
+    
+    // Vérifie si tous les termes de recherche sont présents dans les champs
+    return termes.every(t => 
+      nomComplet.includes(t) || 
+      prenomNom.includes(t) || 
+      cin.includes(t)
+    );
+  });
+  
+  this.appliquerFiltresDate();
+}
 
   filtrerParDate() {
-    if (!this.startDate || !this.endDate) {
+    if (this.startDate || this.endDate) {
       this.visiteursFiltres = [...this.visiteurs];
-      return;
+      this.appliquerFiltresDate();
+      if (this.searchTerm) {
+        this.rechercher();
+      }
+    } else if (this.searchTerm) {
+      this.rechercher();
+    } else {
+      this.visiteursFiltres = [...this.visiteurs];
+    }
+    this.currentPage = 1;
+  }
+
+  appliquerFiltresDate() {
+    if (!this.startDate && !this.endDate) return;
+
+    let start = this.startDate ? new Date(this.startDate) : new Date(0);
+    let end = this.endDate ? new Date(this.endDate) : new Date();
+
+    if (this.endDate) {
+      end.setHours(23, 59, 59, 999);
     }
 
-    const start = new Date(this.startDate);
-    const end = new Date(this.endDate);
-    this.visiteursFiltres = this.visiteurs.filter(v => {
+    this.visiteursFiltres = this.visiteursFiltres.filter(v => {
       const dateEntree = new Date(v.dateEntree);
       return dateEntree >= start && dateEntree <= end;
     });
@@ -171,7 +219,7 @@ export class ResponsableVisiteurComponent implements OnInit {
     }
   }
 
-  isSelected(visiteur: Visiteur) {
+  isSelected(visiteur: Visiteur): boolean {
     return this.selectedVisiteurs.some(v => v.id === visiteur.id);
   }
 
@@ -179,8 +227,9 @@ export class ResponsableVisiteurComponent implements OnInit {
     this.erreurExport = false;
     const dataToExport = exportAll ? this.visiteursFiltres : this.selectedVisiteurs;
 
-    if (dataToExport.length === 0) {
+    if (!exportAll && dataToExport.length === 0) {
       this.erreurExport = true;
+      setTimeout(() => this.erreurExport = false, 3000);
       return;
     }
 
@@ -188,7 +237,8 @@ export class ResponsableVisiteurComponent implements OnInit {
       Nom: v.nom,
       Prénom: v.prenom,
       CIN: v.cin,
-      Téléphone: v.telephone,
+      Genre: v.genre,
+      Téléphone: v.telephone || 'Non renseigné',
       Destination: v.destination,
       "Type Visiteur": v.typeVisiteur || 'Particulier',
       "Date Entrée": v.dateEntree ? new Date(v.dateEntree).toLocaleString() : '',
@@ -199,7 +249,12 @@ export class ResponsableVisiteurComponent implements OnInit {
     const workbook = { Sheets: { 'Visiteurs': worksheet }, SheetNames: ['Visiteurs'] };
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(blob, 'visiteurs_export.xlsx');
+
+    const fileName = exportAll
+      ? `visiteurs_complet_${new Date().toISOString().slice(0, 10)}.xlsx`
+      : `visiteurs_selection_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    saveAs(blob, fileName);
   }
 
   resetFiltres() {
@@ -208,6 +263,7 @@ export class ResponsableVisiteurComponent implements OnInit {
     this.endDate = '';
     this.selectedVisiteurs = [];
     this.visiteursFiltres = [...this.visiteurs];
+    this.currentPage = 1;
   }
 
   get visiteursPage(): Visiteur[] {
@@ -216,7 +272,9 @@ export class ResponsableVisiteurComponent implements OnInit {
   }
 
   setPage(page: number) {
+    if (page < 1 || page > this.pages.length) return;
     this.currentPage = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   logout() {
@@ -224,9 +282,56 @@ export class ResponsableVisiteurComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
+  getInitiales(): string {
+    return this.utilisateur.nom && this.utilisateur.prenom 
+      ? `${this.utilisateur.nom.charAt(0)}${this.utilisateur.prenom.charAt(0)}` 
+      : '';
+  }
+
+  // Méthodes pour obtenir les statistiques
+  getVisiteursSortis(): number {
+    if (!this.visiteurs) return 0;
+    return this.visiteurs.filter(v => !!v.dateSortie).length;
+  }
+
+  getVisiteursPresents(): number {
+    if (!this.visiteurs) return 0;
+    return this.visiteurs.filter(v => !v.dateSortie).length;
+  }
+
+  // Format de date personnalisé pour éviter les erreurs avec le pipe date
+  formatDate(dateString: string | undefined, format: string = 'dd/MM/yyyy HH:mm'): string {
+    if (!dateString) return 'Non disponible';
+    
+    try {
+      const date = new Date(dateString);
+      
+      if (isNaN(date.getTime())) {
+        return 'Date invalide';
+      }
+      
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      
+      if (format === 'dd/MM/yyyy HH:mm') {
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+      } else {
+        return `${day}/${month}/${year}`;
+      }
+    } catch (e) {
+      return 'Erreur de date';
+    }
+  }
+
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
-    const clickedInside = (event.target as HTMLElement).closest('.relative');
-    if (!clickedInside) this.menuOuvert = false;
+    const target = event.target as HTMLElement;
+    const clickedInside = target.closest('.relative') || target.closest('.w-10.h-10.rounded-full');
+    if (!clickedInside && this.menuOuvert) {
+      this.menuOuvert = false;
+    }
   }
 }

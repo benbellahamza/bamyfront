@@ -33,9 +33,10 @@ export class AuthService {
           } else if (role === 'AGENT') {
             this.router.navigate(['/agent/dashboard']);
           } else if (role === 'RESPONSABLE') {
-            this.router.navigate(['/responsable/visiteur']);
+            this.router.navigate(['/responsable/dashboard']); // ✅ corrigé ici
           } else {
             console.warn('Rôle non reconnu');
+            this.router.navigate(['/']);
           }
         } else {
           console.warn('Token JWT non trouvé dans la réponse');

@@ -1,38 +1,19 @@
-<div class="flex min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans">
-  <!-- ✅ SIDEBAR ADMIN UNIFIÉE -->
-  <div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white shadow-xl z-50">
-    <div class="flex items-center justify-center py-6 border-b border-slate-700">
-      <div class="bg-white p-2 rounded-lg shadow-md mr-3">
+<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans">
+
+  <!-- ✅ HEADER UNIFIÉ -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg flex items-center justify-between p-4">
+    <div class="flex items-center gap-3">
+      <div class="bg-white p-2 rounded-lg shadow-md">
         <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-8 h-8 object-contain" />
       </div>
       <span class="text-white font-bold text-xl tracking-wide">BAMY TRUCKS</span>
     </div>
-    <nav class="px-4 py-6">
-      <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 px-3">Navigation principale</h3>
-      <ul class="space-y-2">
-        <li><a routerLink="/admin/dashboard" routerLinkActive="bg-blue-600 text-white"
-               class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">Tableau de bord</a></li>
-        <li><a routerLink="/admin/historique" routerLinkActive="bg-blue-600 text-white"
-               class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">Historique des actions</a></li>
-        <li><a routerLink="/admin/visiteur" routerLinkActive="bg-blue-600 text-white"
-               class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">Gestion des visiteurs</a></li>
-        <li><a routerLink="/responsable/livraison" routerLinkActive="bg-blue-600 text-white"
-               class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">Gestion des livraisons</a></li>
-      </ul>
-    </nav>
-  </div>
-  
-  <!-- ✅ CONTENU PRINCIPAL -->
-  <div class="flex-1 ml-64 flex flex-col min-h-screen">
 
-    <!-- ✅ HEADER UNIFIÉ -->
-    <header class="fixed top-0 left-64 right-0 z-40 bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg flex items-center justify-between p-4">
-      <div class="flex items-center gap-3">
-      </div>
-      <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
-         Gestion des visiteurs
-      </h1>
-       <!-- BOUTON UTILISATEUR AMÉLIORÉ -->
+    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
+      Ajouter une livraison
+    </h1>
+
+ <!-- BOUTON UTILISATEUR AMÉLIORÉ -->
   <div class="relative">
     <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-700 hover:bg-slate-600 cursor-pointer transition-all shadow-md"
          (click)="menuOuvert = !menuOuvert">
@@ -208,68 +189,26 @@
     </div>
   </div>
 </div>
-  <!-- ✅ MAIN -->
-  <main class="flex-1 mt-20 px-6 pb-28 pt-4">
 
-    <!-- 🔎 FILTRES -->
-    <div class="bg-white shadow-md rounded-xl p-4 mb-6 flex flex-col lg:flex-row justify-between items-center gap-4 border border-slate-100">
-      <input type="text" [(ngModel)]="searchTerm" (input)="rechercher()" placeholder="🔍 Rechercher..." class="input input-bordered w-full lg:w-1/3" />
-      <div class="flex flex-wrap items-center gap-3">
-        <input type="date" [(ngModel)]="startDate" (change)="filtrerParDate()" class="input input-bordered" />
-        <input type="date" [(ngModel)]="endDate" (change)="filtrerParDate()" class="input input-bordered" />
-        <button class="btn bg-blue-600 text-white hover:bg-blue-700" (click)="exporterExcel(true)">⬇️ Exporter tout</button>
-        <button class="btn bg-emerald-600 text-white hover:bg-emerald-700" (click)="exporterExcel(false)">✅ Sélectionnés</button>
-        <button class="btn bg-slate-100 text-slate-700 hover:bg-slate-200" (click)="resetFiltres()">🔄 Réinitialiser</button>
+  <!-- ✅ CONTENU PRINCIPAL -->
+  <main class="flex-grow mt-24 px-6 pb-28">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+
+      <!-- 📝 Bloc Formulaire -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 h-[calc(100vh-200px)] overflow-hidden">
+        <app-livraison-form></app-livraison-form>
       </div>
-    </div>
 
-    <!-- ⏳ CHARGEMENT -->
-    <div *ngIf="loading" class="text-center text-blue-600 font-medium text-lg">
-      ⏳ Chargement des visiteurs...
-    </div>
-
-    <!-- ✅ VISITEURS -->
-    <div *ngIf="!loading && visiteursFiltres.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-5">
-      <div *ngFor="let v of visiteursPage" class="bg-white p-4 shadow rounded-xl hover:shadow-md border border-slate-100 transition-all">
-        <div class="flex items-center justify-between mb-2">
-          <label class="flex items-center gap-2">
-            <input type="checkbox" class="checkbox checkbox-sm" [checked]="isSelected(v)" (change)="toggleSelection(v)" />
-            <span class="font-semibold text-slate-800">{{ v.nom }} {{ v.prenom }}</span>
-          </label>
-        </div>
-        <div class="text-sm text-slate-600 space-y-1">
-          <p><strong>CIN :</strong> {{ v.cin }}</p>
-          <p><strong>Genre :</strong> {{ v.genre }}</p>
-          <p><strong>Destination :</strong> {{ v.destination }}</p>
-          <p><strong>Téléphone :</strong> {{ v.telephone || 'N/A' }}</p>
-          <p><strong>Type :</strong> {{ v.typeVisiteur || 'Particulier' }}</p>
-          <p><strong>Entrée :</strong> {{ v.dateEntree | date:'short' }}</p>
-          <p><strong>Sortie :</strong>
-            <span *ngIf="v.dateSortie">{{ v.dateSortie | date:'short' }}</span>
-            <span *ngIf="!v.dateSortie" class="text-red-600 font-semibold">❌ Non sorti</span>
-          </p>
-        </div>
+      <!-- 📋 Bloc Liste -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200 h-[calc(100vh-200px)] overflow-hidden">
+        <app-livraison-list></app-livraison-list>
       </div>
-    </div>
 
-    <!-- 🔢 PAGINATION -->
-    <div *ngIf="pages.length > 1" class="mt-6 flex justify-center gap-2">
-      <button *ngFor="let page of pages; let i = index"
-              (click)="setPage(i + 1)"
-              [ngClass]="{ 'btn bg-blue-600 text-white hover:bg-blue-700': (i + 1) === currentPage, 'btn bg-slate-100 text-slate-700 hover:bg-slate-200': (i + 1) !== currentPage }"
-              class="btn btn-sm rounded-full w-8 h-8">
-        {{ i + 1 }}
-      </button>
-    </div>
-
-    <!-- ❌ AUCUN -->
-    <div *ngIf="!loading && visiteursFiltres.length === 0" class="text-center text-red-600 mt-10 text-lg">
-      🚫 Aucun visiteur trouvé.
     </div>
   </main>
-  <!-- ✅ FOOTER ADMIN UNIFIÉ -->
-    <footer class="fixed bottom-0 left-64 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
-      &copy; BamyGuest
-    </footer>
-  </div>
+
+  <!-- ✅ FOOTER FIXE UNIFIÉ -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
+    &copy; BamyGuest
+  </footer>
 </div>

@@ -1,1 +1,49 @@
-<p>livraison-form works!</p>
+<div class="space-y-6 animate-fadeIn">
+  <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
+    🚚 Enregistrement d'entrée camion
+  </h2>
+
+  <div *ngIf="erreurFormulaire" class="bg-red-100 text-red-700 p-3 rounded-md text-sm shadow">
+    {{ erreurFormulaire }}
+  </div>
+
+  <!-- Numéro de châssis -->
+  <div class="form-control">
+    <label class="label font-semibold">Numéro de châssis</label>
+    <input type="text" class="input input-bordered w-full" [(ngModel)]="entreeCamion.numeroChassis" placeholder="Ex : CHS123456789" />
+  </div>
+
+  <!-- Marque -->
+  <div class="form-control">
+    <label class="label font-semibold">Marque</label>
+    <select class="select select-bordered w-full" [(ngModel)]="entreeCamion.marque" (change)="onMarqueChange()">
+      <option disabled selected value="">Choisir une marque</option>
+      <option value="Renault">Renault</option>
+      <option value="Forlend">Forlend</option>
+      <option value="Kaycenne">Kaycenne</option>
+    </select>
+  </div>
+
+  <!-- Modèle dynamique -->
+  <div class="form-control" *ngIf="modelesDisponibles.length > 0">
+    <label class="label font-semibold">Modèle</label>
+    <select class="select select-bordered w-full" [(ngModel)]="entreeCamion.modele">
+      <option disabled selected value="">Choisir un modèle</option>
+      <option *ngFor="let m of modelesDisponibles" [value]="m">{{ m }}</option>
+    </select>
+  </div>
+
+  <!-- Nom chauffeur -->
+  <div class="form-control">
+    <label class="label font-semibold">Nom du chauffeur</label>
+    <input type="text" class="input input-bordered w-full" [(ngModel)]="entreeCamion.nomChauffeur" placeholder="Nom" />
+  </div>
+
+  <!-- Prénom chauffeur -->
+  <div class="form-control">
+    <label class="label font-semibold">Prénom du chauffeur</label>
+    <input type="text" class="input input-bordered w-full" [(ngModel)]="entreeCamion.prenomChauffeur" placeholder="Prénom" />
+  </div>
+
+  <button class="btn btn-success w-full mt-3" (click)="enregistrerEntree()">✅ Enregistrer l’entrée</button>
+</div>

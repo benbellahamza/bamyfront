@@ -26,6 +26,10 @@ export class DashboardAdminComponent implements OnInit {
   totalActifs: number = 0;
   totalInactifs: number = 0;
 
+    motDePasseVisible = false;
+  confirmationVisible = false;
+  confirmationMotDePasse: string = '';
+
   utilisateur = {
     nom: '',
     prenom: '',

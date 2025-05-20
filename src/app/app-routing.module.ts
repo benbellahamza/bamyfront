@@ -10,21 +10,23 @@ import { DashboardAgentComponent } from './shared/pages/agent/dashboard-agent/da
 
 // 🧾 Visiteur (Formulaire + Liste)
 import { AjouterVisiteurPageComponent } from './shared/pages/visiteur/ajouter-visiteur-page/ajouter-visiteur-page.component';
-import { ListComponent } from './shared/pages/visiteur/list/list.component'; // Liste seule (utilisée aussi pour /visiteurs)
+import { ListComponent } from './shared/pages/visiteur/list/list.component';
 
 // 🚚 Livraison
 import { LivraisonFormComponent } from './shared/pages/livraison/livraison-form/livraison-form.component';
+import { AjouterLivraisonComponent } from './shared/pages/livraison/ajouter-livraison/ajouter-livraison.component';
 import { LivraisonListComponent } from './shared/pages/livraison/livraison-list/livraison-list.component';
 
 // ⚙️ Admin
 import { DashboardAdminComponent } from './shared/pages/admin/dashboard-admin/dashboard-admin.component';
 import { AjouterUtilisateurComponent } from './shared/pages/admin/ajouter-utilisateur/ajouter-utilisateur.component';
-import { HistoriqueActiviteComponent } from './shared/pages/admin/historique-activite/historique-activite.component'; // ✅ NOUVELLE IMPORTATION
+import { HistoriqueActiviteComponent } from './shared/pages/admin/historique-activite/historique-activite.component'; 
 
 // 📊 Responsable
 import { ResponsableVisiteurComponent } from './shared/pages/responsable/responsable-visiteur/responsable-visiteur.component';
 import { ResponsableLivraisonComponent } from './shared/pages/responsable/responsable-livraison/responsable-livraison.component';
 import { AdminVisiteurComponent } from './shared/pages/admin/admin-visiteur/admin-visiteur.component';
+import { DashboardResponsableComponent } from './shared/pages/responsable/dashboard-responsable/dashboard-responsable.component';
 
 const routes: Routes = [
 
@@ -41,7 +43,7 @@ const routes: Routes = [
   { path: 'visiteurs', component: ListComponent },
 
   // ✅ Gestion des livraisons pour l'agent
-  { path: 'ajouterLivraison', component: LivraisonFormComponent },
+  { path: 'ajouterLivraison', component: AjouterLivraisonComponent },
   { path: 'livraisons', component: LivraisonListComponent },
 
 
@@ -58,6 +60,7 @@ const routes: Routes = [
 
 
   // ✅ Pages responsables
+  { path: 'responsable/dashboard', component: DashboardResponsableComponent },
   { path: 'responsable/visiteur', component: ResponsableVisiteurComponent },
   { path: 'responsable/livraison', component: ResponsableLivraisonComponent }
 

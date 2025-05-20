@@ -1,1 +1,59 @@
-<p>livraison-list works!</p>
+<div class="space-y-6 animate-fadeIn">
+  <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4m16 0a8 8 0 11-16 0 8 8 0 0116 0z" />
+    </svg>
+    Sortie de camion
+  </h2>
+
+  <!-- Recherche par numéro de châssis -->
+  <div class="form-control">
+    <label class="label font-semibold">Numéro de châssis</label>
+    <div class="flex gap-2">
+      <input type="text" class="input input-bordered w-full" [(ngModel)]="numeroRecherche" placeholder="Rechercher un camion..." />
+      <button class="btn btn-primary" (click)="rechercherCamion()">🔍</button>
+    </div>
+  </div>
+
+  <!-- Résultat de recherche -->
+  <div *ngIf="camionTrouve" class="mt-4 space-y-4 border-t pt-4">
+    <div class="bg-green-50 text-green-800 p-3 rounded-lg text-sm shadow">
+      ✅ Camion trouvé : <strong>{{ camionTrouve.marque }} {{ camionTrouve.modele }}</strong>
+    </div>
+
+    <!-- Formulaire de sortie -->
+    <div class="form-control">
+      <label class="label font-semibold">Destination</label>
+      <select class="select select-bordered w-full" [(ngModel)]="sortieCamion.destination">
+        <option disabled selected>Choisir la destination</option>
+        <option value="park">Park</option>
+        <option value="livraison finale">Livraison finale</option>
+        <option value="prestation extérieure">Prestation extérieure</option>
+      </select>
+    </div>
+
+    <div class="form-control">
+      <label class="label font-semibold">Nom du chauffeur de livraison</label>
+      <input type="text" class="input input-bordered w-full" [(ngModel)]="sortieCamion.nomChauffeurSortie" />
+    </div>
+
+    <div class="form-control">
+      <label class="label font-semibold">Prénom du chauffeur de livraison</label>
+      <input type="text" class="input input-bordered w-full" [(ngModel)]="sortieCamion.prenomChauffeurSortie" />
+    </div>
+
+    <div class="form-control">
+      <label class="label font-semibold">CIN du chauffeur</label>
+      <input type="text" class="input input-bordered w-full" [(ngModel)]="sortieCamion.cinChauffeurSortie" />
+    </div>
+
+    <div class="form-control">
+      <label class="label font-semibold">Nom de l’entreprise</label>
+      <input type="text" class="input input-bordered w-full" [(ngModel)]="sortieCamion.entreprise" />
+    </div>
+
+    <button class="btn btn-warning w-full mt-3" (click)="enregistrerSortie()">
+      📤 Enregistrer la sortie
+    </button>
+  </div>
+</div>

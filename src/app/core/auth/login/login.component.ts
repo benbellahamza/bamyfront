@@ -46,7 +46,7 @@ export class LoginComponent {
           } else if (role === 'AGENT') {
             this.router.navigate(['/agent/dashboard']);
           } else if (role === 'RESPONSABLE') {
-            this.router.navigate(['/responsable/visiteur']);
+            this.router.navigate(['/responsable/dashboard']);
           } else {
             this.errorMessage = 'Rôle inconnu. Veuillez contacter l\'administrateur.';
           }

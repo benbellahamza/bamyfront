@@ -34,6 +34,10 @@ export class AdminVisiteurComponent implements OnInit {
   endDate: string = '';
   loading: boolean = false;
 
+  motDePasseVisible = false;
+  confirmationVisible = false;
+  confirmationMotDePasse: string = '';
+
   utilisateur = {
     nom: '',
     prenom: '',
