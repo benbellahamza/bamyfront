@@ -20,6 +20,10 @@ export class AjouterVisiteurPageComponent implements OnInit {
   menuOuvert: boolean = false;
   modalePasswordVisible = false;
 
+  motDePasseVisible = false;
+  confirmationVisible = false;
+  confirmationMotDePasse: string = '';
+
   ancienMotDePasse: string = '';
   nouveauMotDePasse: string = '';
   messageSuccess: string = '';

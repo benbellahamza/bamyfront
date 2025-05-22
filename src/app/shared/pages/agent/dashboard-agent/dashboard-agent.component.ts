@@ -18,6 +18,10 @@ export class DashboardAgentComponent implements OnInit {
   messageSuccess: string = '';
   messageErreur: string = '';
 
+  motDePasseVisible = false;
+  confirmationVisible = false;
+  confirmationMotDePasse: string = '';
+
   utilisateur = {
     nom: '',
     prenom: '',
