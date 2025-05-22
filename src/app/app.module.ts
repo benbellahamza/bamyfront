@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -27,15 +26,16 @@ import { AjouterLivraisonComponent } from './shared/pages/livraison/ajouter-livr
 
 // 📊 Dashboards et gestion
 import { DashboardAgentComponent } from './shared/pages/agent/dashboard-agent/dashboard-agent.component';
-import { DashboardAdminComponent } from './shared/pages/admin/dashboard-admin/dashboard-admin.component';
-import { AjouterUtilisateurComponent } from './shared/pages/admin/ajouter-utilisateur/ajouter-utilisateur.component';
+import { DashboardResponsableComponent } from './shared/pages/responsable/dashboard-responsable/dashboard-responsable.component';
 import { ResponsableVisiteurComponent } from './shared/pages/responsable/responsable-visiteur/responsable-visiteur.component';
 import { ResponsableLivraisonComponent } from './shared/pages/responsable/responsable-livraison/responsable-livraison.component';
 
 // 📁 Admin - Historique & Visiteurs
 import { HistoriqueActiviteComponent } from './shared/pages/admin/historique-activite/historique-activite.component';
 import { AdminVisiteurComponent } from './shared/pages/admin/admin-visiteur/admin-visiteur.component';
-import { DashboardResponsableComponent } from './shared/pages/responsable/dashboard-responsable/dashboard-responsable.component';
+import { AdminLivraisonComponent } from './shared/pages/admin/admin-livraison/admin-livraison.component';
+import { DashboardAdminComponent } from './shared/pages/admin/dashboard-admin/dashboard-admin.component';
+import { AjouterUtilisateurComponent } from './shared/pages/admin/ajouter-utilisateur/ajouter-utilisateur.component';
 
 @NgModule({
   declarations: [
@@ -64,7 +64,8 @@ import { DashboardResponsableComponent } from './shared/pages/responsable/dashbo
     // 📁 Admin
     HistoriqueActiviteComponent,
     AdminVisiteurComponent,
-    DashboardResponsableComponent
+    DashboardResponsableComponent,
+    AdminLivraisonComponent
   ],
   imports: [
     BrowserModule,
