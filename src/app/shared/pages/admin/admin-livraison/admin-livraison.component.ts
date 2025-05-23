@@ -32,7 +32,6 @@ export class AdminLivraisonComponent implements OnInit {
   ngOnInit(): void {
     this.chargerCamions();
   }
-
   chargerCamions(): void {
     this.livraisonService.getCamions().subscribe({
       next: (data: Camion[]) => {
