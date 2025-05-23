@@ -1,7 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { LivraisonService } from 'app/core/services/livraison/livraison.service';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+interface Camion {
+  id: number;
+  marque: string;
+  modele: string;
+  numeroChassis: string;
+  nomChauffeur: string;
+  prenomChauffeur: string;
+  dateEntree: string;
+  dateSortie?: string;
+  destination?: string;
+  statut?: 'ENTREE' | 'SORTIE';
+  dateEntreeFormatee?: string;
+  dateSortieFormatee?: string;
+}
 
 @Component({
   selector: 'app-responsable-livraison',
@@ -9,107 +22,74 @@ import { Subscription } from 'rxjs';
   templateUrl: './responsable-livraison.component.html',
   styleUrls: ['./responsable-livraison.component.css']
 })
-export class ResponsableLivraisonComponent implements OnInit, OnDestroy {
-  camions: any[] = [];
-  camionsFiltres: any[] = [];
-  filtreStatut: string = 'TOUS';
-  private subscription: Subscription = new Subscription();
-  
-  constructor(
-    private livraisonService: LivraisonService,
-    private router: Router
-  ) {}
-  
+export class ResponsableLivraisonComponent implements OnInit {
+  camions: Camion[] = [];
+  camionsFiltres: Camion[] = [];
+  filtreStatut: 'TOUS' | 'ENTREE' | 'SORTIE' = 'TOUS';
+
+  constructor(private http: HttpClient) {}
+
   ngOnInit(): void {
     this.chargerCamions();
-    
-    // S'abonner aux mises à jour des camions
-    this.subscription.add(
-      this.livraisonService.getCamionsUpdates().subscribe(() => {
-        this.chargerCamions();
-      })
-    );
   }
-  
-  ngOnDestroy(): void {
-    // Se désabonner pour éviter les fuites de mémoire
-    this.subscription.unsubscribe();
-  }
-  
+
   chargerCamions(): void {
-    // Pour les tests, vous pouvez utiliser localStorage
-    const testMode = true; // Mettez à false pour utiliser l'API
-    
-    if (testMode) {
-      const camionsEnregistres = JSON.parse(localStorage.getItem('camionsEnregistres') || '[]');
-      this.camions = camionsEnregistres;
-      this.appliquerFiltre();
+    this.http.get<Camion[]>('http://localhost:8085/api/livraison/all').subscribe({
+      next: (data) => {
+        this.camions = data.map(camion => ({
+          ...camion,
+          statut: camion.dateSortie ? 'SORTIE' : 'ENTREE',
+          dateEntreeFormatee: this.formatDate(camion.dateEntree),
+          dateSortieFormatee: camion.dateSortie ? this.formatDate(camion.dateSortie) : ''
+        }));
+        this.appliquerFiltre();
+      },
+      error: (err) => console.error('Erreur chargement camions', err)
+    });
+  }
+
+  appliquerFiltre(): void {
+    if (this.filtreStatut === 'TOUS') {
+      this.camionsFiltres = this.camions;
     } else {
-      // Utiliser l'API
-      this.livraisonService.getCamions().subscribe({
-        next: (data) => {
-          this.camions = data;
-          this.appliquerFiltre();
-        },
-        error: (err) => {
-          console.error('Erreur lors du chargement des camions:', err);
-        }
-      });
+      this.camionsFiltres = this.camions.filter(c => c.statut === this.filtreStatut);
     }
   }
-  
-  getCamionsByStatut(statut: string): any[] {
-    return this.camions.filter(camion => camion.statut === statut);
+
+  getCamionsByStatut(statut: 'ENTREE' | 'SORTIE'): Camion[] {
+    return this.camions.filter(c => c.statut === statut);
   }
-  
-  filtrerParStatut(statut: string): void {
+
+  filtrerParStatut(statut: 'TOUS' | 'ENTREE' | 'SORTIE') {
     this.filtreStatut = statut;
     this.appliquerFiltre();
   }
-  
-  appliquerFiltre(): void {
-    if (this.filtreStatut === 'TOUS') {
-      this.camionsFiltres = [...this.camions];
-    } else {
-      this.camionsFiltres = this.camions.filter(camion => camion.statut === this.filtreStatut);
-    }
+
+  enregistrerSortie(camion: Camion): void {
+    const payload = {
+      nomChauffeurSortie: camion.nomChauffeur,
+      prenomChauffeurSortie: camion.prenomChauffeur,
+      cinChauffeurSortie: 'CIN_PLACEHOLDER' // à récupérer ou ajouter dans le formulaire
+    };
+
+    this.http.post(`http://localhost:8085/api/livraison/sortie/${camion.numeroChassis}`, payload).subscribe({
+      next: () => this.chargerCamions(),
+      error: (err) => console.error('Erreur lors de la sortie du camion', err)
+    });
   }
-  
+
   naviguerVersAjout(): void {
-    this.router.navigate(['/ajouterLivraison']);
+    window.location.href = '/agent/ajouterLivraison';
   }
-  
-  enregistrerSortie(camion: any): void {
-    const testMode = true; // Mettez à false pour utiliser l'API
-    
-    if (testMode) {
-      // Pour les tests avec localStorage
-      const camionsEnregistres = JSON.parse(localStorage.getItem('camionsEnregistres') || '[]');
-      const index = camionsEnregistres.findIndex((c: any) => c.numeroChassis === camion.numeroChassis);
-      
-      if (index !== -1) {
-        camionsEnregistres[index].statut = 'SORTIE';
-        camionsEnregistres[index].dateSortieFormatee = new Date().toLocaleString();
-        camionsEnregistres[index].destination = 'Destination test'; // Normalement demandé à l'utilisateur
-        
-        localStorage.setItem('camionsEnregistres', JSON.stringify(camionsEnregistres));
-        this.chargerCamions();
-      }
-    } else {
-      // Utiliser l'API
-      const sortieData = {
-        destination: 'Destination test', // Normalement demandé à l'utilisateur
-        dateSortie: new Date().toISOString()
-      };
-      
-      this.livraisonService.enregistrerSortie(camion.numeroChassis, sortieData).subscribe({
-        next: () => {
-          this.chargerCamions();
-        },
-        error: (err) => {
-          console.error('Erreur lors de l\'enregistrement de la sortie:', err);
-        }
-      });
-    }
+
+  private formatDate(dateStr: string): string {
+    const date = new Date(dateStr);
+    return date.toLocaleString('fr-FR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }

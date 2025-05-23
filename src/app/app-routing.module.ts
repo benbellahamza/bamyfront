@@ -28,39 +28,32 @@ import { ResponsableVisiteurComponent } from './shared/pages/responsable/respons
 import { ResponsableLivraisonComponent } from './shared/pages/responsable/responsable-livraison/responsable-livraison.component';
 import { DashboardResponsableComponent } from './shared/pages/responsable/dashboard-responsable/dashboard-responsable.component';
 
-const routes: Routes = [
+// 🛡️ Guards
+import { RoleGuard } from './core/guards/role.guard';
 
-  // Page de connexion
+const routes: Routes = [
   { path: '', component: LoginComponent },
 
-  // ✅ Dashboard de l'agent
-  { path: 'agent/dashboard', component: DashboardAgentComponent },
+  // Agent
+  { path: 'agent/dashboard', component: DashboardAgentComponent, canActivate: [RoleGuard], data: { roles: ['AGENT'] } },
+  { path: 'ajouterVisiteur', component: AjouterVisiteurPageComponent, canActivate: [RoleGuard], data: { roles: ['AGENT'] } },
+  { path: 'visiteurs', component: ListComponent, canActivate: [RoleGuard], data: { roles: ['AGENT'] } },
+  { path: 'ajouterLivraison', component: AjouterLivraisonComponent, canActivate: [RoleGuard], data: { roles: ['AGENT'] } },
+  { path: 'livraison/entree', component: LivraisonFormComponent, canActivate: [RoleGuard], data: { roles: ['AGENT'] } },
+  { path: 'livraison/sortie', component: LivraisonListComponent, canActivate: [RoleGuard], data: { roles: ['AGENT'] } },
+  { path: 'livraisons', component: LivraisonListComponent, canActivate: [RoleGuard], data: { roles: ['AGENT'] } },
 
-  // ✅ Page combinée : Formulaire + Liste
-  { path: 'ajouterVisiteur', component: AjouterVisiteurPageComponent },
+  // Admin
+  { path: 'admin/dashboard', component: DashboardAdminComponent, canActivate: [RoleGuard], data: { roles: ['ADMIN'] } },
+  { path: 'ajouterUtilisateur', component: AjouterUtilisateurComponent, canActivate: [RoleGuard], data: { roles: ['ADMIN'] } },
+  { path: 'admin/historique', component: HistoriqueActiviteComponent, canActivate: [RoleGuard], data: { roles: ['ADMIN'] } },
+  { path: 'admin/visiteur', component: AdminVisiteurComponent, canActivate: [RoleGuard], data: { roles: ['ADMIN'] } },
+  { path: 'admin/livraison', component: AdminLivraisonComponent, canActivate: [RoleGuard], data: { roles: ['ADMIN'] } },
 
-  // ✅ Liste seule des visiteurs
-  { path: 'visiteurs', component: ListComponent },
-
-  // ✅ Gestion des livraisons (complet)
-  { path: 'ajouterLivraison', component: AjouterLivraisonComponent },
-  { path: 'livraison/entree', component: LivraisonFormComponent },  
-  { path: 'livraison/sortie', component: LivraisonListComponent },   
-
-  // 🛑 Ancien route généraliste (peut rester ou être redirigée)
-  { path: 'livraisons', component: LivraisonListComponent },
-
-  // ✅ Admin
-  { path: 'admin/dashboard', component: DashboardAdminComponent },
-  { path: 'ajouterUtilisateur', component: AjouterUtilisateurComponent },
-  { path: 'admin/historique', component: HistoriqueActiviteComponent },
-  { path: 'admin/visiteur', component: AdminVisiteurComponent },
-  { path: 'admin/livraison', component: AdminLivraisonComponent },
-
-  // ✅ Responsable
-  { path: 'responsable/dashboard', component: DashboardResponsableComponent },
-  { path: 'responsable/visiteur', component: ResponsableVisiteurComponent },
-  { path: 'responsable/livraison', component: ResponsableLivraisonComponent }
+  // Responsable
+  { path: 'responsable/dashboard', component: DashboardResponsableComponent, canActivate: [RoleGuard], data: { roles: ['RESPONSABLE'] } },
+  { path: 'responsable/visiteur', component: ResponsableVisiteurComponent, canActivate: [RoleGuard], data: { roles: ['RESPONSABLE'] } },
+  { path: 'responsable/livraison', component: ResponsableLivraisonComponent, canActivate: [RoleGuard], data: { roles: ['RESPONSABLE'] } },
 ];
 
 @NgModule({

@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+import { RoleGuard } from './core/guards/role.guard';
+
 // 🌐 Composants globaux
 import { NavbarComponent } from './shared/components/navbar/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer/footer.component';
@@ -75,13 +77,14 @@ import { AjouterUtilisateurComponent } from './shared/pages/admin/ajouter-utilis
     CommonModule,
     AppRoutingModule
   ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
-  ],
+ providers: [
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  },
+  RoleGuard // ✅ Ajout ici
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

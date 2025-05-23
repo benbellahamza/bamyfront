@@ -2,7 +2,7 @@
   <h1 class="text-2xl font-bold mb-6 text-slate-800">
     <span class="text-amber-500">🚚</span> Gestion des livraisons
   </h1>
-  
+
   <!-- Statistiques -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100">
@@ -18,7 +18,7 @@
       <p class="text-3xl font-bold text-amber-800">{{ getCamionsByStatut('SORTIE').length }}</p>
     </div>
   </div>
-  
+
   <!-- Filtres -->
   <div class="flex flex-wrap gap-2 mb-6">
     <button 
@@ -40,20 +40,21 @@
       Camions sortis
     </button>
   </div>
-  
-  <!-- Message si aucun camion -->
+
+  <!-- Alerte si aucun camion -->
   <div *ngIf="camionsFiltres.length === 0" class="text-center py-10 bg-gray-50 rounded-lg">
     <p class="text-gray-500">Aucun camion trouvé pour le statut sélectionné.</p>
     <button class="btn btn-primary mt-4" (click)="naviguerVersAjout()">
       + Ajouter un camion
     </button>
   </div>
-  
-  <!-- Liste des camions -->
+
+  <!-- Liste -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     <div *ngFor="let camion of camionsFiltres" class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow duration-300">
       <div class="card-body p-4">
-        <!-- En-tête avec statut -->
+
+        <!-- En-tête -->
         <div class="flex justify-between items-center mb-3">
           <h2 class="card-title text-lg">
             <span [ngClass]="{
@@ -70,8 +71,8 @@
             {{ camion.marque }}
           </div>
         </div>
-        
-        <!-- Informations du camion -->
+
+        <!-- Détails -->
         <div class="space-y-2 text-sm">
           <p class="flex justify-between">
             <span class="font-semibold">N° Châssis:</span>
@@ -98,17 +99,11 @@
             <span>{{ camion.destination }}</span>
           </p>
         </div>
-        
-        <!-- Actions -->
+
+        <!-- Boutons -->
         <div class="card-actions justify-end mt-4">
           <button *ngIf="camion.statut === 'ENTREE'" class="btn btn-warning btn-sm" (click)="enregistrerSortie(camion)">
             Enregistrer la sortie
-          </button>
-          <button class="btn btn-ghost btn-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Détails
           </button>
         </div>
       </div>
