@@ -65,6 +65,10 @@ export class LivraisonService {
     return this.http.get(`${this.baseUrl}/camion/${numeroChassis}`, this.getHeaders());
   }
 
+  modifierCamion(numeroChassis: string, data: any): Observable<any> {
+  return this.http.put(`${this.baseUrl}/camions/${numeroChassis}`, data);
+}
+
   private getHeaders() {
     const token = localStorage.getItem('access-token');
     return {

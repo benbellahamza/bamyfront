@@ -1,46 +1,304 @@
-.card, .hover\:shadow-xl {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* Styles CSS améliorés pour l'interface visiteurs */
+
+/* Import de la police Inter pour un look moderne */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Variables CSS pour une maintenance plus facile */
+:root {
+  --primary-blue: #3b82f6;
+  --primary-blue-dark: #1d4ed8;
+  --success-green: #10b981;
+  --success-green-dark: #059669;
+  --danger-red: #ef4444;
+  --danger-red-dark: #dc2626;
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
-.card:hover, .hover\:shadow-xl:hover {
+
+/* Corps de la page avec dégradé de fond moderne */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%);
+  min-height: 100vh;
+  font-feature-settings: 'cv11', 'ss01';
+  text-rendering: optimizeLegibility;
+}
+
+/* =====================
+   ANIMATIONS KEYFRAMES
+   ===================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes rotate-subtle {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =====================
+   CARTES VISITEURS
+   ===================== */
+
+.card-enhanced {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  transition: var(--transition-spring);
+  animation: fadeInUp 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(145deg, transparent 0%, rgba(59, 130, 246, 0.01) 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card-enhanced:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(59, 130, 246, 0.1),
+    0 0 20px rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.card-enhanced:hover::before {
+  opacity: 1;
+}
+
+/* =====================
+   CARTES STATISTIQUES
+   ===================== */
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+  animation: slideInRight 0.8s ease-out;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 3s infinite;
+}
+
+.stat-card:hover {
   transform: translateY(-4px);
+  box-shadow: var(--shadow-large);
 }
 
-.text-red-500 {
-  font-weight: bold;
+/* Indicateurs de statut avec animations */
+.status-indicator {
+  position: relative;
+  transition: var(--transition-smooth);
 }
 
-input[type="checkbox"] {
-  accent-color: #2563eb;
-  width: 16px;
-  height: 16px;
+.status-indicator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: 0.4;
 }
 
-.card-top-bar {
-  height: 8px;
-  background-color: #e2e8f0;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+.status-present::after {
+  background: var(--danger-red);
 }
 
-@media (max-width: 400px) {
-  .card-body p {
-    font-size: 0.85rem;
-  }
-  .card-title {
-    font-size: 1rem;
-  }
-  .btn, input {
-    font-size: 0.9rem;
-  }
+.status-exited::after {
+  background: var(--success-green);
 }
 
-/* ✅ Centrer le titre */
-nav span {
-  display: block;
-  text-align: center;
+.status-indicator:hover {
+  animation: pulse-soft 1s infinite;
 }
 
-/* ✅ Réduction espace entre cartes */
-.grid-cols-1.sm\:grid-cols-2.xl\:grid-cols-3 {
-  gap: 1.25rem; /* 20px */
+/* =====================
+   EFFET GLASSMORPHISM
+   ===================== */
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
+
+/* =====================
+   BOUTONS MODERNES
+   ===================== */
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+  border: none;
+  color: white;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
+  border: none;
+  color: white;
+  transition: var(--transition-smooth);
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.btn-success:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+}
+
+/* =====================
+   CHAMPS DE RECHERCHE
+   ===================== */
+
+.search-input {
+  transition: var(--transition-smooth);
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid rgba(203, 213, 225, 0.5);
+  font-weight: 500;
+}
+
+.search-input:focus {
+  background: white;
+  transform: scale(1.02);
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-blue);
+}
+
+.search-input::placeholder {
+  color: rgba(100, 116, 139, 0.7);
+  font-weight: 400;
+}
+
+/* =====================
+   PAGINATION MODERNE
+   ===================== */
+
+.pagination-btn {
+  transition: var(--transition-smooth);
+  position: relative;
+  font-weight: 500;
+}
+
+.pagination-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.pagination-active {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+  color: white;
+  box-shadow: 0}

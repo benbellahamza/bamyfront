@@ -1,5 +1,6 @@
-<!-- ✅ PAGE HISTORIQUE AVEC DESIGN UNIFIÉ -->
-<div class="flex min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans">
+<!-- ✨ PAGE HISTORIQUE AVEC DESIGN PROFESSIONNEL MODERNE -->
+<div class="flex min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 font-sans">
+  
   <!-- ✅ SIDEBAR UNIFIÉE -->
   <div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white shadow-xl z-50">
     <div class="flex items-center justify-center py-6 border-b border-slate-700">
@@ -29,813 +30,586 @@
     <!-- ✅ HEADER UNIFIÉ -->
     <header class="fixed top-0 left-64 right-0 z-40 bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg flex items-center justify-between p-4">
       <div class="flex items-center gap-3">
+        <button (click)="raffraichirDonnees()" 
+                class="btn btn-sm bg-white/10 hover:bg-white/20 text-white border-none transition-all duration-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+        </button>
       </div>
       <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
         Historique des actions
       </h1>
-       <!-- BOUTON UTILISATEUR AMÉLIORÉ -->
-  <div class="relative">
-    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-700 hover:bg-slate-600 cursor-pointer transition-all shadow-md"
-         (click)="menuOuvert = !menuOuvert">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 text-white flex items-center justify-center font-bold shadow-inner">
-        {{ utilisateur.nom.charAt(0) }}
-      </div>
-      <span class="text-sm font-medium hidden md:inline-block">{{ utilisateur.nom }} {{ utilisateur.prenom }}</span>
-      <span class="inline-block transition-transform duration-300" [ngClass]="{'rotate-180': menuOuvert}">▼</span>
-    </div>
-  </div>
-</header>
-
-<!-- MENU UTILISATEUR AMÉLIORÉ -->
-<div *ngIf="menuOuvert"
-     class="fixed top-16 right-4 w-72 bg-white text-slate-800 shadow-xl rounded-2xl p-5 z-[100] animate-fadeIn border border-slate-200">
-  
-  <!-- En-tête du profil -->
-  <div class="flex items-start gap-4 pb-4 border-b border-slate-200">
-    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 text-white flex items-center justify-center font-bold text-xl shadow-lg">
-      {{ utilisateur.nom.charAt(0) }}
-    </div>
-    <div class="flex-1">
-      <div class="font-bold text-lg text-slate-800">{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
-      <div class="flex items-center gap-2 mt-1 mb-2">
-        <span class="px-2 py-0.5 bg-teal-100 text-teal-800 text-xs font-semibold rounded-full flex items-center">
-          <span class="w-1.5 h-1.5 rounded-full bg-teal-500 inline-block mr-1"></span>
-          {{ utilisateur.role }}
-        </span>
-      </div>
-      <div class="text-xs flex items-center text-teal-600 font-medium">
-        <span class="w-2 h-2 rounded-full bg-teal-500 inline-block mr-1.5"></span>
-        En ligne
-      </div>
-    </div>
-  </div>
- <!-- Infos utilisateur -->
-  <div class="py-3 space-y-3">
-    <div class="text-sm flex items-center gap-3 text-slate-600">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-      {{ utilisateur.email }}
-    </div>
-    <div class="text-sm flex items-center gap-3 text-slate-600">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-      Dernière connexion: aujourd'hui
-    </div>
-  </div>
-<!-- Actions -->
-  <div class="pt-3 border-t border-slate-200 space-y-1">
-    <button class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl hover:bg-slate-100 text-teal-600 transition-colors"
-            (click)="ouvrirModalePassword()">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-      </svg>
-      <span>Modifier mot de passe</span>
-    </button>
-    <button class="flex items-center gap-3 w-full px-3 py-2.5 mt-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
-            (click)="logout()">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-      </svg>
-      <span>Se déconnecter</span>
-    </button>
-  </div>
-</div>
-
-<!-- MODALE MOT DE PASSE AMÉLIORÉE -->
-<div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
-  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-        </svg>
-        Modifier le mot de passe
-      </h2>
-      <button class="text-slate-400 hover:text-red-500 transition-colors" 
-              (click)="fermerModalePassword()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    
-    <div class="space-y-4">
-      <!-- Ancien mot de passe -->
-      <div class="relative">
-        <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" 
-               class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-        <button type="button"
-                (click)="motDePasseVisible = !motDePasseVisible" 
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600">
-          <svg *ngIf="!motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          <svg *ngIf="motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-          </svg>
-        </button>
-      </div>
       
-      <!-- Nouveau mot de passe -->
+      <!-- BOUTON UTILISATEUR AMÉLIORÉ -->
       <div class="relative">
-        <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" 
-               class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-        </svg>
-        <button type="button"
-                (click)="motDePasseVisible = !motDePasseVisible" 
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600">
-          <svg *ngIf="!motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          <svg *ngIf="motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-          </svg>
-        </button>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-700 hover:bg-slate-600 cursor-pointer transition-all shadow-md"
+             (click)="menuOuvert = !menuOuvert">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 text-white flex items-center justify-center font-bold shadow-inner">
+            {{ utilisateur.nom.charAt(0) }}
+          </div>
+          <span class="text-sm font-medium hidden md:inline-block">{{ utilisateur.nom }} {{ utilisateur.prenom }}</span>
+          <span class="inline-block transition-transform duration-300" [ngClass]="{'rotate-180': menuOuvert}">▼</span>
+        </div>
       </div>
+    </header>
+
+    <!-- MENU UTILISATEUR AMÉLIORÉ -->
+    <div *ngIf="menuOuvert"
+         class="fixed top-16 right-4 w-72 bg-white text-slate-800 shadow-xl rounded-2xl p-5 z-[100] animate-fadeIn border border-slate-200">
       
-      <!-- Confirmation du mot de passe -->
-      <div class="relative">
-        <input [type]="confirmationVisible ? 'text' : 'password'" [(ngModel)]="confirmationMotDePasse" placeholder="Confirmer le mot de passe" 
-               class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <button type="button"
-                (click)="confirmationVisible = !confirmationVisible" 
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600">
-          <svg *ngIf="!confirmationVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          <svg *ngIf="confirmationVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-          </svg>
-        </button>
-      </div>
-    </div>
-    
-    <div class="flex justify-end gap-3 mt-6">
-      <button class="btn btn-outline border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-colors" 
-              (click)="fermerModalePassword()">
-        Annuler
-      </button>
-      <button class="btn bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white border-none shadow-md"
-              [disabled]="!ancienMotDePasse || !nouveauMotDePasse || nouveauMotDePasse !== confirmationMotDePasse"
-              (click)="changerMotDePasse()">
-        Enregistrer
-      </button>
-    </div>
-    
-    <div *ngIf="messageSuccess" class="mt-4 bg-green-50 text-green-700 p-3 rounded-lg text-sm flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      {{ messageSuccess }}
-    </div>
-    
-    <div *ngIf="messageErreur" class="mt-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      {{ messageErreur }}
-    </div>
-  </div>
-</div>
-<!-- 📊 HISTORIQUE DES ACTIONS - INTERFACE PROFESSIONNELLE -->
-<main class="flex-1 mt-20 px-6 pb-28 pt-4 bg-slate-50">
- <!-- ✅ FILTRES PROFESSIONNELS -->
-<section class="bg-white border border-slate-200 rounded-2xl shadow-md px-6 py-6 mb-8 animate-fadeIn">
-  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
-    <div class="flex items-center gap-3">
-      <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2"
-        viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-      </svg>
-      <h2 class="text-xl font-bold text-slate-800">Filtres & recherche</h2>
-    </div>
-    <button class="btn btn-sm btn-outline" (click)="reinitialiserFiltres()">
-      🔄 Réinitialiser les filtres
-    </button>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- 🔎 Recherche globale -->
-    <div class="form-control">
-      <label class="label font-semibold text-slate-600">Recherche globale</label>
-      <div class="relative">
-        <input
-          [(ngModel)]="filtreTexte"
-          (input)="appliquerFiltres()"
-          type="text"
-          placeholder="Ex. : Suppression Visiteur, Ajout Visiteur ou nom d'agent"
-          class="input input-bordered w-full pl-10"
-        />
-        <svg class="absolute left-3 top-3 w-5 h-5 text-slate-400" fill="none" stroke="currentColor"
-          stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <button
-          *ngIf="filtreTexte"
-          class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
-          (click)="filtreTexte=''; appliquerFiltres()">
-          ✖
-        </button>
-      </div>
-    </div>
-
-    <!-- 📅 Période -->
-    <div class="form-control">
-      <label class="label font-semibold text-slate-600">Période</label>
-      <select [(ngModel)]="filtrePeriode" (change)="appliquerFiltres()"
-        class="select select-bordered w-full">
-        <option value="">Toutes les périodes</option>
-        <option value="today">Aujourd’hui</option>
-        <option value="yesterday">Hier</option>
-        <option value="week">Cette semaine</option>
-        <option value="month">Ce mois</option>
-        <option value="custom">Période personnalisée</option>
-      </select>
-    </div>
-
-    <!-- 🏷️ Type d’action -->
-    <div class="form-control">
-      <label class="label font-semibold text-slate-600">Type d'action</label>
-      <select [(ngModel)]="filtreTypeAction" (change)="appliquerFiltres()"
-        class="select select-bordered w-full">
-        <option value="">Tous les types</option>
-        <option value="creation">Création</option>
-        <option value="modification">Modification</option>
-        <option value="suppression">Suppression</option>
-        <option value="consultation">Consultation</option>
-      </select>
-    </div>
-
-    <!-- 🗓️ Période personnalisée -->
-    <div *ngIf="filtrePeriode === 'custom'" class="md:col-span-1">
-      <label class="label font-semibold text-slate-600">Date de début</label>
-      <input type="date" [(ngModel)]="dateDebut" (change)="appliquerFiltres()"
-        class="input input-bordered w-full" />
-    </div>
-    <div *ngIf="filtrePeriode === 'custom'" class="md:col-span-1">
-      <label class="label font-semibold text-slate-600">Date de fin</label>
-      <input type="date" [(ngModel)]="dateFin" (change)="appliquerFiltres()"
-        class="input input-bordered w-full" />
-    </div>
-  </div>
-</section>
-
-  <!-- 📊 Cartes de statistiques améliorées -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-    <div class="stats bg-white shadow-sm border border-slate-200 rounded-xl transition-all hover:shadow-md">
-      <div class="stat p-4">
-        <div class="stat-title text-slate-500 flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          Nombre total
+      <!-- En-tête du profil -->
+      <div class="flex items-start gap-4 pb-4 border-b border-slate-200">
+        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 text-white flex items-center justify-center font-bold text-xl shadow-lg">
+          {{ utilisateur.nom.charAt(0) }}
         </div>
-        <div class="stat-value text-blue-600 text-3xl">{{ historiqueFiltre().length }}</div>
-        <div class="stat-desc text-blue-600 font-medium">{{ pourcentageTotal() }}% du total</div>
-        <div class="mt-2 text-xs text-slate-400">Basé sur {{ historique.length }} entrées</div>
-      </div>
-    </div>
-    
-    <div class="stats bg-white shadow-sm border border-slate-200 rounded-xl transition-all hover:shadow-md">
-      <div class="stat p-4">
-        <div class="stat-title text-slate-500 flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Créations
-        </div>
-        <div class="stat-value text-green-600 text-3xl">{{ nombreCreations() }}</div>
-        <div class="stat-desc text-green-600 flex items-center">
-          <svg *ngIf="evolutionCreations() > 0" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-          </svg>
-          <svg *ngIf="evolutionCreations() < 0" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-          <span *ngIf="evolutionCreations() !== 0">{{ Math.abs(evolutionCreations()) }}% vs période préc.</span>
-          <span *ngIf="evolutionCreations() === 0">Stable</span>
-        </div>
-        <div class="mt-2 text-xs text-slate-400">{{ getCreationTrend() }}</div>
-      </div>
-    </div>
-    
-    <div class="stats bg-white shadow-sm border border-slate-200 rounded-xl transition-all hover:shadow-md">
-      <div class="stat p-4">
-        <div class="stat-title text-slate-500 flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-          Modifications
-        </div>
-        <div class="stat-value text-amber-600 text-3xl">{{ nombreModifications() }}</div>
-        <div class="stat-desc text-amber-600 font-medium">{{ pourcentageModifications() }}% du total</div>
-        <div class="mt-2 text-xs text-slate-400">{{ getModificationTrend() }}</div>
-      </div>
-    </div>
-    
-    <div class="stats bg-white shadow-sm border border-slate-200 rounded-xl transition-all hover:shadow-md">
-      <div class="stat p-4">
-        <div class="stat-title text-slate-500 flex items-center text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-          Agents actifs
-        </div>
-        <div class="stat-value text-purple-600 text-3xl">{{ nombreAgentsActifs() }}</div>
-        <div class="stat-desc text-purple-600 font-medium">{{ pourcentageAgentsActifs() }}% du total</div>
-        <div class="mt-2 text-xs text-slate-400">Sur la période sélectionnée</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 📋 Tableau de données amélioré -->
-  <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-    <!-- En-tête avec filtres et export -->
-    <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
-      <div class="flex items-center">
-        <div class="form-control">
-          <label class="label cursor-pointer flex items-center">
-            <span class="label-text text-slate-600 mr-2 font-medium">Afficher</span>
-            <select 
-              [(ngModel)]="nombreElementsAffichage" 
-              (change)="resetPagination()"
-              class="select select-bordered select-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all"
-            >
-              <option value="5">5 éléments</option>
-              <option value="10">10 éléments</option>
-              <option value="20">20 éléments</option>
-              <option value="50">50 éléments</option>
-            </select>
-          </label>
-        </div>
-        
-        <div class="divider divider-horizontal mx-2"></div>
-        
-        <div class="text-sm text-slate-500">
-          <span class="font-medium">{{ historiqueFiltre().length }}</span> entrées trouvées
+        <div class="flex-1">
+          <div class="font-bold text-lg text-slate-800">{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
+          <div class="flex items-center gap-2 mt-1 mb-2">
+            <span class="px-2 py-0.5 bg-teal-100 text-teal-800 text-xs font-semibold rounded-full flex items-center">
+              <span class="w-1.5 h-1.5 rounded-full bg-teal-500 inline-block mr-1"></span>
+              {{ utilisateur.role }}
+            </span>
+          </div>
+          <div class="text-xs flex items-center text-teal-600 font-medium">
+            <span class="w-2 h-2 rounded-full bg-teal-500 inline-block mr-1.5"></span>
+            En ligne
+          </div>
         </div>
       </div>
       
-      <div class="flex gap-2">
-        <button 
-          class="btn btn-sm btn-outline hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all"
-          [disabled]="historiqueFiltre().length === 0"
-          (click)="exporterCSV()"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      <!-- Infos utilisateur -->
+      <div class="py-3 space-y-3">
+        <div class="text-sm flex items-center gap-3 text-slate-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
-          Exporter (CSV)
-        </button>
-        
-        <button 
-          class="btn btn-sm btn-outline hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all"
-          [disabled]="historiqueFiltre().length === 0"
-          (click)="exporterExcel()"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          {{ utilisateur.email }}
+        </div>
+        <div class="text-sm flex items-center gap-3 text-slate-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          Exporter (Excel)
-        </button>
-      </div>
-    </div>
-    
-    <!-- Tableau avec tri -->
-    <div class="overflow-x-auto">
-      <table class="table w-full text-sm">
-        <thead class="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider">
-          <tr>
-            <th class="cursor-pointer hover:bg-slate-100 transition-all" (click)="trierPar('agent')">
-              <div class="flex items-center">
-                <span class="mr-1">👤 Agent</span>
-                <span *ngIf="colonneTri === 'agent'" class="flex flex-col">
-                  <svg *ngIf="ordreTri === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                  </svg>
-                  <svg *ngIf="ordreTri === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </div>
-            </th>
-            <th class="cursor-pointer hover:bg-slate-100 transition-all" (click)="trierPar('typeAction')">
-              <div class="flex items-center">
-                <span class="mr-1">🏷️ Type</span>
-                <span *ngIf="colonneTri === 'typeAction'" class="flex flex-col">
-                  <svg *ngIf="ordreTri === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                  </svg>
-                  <svg *ngIf="ordreTri === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </div>
-            </th>
-            <th class="cursor-pointer hover:bg-slate-100 transition-all" (click)="trierPar('action')">
-              <div class="flex items-center">
-                <span class="mr-1">📝 Action</span>
-                <span *ngIf="colonneTri === 'action'" class="flex flex-col">
-                  <svg *ngIf="ordreTri === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                  </svg>
-                  <svg *ngIf="ordreTri === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </div>
-            </th>
-            <th class="cursor-pointer hover:bg-slate-100 transition-all" (click)="trierPar('dateAction')">
-              <div class="flex items-center">
-                <span class="mr-1">📅 Date</span>
-                <span *ngIf="colonneTri === 'dateAction'" class="flex flex-col">
-                  <svg *ngIf="ordreTri === 'asc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                  </svg>
-                  <svg *ngIf="ordreTri === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </div>
-            </th>
-            <!-- <th class="text-center">🔍 Détails</th> -->
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <tr *ngFor="let action of historiqueFiltre() | slice:(pageActuelle-1)*nombreElementsAffichage:(pageActuelle)*nombreElementsAffichage" 
-              class="hover:bg-slate-50 transition-all group">
-            <!-- Colonne Agent -->
-            <td class="font-medium text-slate-800">
-              <div class="flex items-center">
-                <div class="avatar placeholder mr-2">
-                  <div class="bg-slate-700 text-slate-100 rounded-full w-8 h-8 flex items-center justify-center">
-                    <span>{{ action.agent.charAt(0).toUpperCase() }}</span>
-                  </div>
-                </div>
-                {{ action.agent }}
-              </div>
-            </td>
-            
-            <!-- Colonne Type d'action -->
-            <td>
-              <span class="badge text-xs font-semibold py-1.5 px-2"
-                    [ngClass]="{
-                      'bg-green-100 text-green-700 border-green-200': action.typeAction === 'creation',
-                      'bg-amber-100 text-amber-700 border-amber-200': action.typeAction === 'modification',
-                      'bg-red-100 text-red-700 border-red-200': action.typeAction === 'suppression',
-                      'bg-blue-100 text-blue-700 border-blue-200': action.typeAction === 'consultation'
-                    }">
-                {{ action.typeAction | titlecase }}
-              </span>
-            </td>
-            
-            <!-- Colonne Action -->
-            <td class="text-left text-slate-700 max-w-xs truncate" [title]="action.action">
-              {{ action.action }}
-            </td>
-            
-            <!-- Colonne Date -->
-            <td class="text-slate-500 whitespace-nowrap">
-              <div class="flex flex-col">
-                <span>{{ action.dateAction | date: 'dd/MM/yyyy' }}</span>
-                <span class="text-xs text-slate-400">{{ action.dateAction | date: 'HH:mm:ss' }}</span>
-              </div>
-            </td>
-            
-            <!-- Colonne Détails -->
-            <td class="text-center">
-              <button 
-                class="btn btn-sm btn-ghost btn-circle opacity-70 group-hover:opacity-100 transition-all hover:bg-slate-200"
-                (click)="afficherDetails(action)"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- État vide -->
-    <div *ngIf="historiqueFiltre().length === 0"
-         class="flex flex-col items-center justify-center py-16 text-slate-400">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <p class="text-lg font-medium mb-1">Aucun résultat trouvé</p>
-      <p class="text-sm text-slate-400 mb-4">Aucune donnée ne correspond à vos critères de recherche</p>
-      <button 
-        class="btn btn-sm btn-outline"
-        (click)="reinitialiserFiltres()"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-        Réinitialiser les filtres
-      </button>
-    </div>
-
-    <!-- Pagination -->
-    <div class="flex flex-col md:flex-row justify-between items-center mt-6 gap-4" *ngIf="historiqueFiltre().length > 0">
-      <div class="text-sm text-slate-500">
-        Affichage de <span class="font-medium">{{ ((pageActuelle-1)*nombreElementsAffichage)+1 }}</span> à 
-        <span class="font-medium">{{ Math.min(pageActuelle*nombreElementsAffichage, historiqueFiltre().length) }}</span> 
-        sur <span class="font-medium">{{ historiqueFiltre().length }}</span> entrées
+          Dernière connexion: aujourd'hui
+        </div>
       </div>
       
-      <div class="join">
-        <button 
-          class="join-item btn btn-sm" 
-          [disabled]="pageActuelle === 1" 
-          (click)="changerPage(pageActuelle - 1)"
-        >
-          «
-        </button>
-        <ng-container *ngFor="let page of getPagesArray()">
-          <button 
-            class="join-item btn btn-sm" 
-            [ngClass]="{'btn-active': page === pageActuelle}"
-            (click)="changerPage(page)"
-          >
-            {{ page }}
-          </button>
-        </ng-container>
-        <button 
-          class="join-item btn btn-sm" 
-          [disabled]="pageActuelle === totalPages()" 
-          (click)="changerPage(pageActuelle + 1)"
-        >
-          »
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Modal de détails amélioré -->
-  <div *ngIf="actionSelectionnee" class="modal modal-open">
-    <div class="modal-box max-w-2xl">
-      <div class="flex justify-between items-start mb-6">
-        <h3 class="font-bold text-lg text-slate-800 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Détails de l'action
-        </h3>
-        <button 
-          class="btn btn-sm btn-ghost btn-circle" 
-          (click)="actionSelectionnee = null"
-        >
+      <!-- Actions -->
+      <div class="pt-3 border-t border-slate-200 space-y-1">
+        <button class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl hover:bg-slate-100 text-teal-600 transition-colors"
+                (click)="ouvrirModalePassword()">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
           </svg>
+          <span>Modifier mot de passe</span>
+        </button>
+        <button class="flex items-center gap-3 w-full px-3 py-2.5 mt-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+                (click)="logout()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>Se déconnecter</span>
         </button>
       </div>
+    </div>
+
+    <main class="flex-1 mt-20 px-6 pb-28 pt-6 bg-slate-50">
       
-      <div class="bg-slate-50 rounded-lg p-4 mb-6">
-        <div class="flex flex-col sm:flex-row gap-2 justify-between mb-4">
-          <div class="flex items-center">
-            <div class="avatar placeholder mr-2">
-              <div class="bg-slate-700 text-slate-100 rounded-full w-10 h-10 flex items-center justify-center">
-                <span>{{ actionSelectionnee.agent.charAt(0).toUpperCase() }}</span>
-              </div>
-            </div>
+      <!-- 🚀 TABLEAU DE BORD STATISTIQUES -->
+      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Nombre total d'actions -->
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div class="flex items-center justify-between">
             <div>
-              <p class="font-semibold text-slate-800">{{ actionSelectionnee.agent }}</p>
-              <p class="text-sm text-slate-500">Agent</p>
+              <p class="text-blue-100 text-sm font-medium">Actions totales</p>
+              <p class="text-3xl font-bold">{{ historiqueFiltre().length }}</p>
+              <p class="text-blue-200 text-xs mt-1">{{ pourcentageTotal() }}% du total</p>
+            </div>
+            <div class="bg-white/20 p-3 rounded-xl">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
             </div>
           </div>
+        </div>
+
+        <!-- Nombre d'ajouts -->
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-emerald-100 text-sm font-medium">Ajouts visiteurs</p>
+              <p class="text-3xl font-bold">{{ nombreCreations() }}</p>
+              <p class="text-emerald-200 text-xs mt-1">{{ getCreationTrend() }}</p>
+            </div>
+            <div class="bg-white/20 p-3 rounded-xl">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nombre de modifications -->
+        <div class="bg-gradient-to-br from-amber-500 to-amber-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-amber-100 text-sm font-medium">Modifications</p>
+              <p class="text-3xl font-bold">{{ nombreModifications() }}</p>
+              <p class="text-amber-200 text-xs mt-1">{{ getModificationTrend() }}</p>
+            </div>
+            <div class="bg-white/20 p-3 rounded-xl">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agents actifs -->
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-purple-100 text-sm font-medium">Agents actifs</p>
+              <p class="text-3xl font-bold">{{ nombreAgentsActifs() }}</p>
+              <p class="text-purple-200 text-xs mt-1">Agents uniques</p>
+            </div>
+            <div class="bg-white/20 p-3 rounded-xl">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 🎛️ PANNEAU DE CONTRÔLE AVANCÉ -->
+      <section class="bg-white border border-slate-200 rounded-2xl shadow-lg p-8 mb-8 animate-fadeIn">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+          <div class="flex items-center gap-4">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-xl">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-slate-800">Filtres & Recherche</h2>
+              <p class="text-slate-500 text-sm">Affinez vos résultats avec des filtres avancés</p>
+            </div>
+          </div>
+          <button class="btn bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-none shadow-md transition-all duration-300 hover:shadow-lg" 
+                  (click)="reinitialiserFiltres()">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Réinitialiser
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Recherche améliorée -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-slate-700">Recherche globale</label>
+            <div class="relative">
+              <input [(ngModel)]="filtreTexte" (input)="appliquerFiltres()" type="text"
+                placeholder="Nom d'agent, action, type..." 
+                class="input input-bordered w-full pl-10 pr-4 bg-slate-50 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+              <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Type d'action -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-slate-700">Type d'action</label>
+            <select [(ngModel)]="filtreTypeAction" (change)="appliquerFiltres()" 
+                    class="select select-bordered w-full bg-slate-50 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+              <option value="">🔍 Tous les types</option>
+              <option value="Ajout Visiteur">👤 Ajout Visiteur</option>
+              <option value="Modification Visiteur">✏️ Modification Visiteur</option>
+              <option value="Validation Sortie">✅ Validation Sortie</option>
+            </select>
+          </div>
+
+          <!-- Période -->
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-slate-700">Période</label>
+            <select [(ngModel)]="filtrePeriode" (change)="appliquerFiltres()" 
+                    class="select select-bordered w-full bg-slate-50 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+              <option value="">📅 Toutes les périodes</option>
+              <option value="today">🌅 Aujourd'hui</option>
+              <option value="yesterday">🌄 Hier</option>
+              <option value="week">📆 Cette semaine</option>
+              <option value="month">🗓️ Ce mois</option>
+              <option value="custom">⚙️ Période personnalisée</option>
+            </select>
+          </div>
+
+          <!-- Dates personnalisées -->
+          <div *ngIf="filtrePeriode === 'custom'" class="space-y-2">
+            <label class="block text-sm font-semibold text-slate-700">Date début</label>
+            <input type="date" [(ngModel)]="dateDebut" (change)="appliquerFiltres()" 
+                   class="input input-bordered w-full bg-slate-50 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+          </div>
           
-          <div class="flex items-center">
-            <span class="badge text-sm py-2 px-3"
-                  [ngClass]="{
-                    'bg-green-100 text-green-700 border-green-200': actionSelectionnee.typeAction === 'creation',
-                    'bg-amber-100 text-amber-700 border-amber-200': actionSelectionnee.typeAction === 'modification',
-                    'bg-red-100 text-red-700 border-red-200': actionSelectionnee.typeAction === 'suppression',
-                    'bg-blue-100 text-blue-700 border-blue-200': actionSelectionnee.typeAction === 'consultation'
-                  }">
-              {{ actionSelectionnee.typeAction | titlecase }}
+          <div *ngIf="filtrePeriode === 'custom'" class="space-y-2">
+            <label class="block text-sm font-semibold text-slate-700">Date fin</label>
+            <input type="date" [(ngModel)]="dateFin" (change)="appliquerFiltres()" 
+                   class="input input-bordered w-full bg-slate-50 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+          </div>
+        </div>
+      </section>
+
+      <!-- 📊 SECTION EXPORT ET RÉSULTATS -->
+      <div class="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4 bg-white p-6 rounded-2xl shadow-lg">
+        <div class="flex items-center gap-4">
+          <div class="bg-gradient-to-r from-blue-100 to-purple-100 p-3 rounded-xl">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-2xl font-bold text-slate-800">{{ historiqueFiltre().length }}</p>
+            <p class="text-sm text-slate-500">résultats trouvés sur {{ historique.length }} entrées totales</p>
+          </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-3">
+          <button class="btn bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white border-none shadow-md transition-all duration-300 hover:shadow-lg" 
+                  (click)="exporterExcelTout()">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Exporter tout
+          </button>
+          
+          <button class="btn bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-none shadow-md transition-all duration-300 hover:shadow-lg" 
+                  (click)="exporterExcelFiltre()">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            Exporter filtrés
+          </button>
+          
+          <button class="btn bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-none shadow-md transition-all duration-300 hover:shadow-lg" 
+                  [disabled]="lignesSelectionnees.size === 0" 
+                  (click)="exporterExcelSelection()">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Exporter sélection ({{ lignesSelectionnees.size }})
+          </button>
+        </div>
+      </div>
+
+      <!-- 📋 TABLEAU MODERNE AVEC DESIGN AVANCÉ -->
+      <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        <!-- Indicateur de chargement -->
+        <div *ngIf="isLoading" class="flex items-center justify-center py-12">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <span class="ml-3 text-slate-600">Chargement des données...</span>
+        </div>
+
+        <div *ngIf="!isLoading" class="overflow-x-auto">
+          <table class="table w-full">
+            <thead class="bg-gradient-to-r from-slate-800 to-slate-700 text-white">
+              <tr>
+                <th class="p-4">
+                  <label class="flex items-center cursor-pointer">
+                    <input type="checkbox" [(ngModel)]="toutSelectionner" (change)="toggleSelectionTout()" 
+                           class="checkbox checkbox-sm border-slate-300 checked:bg-blue-600 checked:border-blue-600">
+                    <span class="ml-2 text-xs font-medium">Tout</span>
+                  </label>
+                </th>
+                <th (click)="trierPar('agent')" 
+                    class="cursor-pointer hover:bg-slate-600 transition-colors p-4 text-left">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span class="font-semibold">Agent</span>
+                    <svg *ngIf="colonneTri === 'agent'" class="w-4 h-4 transition-transform" 
+                         [ngClass]="{'rotate-180': ordreTri === 'desc'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                    </svg>
+                  </div>
+                </th>
+                <th (click)="trierPar('categorie')" 
+                    class="cursor-pointer hover:bg-slate-600 transition-colors p-4 text-left">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    <span class="font-semibold">Type</span>
+                    <svg *ngIf="colonneTri === 'categorie'" class="w-4 h-4 transition-transform" 
+                         [ngClass]="{'rotate-180': ordreTri === 'desc'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                    </svg>
+                  </div>
+                </th>
+                <th (click)="trierPar('action')" 
+                    class="cursor-pointer hover:bg-slate-600 transition-colors p-4 text-left">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span class="font-semibold">Action</span>
+                    <svg *ngIf="colonneTri === 'action'" class="w-4 h-4 transition-transform" 
+                         [ngClass]="{'rotate-180': ordreTri === 'desc'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                    </svg>
+                  </div>
+                </th>
+                <th (click)="trierPar('dateAction')" 
+                    class="cursor-pointer hover:bg-slate-600 transition-colors p-4 text-left">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span class="font-semibold">Date</span>
+                    <svg *ngIf="colonneTri === 'dateAction'" class="w-4 h-4 transition-transform" 
+                         [ngClass]="{'rotate-180': ordreTri === 'desc'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                    </svg>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr *ngFor="let action of historiqueFiltre() | slice:(pageActuelle-1)*nombreElementsAffichage:(pageActuelle)*nombreElementsAffichage; let i = index"
+                  [ngClass]="getRowClass(action)">
+                <td class="p-4">
+                  <input type="checkbox" [checked]="lignesSelectionnees.has(action.id)" 
+                         (change)="toggleSelection(action.id)"
+                         class="checkbox checkbox-sm border-slate-300 checked:bg-blue-600 checked:border-blue-600">
+                </td>
+                <td class="p-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-md">
+                      {{ action.agent.charAt(0) || '?' }}
+                    </div>
+                    <div>
+                      <div class="font-semibold text-slate-800">{{ action.agent || 'Agent inconnu' }}</div>
+                      <div class="text-xs text-slate-500">ID: {{ action.id }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="p-4">
+                  <span [ngClass]="getBadgeClass(getCategorieAction(action))">
+                    <span [ngClass]="getDotClass(getCategorieAction(action))"></span>
+                    {{ getCategorieAction(action) }}
+                  </span>
+                </td>
+                <td class="p-4">
+                  <div class="max-w-md">
+                    <p class="text-sm font-medium text-slate-800 truncate" [title]="action.action">
+                      {{ action.action }}
+                    </p>
+                    <p class="text-xs text-slate-500 mt-1">Action #{{ i + 1 + (pageActuelle - 1) * nombreElementsAffichage }}</p>
+                  </div>
+                </td>
+                <td class="p-4">
+                  <div class="flex flex-col">
+                    <span class="text-sm font-medium text-slate-800">
+                      {{ action.dateAction | date: 'dd/MM/yyyy' }}
+                    </span>
+                    <span class="text-xs text-slate-500">
+                      {{ action.dateAction | date: 'HH:mm:ss' }}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Message si aucun résultat -->
+        <div *ngIf="!isLoading && historiqueFiltre().length === 0" class="text-center py-12">
+          <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <h3 class="text-lg font-semibold text-slate-600 mb-2">Aucun résultat trouvé</h3>
+          <p class="text-slate-500">Essayez de modifier vos critères de recherche</p>
+        </div>
+      </div>
+
+      <!-- 📄 PAGINATION MODERNE -->
+      <div *ngIf="!isLoading && historiqueFiltre().length > 0" class="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4 bg-white p-6 rounded-2xl shadow-lg">
+        <div class="text-sm text-slate-600">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span>
+              Affichage de <strong>{{ ((pageActuelle - 1) * nombreElementsAffichage) + 1 }}</strong> à 
+              <strong>{{ Math.min(pageActuelle * nombreElementsAffichage, historiqueFiltre().length) }}</strong>
+              sur <strong>{{ historiqueFiltre().length }}</strong> entrées
             </span>
           </div>
         </div>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <h4 class="text-sm font-semibold text-slate-500 mb-2 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Date et heure
-          </h4>
-          <p class="text-slate-800 font-medium">{{ actionSelectionnee.dateAction | date: 'EEEE dd MMMM yyyy' }}</p>
-          <p class="text-slate-600">à {{ actionSelectionnee.dateAction | date: 'HH:mm:ss' }}</p>
-        </div>
         
-        <div>
-          <h4 class="text-sm font-semibold text-slate-500 mb-2 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <div class="flex items-center gap-2">
+          <button class="btn btn-sm bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-none" 
+                  [disabled]="pageActuelle === 1" 
+                  (click)="changerPage(pageActuelle - 1)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
-            Identifiant
-          </h4>
-          <p class="text-slate-800 font-mono">{{ actionSelectionnee.id || 'Non spécifié' }}</p>
+            Précédent
+          </button>
+          
+          <div class="flex gap-1">
+            <ng-container *ngFor="let page of getPagesArray()">
+              <button class="btn btn-sm transition-all duration-300" 
+                      [ngClass]="page === pageActuelle ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-none shadow-md' : 'btn-outline hover:bg-slate-100'"
+                      (click)="changerPage(page)">
+                {{ page }}
+              </button>
+            </ng-container>
+          </div>
+          
+          <button class="btn btn-sm bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-none" 
+                  [disabled]="pageActuelle === totalPages()" 
+                  (click)="changerPage(pageActuelle + 1)">
+            Suivant
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
         </div>
       </div>
-      
-      <div class="mb-6">
-        <h4 class="text-sm font-semibold text-slate-500 mb-2 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-          </svg>
-          Action
-        </h4>
-        <p class="text-slate-800 bg-slate-50 p-3 rounded-lg">{{ actionSelectionnee.action }}</p>
-      </div>
-      
-      <div *ngIf="actionSelectionnee.details" class="mb-6">
-        <h4 class="text-sm font-semibold text-slate-500 mb-2 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Détails supplémentaires
-        </h4>
-        <div class="bg-slate-50 p-4 rounded-lg overflow-auto max-h-60">
-          <pre class="text-xs font-mono text-slate-700">{{ actionSelectionnee.details | json }}</pre>
-        </div>
-      </div>
-      
-      <div class="modal-action">
-        <button class="btn btn-outline mr-2" (click)="actionSelectionnee = null">Fermer</button>
-        <button class="btn btn-primary" *ngIf="actionSelectionnee.details" (click)="exporterDetailsJSON(actionSelectionnee)">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          Exporter JSON
-        </button>
-      </div>
-    </div>
-  </div>
-</main>
+    </main>
+    
     <!-- ✅ FOOTER UNIFIÉ -->
     <footer class="fixed bottom-0 left-64 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
-      &copy; BamyGuest
+      &copy; BamyGuest - {{ currentYear }}
     </footer>
   </div>
 
-  <!-- ✅ MODALE MOT DE PASSE AMÉLIORÉE -->
-<div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
-  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100">
-    <div class="flex justify-between items-start mb-6">
-      <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-        </svg>
-        Modifier le mot de passe
-      </h2>
-      <button class="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 transition-colors" 
-              (click)="fermerModalePassword()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    
-    <div class="space-y-4">
-      <!-- 🔐 Ancien mot de passe -->
-      <div class="relative">
-        <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" 
-               class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-        <button type="button"
-                (click)="motDePasseVisible = !motDePasseVisible" 
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors group">
-          <span *ngIf="!motDePasseVisible" class="relative flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            <span class="absolute bg-slate-700 text-slate-100 text-xs font-medium rounded px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 -translate-y-8 whitespace-nowrap">Afficher</span>
-          </span>
-          <span *ngIf="motDePasseVisible" class="relative flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-            </svg>
-            <span class="absolute bg-slate-700 text-slate-100 text-xs font-medium rounded px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 -translate-y-8 whitespace-nowrap">Masquer</span>
-          </span>
+  <!-- 🔐 MODALE MOT DE PASSE AMÉLIORÉE -->
+  <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100">
+      <div class="flex justify-between items-start mb-6">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          </svg>
+          Modifier le mot de passe
+        </h2>
+        <button class="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 transition-colors" 
+                (click)="fermerModalePassword()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
       
-      <!-- 🔐 Nouveau mot de passe -->
-      <div class="relative">
-        <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" 
-               class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-        </svg>
-        <button type="button"
-                (click)="motDePasseVisible = !motDePasseVisible" 
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
-          <span *ngIf="!motDePasseVisible" class="relative flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="space-y-4">
+        <!-- 🔐 Ancien mot de passe -->
+        <div class="relative">
+          <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" 
+                 class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <button type="button"
+                  (click)="motDePasseVisible = !motDePasseVisible" 
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+            <svg *ngIf="!motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
-          </span>
-          <span *ngIf="motDePasseVisible" class="relative flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg *ngIf="motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
             </svg>
-          </span>
-        </button>
+          </button>
+        </div>
+        
+        <!-- 🔐 Nouveau mot de passe -->
+        <div class="relative">
+          <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" 
+                 class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
+          </svg>
+          <button type="button"
+                  (click)="motDePasseVisible = !motDePasseVisible" 
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+            <svg *ngIf="!motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <svg *ngIf="motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- 🔐 Confirmation -->
+        <div class="relative">
+          <input [type]="confirmationVisible ? 'text' : 'password'" [(ngModel)]="confirmationMotDePasse" placeholder="Confirmer le mot de passe" 
+                 class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <button type="button"
+                  (click)="confirmationVisible = !confirmationVisible" 
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+            <svg *ngIf="!confirmationVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <svg *ngIf="confirmationVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Message de validation -->
+        <div *ngIf="nouveauMotDePasse && confirmationMotDePasse" class="mt-1">
+          <div *ngIf="nouveauMotDePasse === confirmationMotDePasse" class="text-xs text-teal-600 flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Les mots de passe correspondent
+          </div>
+          <div *ngIf="nouveauMotDePasse !== confirmationMotDePasse" class="text-xs text-red-500 flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Les mots de passe ne correspondent pas
+          </div>
+        </div>
       </div>
       
-      <!-- 🔐 Confirmation -->
-      <div class="relative">
-        <input [type]="confirmationVisible ? 'text' : 'password'" [(ngModel)]="confirmationMotDePasse" placeholder="Confirmer le mot de passe" 
-               class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50" />
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <button type="button"
-                (click)="confirmationVisible = !confirmationVisible" 
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
-          <span *ngIf="!confirmationVisible" class="relative flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          </span>
-          <span *ngIf="confirmationVisible" class="relative flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-            </svg>
-          </span>
+      <div class="flex justify-end gap-3 mt-6">
+        <button class="btn btn-outline border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-colors" 
+                (click)="fermerModalePassword()">
+          Annuler
         </button>
-      </div>
-      <!-- Message de validation -->
-      <div *ngIf="nouveauMotDePasse && confirmationMotDePasse" class="mt-1">
-        <div *ngIf="nouveauMotDePasse === confirmationMotDePasse" class="text-xs text-teal-600 flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <button class="btn bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white border-none shadow-md"
+                [disabled]="!ancienMotDePasse || !nouveauMotDePasse || nouveauMotDePasse !== confirmationMotDePasse"
+                (click)="changerMotDePasse()">
+          <svg *ngIf="ancienMotDePasse && nouveauMotDePasse && nouveauMotDePasse === confirmationMotDePasse" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
-          Les mots de passe correspondent
-        </div>
-        <div *ngIf="nouveauMotDePasse !== confirmationMotDePasse" class="text-xs text-red-500 flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          Les mots de passe ne correspondent pas
-        </div>
+          Enregistrer
+        </button>
       </div>
-    </div>
-    
-    <div class="flex justify-end gap-3 mt-6">
-      <button class="btn btn-outline border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-colors" 
-              (click)="fermerModalePassword()">
-        Annuler
-      </button>
-      <button class="btn bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white border-none shadow-md"
-              [disabled]="!ancienMotDePasse || !nouveauMotDePasse || nouveauMotDePasse !== confirmationMotDePasse"
-              (click)="changerMotDePasse()">
-        <svg *ngIf="ancienMotDePasse && nouveauMotDePasse && nouveauMotDePasse === confirmationMotDePasse" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      
+      <div *ngIf="messageSuccess" class="mt-4 bg-green-50 text-green-700 p-3 rounded-lg text-sm flex items-center gap-2 animate-fadeIn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        Enregistrer
-      </button>
-    </div>
-    
-    <div *ngIf="messageSuccess" class="mt-4 bg-green-50 text-green-700 p-3 rounded-lg text-sm flex items-center gap-2 animate-fadeIn">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      {{ messageSuccess }}
-    </div>
-    
-    <div *ngIf="messageErreur" class="mt-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm flex items-center gap-2 animate-fadeIn">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      {{ messageErreur }}
+        {{ messageSuccess }}
+      </div>
+      
+      <div *ngIf="messageErreur" class="mt-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm flex items-center gap-2 animate-fadeIn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {{ messageErreur }}
+      </div>
     </div>
   </div>
 </div>
-

@@ -2,47 +2,73 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { HistoriqueService } from 'app/core/services/historique/historique.service';
 import { AdminService } from 'app/core/services/admin/admin.service';
 import * as XLSX from 'xlsx';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+
+// 🔧 INTERFACES
+interface HistoriqueAction {
+  id: number;
+  agent: string;
+  action: string;
+  dateAction: string;
+  typeAction?: string;
+}
+
+interface Utilisateur {
+  nom: string;
+  prenom: string;
+  email: string;
+  role: string;
+}
 
 @Component({
   selector: 'app-historique-activite',
-  standalone:false,
+  standalone: false,
   templateUrl: './historique-activite.component.html',
   styleUrls: ['./historique-activite.component.css']
 })
 export class HistoriqueActiviteComponent implements OnInit {
-  historique: any[] = [];
+  // 📊 DONNÉES PRINCIPALES
+  historique: HistoriqueAction[] = [];
+  
+  // 🔍 FILTRES
   filtreTexte = '';
-  filtreAgent = '';
   filtreTypeAction = '';
   filtrePeriode = '';
   dateDebut = '';
   dateFin = '';
+  
+  // 📄 PAGINATION
   pageActuelle = 1;
-  nombreElementsAffichage: number = 10;
+  nombreElementsAffichage = 10;
+  
+  // 🔄 TRI
   colonneTri = 'dateAction';
-  ordreTri = 'desc';
-  afficherPlusFiltres = false;
-  actionSelectionnee: any = null;
-  Math = Math;
-
+  ordreTri: 'asc' | 'desc' = 'desc';
+  
+  // 👤 UTILISATEUR
+  utilisateur: Utilisateur = { nom: '', prenom: '', email: '', role: '' };
   menuOuvert = false;
+  
+  // 🔐 GESTION MOT DE PASSE
   modalePasswordVisible = false;
   ancienMotDePasse = '';
   nouveauMotDePasse = '';
-  messageSuccess = '';
-  messageErreur = '';
+  confirmationMotDePasse = '';
   motDePasseVisible = false;
   confirmationVisible = false;
-  confirmationMotDePasse: string = '';
-
-  utilisateur = {
-    nom: '',
-    prenom: '',
-    email: '',
-    role: ''
-  };
+  messageSuccess = '';
+  messageErreur = '';
+  
+  // ✅ SÉLECTION
+  lignesSelectionnees = new Set<number>();
+  toutSelectionner = false;
+  
+  // 🛠️ UTILITAIRES
+  Math = Math;
+  actionSelectionnee: HistoriqueAction | null = null;
+  isLoading = false;
+  
+  // 📅 PROPRIÉTÉ POUR L'ANNÉE ACTUELLE
+  currentYear = new Date().getFullYear();
 
   constructor(
     private historiqueService: HistoriqueService,
@@ -54,29 +80,46 @@ export class HistoriqueActiviteComponent implements OnInit {
     this.chargerHistorique();
   }
 
-  recupererInfosUtilisateur() {
+  // 👤 GESTION UTILISATEUR
+  recupererInfosUtilisateur(): void {
     const token = localStorage.getItem('access-token');
-    if (!token) return;
-
-    try {
-      const payload = token.split('.')[1];
-      const decodedPayload = atob(payload);
-      const decoded = JSON.parse(decodedPayload);
-
+    if (!token) {
       this.utilisateur = {
-        nom: decoded.nom || '',
+        nom: 'Utilisateur',
+        prenom: '',
+        email: 'email@domain.com',
+        role: 'ADMIN'
+      };
+      return;
+    }
+    
+    try {
+      const payload = atob(token.split('.')[1]);
+      const decoded = JSON.parse(payload);
+      this.utilisateur = {
+        nom: decoded.nom || 'Utilisateur',
         prenom: decoded.prenom || '',
-        email: decoded.sub || '',
+        email: decoded.sub || 'email@domain.com',
         role: decoded.scope || 'ADMIN'
       };
-    } catch (e) {
-      console.error('Erreur de décodage du JWT :', e);
+    } catch (error) {
+      console.error('❌ Erreur de décodage du JWT :', error);
+      this.utilisateur = {
+        nom: 'Utilisateur',
+        prenom: '',
+        email: 'email@domain.com',
+        role: 'ADMIN'
+      };
     }
   }
 
+  // 📊 CHARGEMENT DES DONNÉES
   chargerHistorique(): void {
     this.historiqueService.getHistorique().subscribe({
-      next: (res) => this.historique = res,
+      next: (res: HistoriqueAction[]) => {
+        this.historique = res || [];
+        this.resetPagination();
+      },
       error: (err) => {
         console.error('❌ Erreur chargement historique :', err);
         this.historique = [];
@@ -84,83 +127,116 @@ export class HistoriqueActiviteComponent implements OnInit {
     });
   }
 
-  appliquerFiltres(): void {
-    this.pageActuelle = 1; // Reset pagination sur filtre
+  // 🏷️ GESTION DES CATÉGORIES
+  getCategorieAction(action: HistoriqueAction): string {
+    if (!action?.action) return 'Autre';
+    
+    const actionText = action.action.toLowerCase();
+    if (actionText.includes('ajout visiteur') || actionText.startsWith('ajout visiteur')) {
+      return 'Ajout Visiteur';
+    }
+    if (actionText.includes('modification visiteur') || actionText.startsWith('modification visiteur')) {
+      return 'Modification Visiteur';
+    }
+    if (actionText.includes('validation sortie') || actionText.startsWith('validation sortie')) {
+      return 'Validation Sortie';
+    }
+    return 'Autre';
   }
 
-  togglePlusFiltres(): void {
-    this.afficherPlusFiltres = !this.afficherPlusFiltres;
+  // 🔍 FILTRAGE ET RECHERCHE
+  appliquerFiltres(): void {
+    this.pageActuelle = 1;
+    this.mettreAJourSelectionTout();
   }
 
   resetPagination(): void {
     this.pageActuelle = 1;
   }
 
-  historiqueFiltre(): any[] {
-    return this.historique
-      .filter(action => {
-        const texte = this.filtreTexte.toLowerCase();
-        const agent = this.filtreAgent;
-        const typeAction = this.filtreTypeAction;
+  historiqueFiltre(): HistoriqueAction[] {
+    let resultats = this.historique.filter(action => {
+      // Filtre par texte
+      const texte = this.filtreTexte.toLowerCase().trim();
+      const matchTexte = !texte || 
+        action.agent?.toLowerCase().includes(texte) ||
+        action.action?.toLowerCase().includes(texte) ||
+        this.getCategorieAction(action).toLowerCase().includes(texte);
+
+      // Filtre par type d'action
+      const matchType = !this.filtreTypeAction || 
+        this.getCategorieAction(action) === this.filtreTypeAction;
+
+      // Filtre par période
+      let matchPeriode = true;
+      if (this.filtrePeriode && action.dateAction) {
         const dateAction = new Date(action.dateAction);
-
-        const matchTexte = !texte || 
-          action.agent.toLowerCase().includes(texte) ||
-          action.action.toLowerCase().includes(texte) ||
-          action.typeAction.toLowerCase().includes(texte);
-
-        const matchAgent = !agent || action.agent === agent;
-        const matchType = !typeAction || action.typeAction === typeAction;
-
-        let matchPeriode = true;
-        if (this.filtrePeriode) {
-          const now = new Date();
-          const startOfDay = new Date(now.setHours(0, 0, 0, 0));
-          const startOfYesterday = new Date(startOfDay);
-          startOfYesterday.setDate(startOfDay.getDate() - 1);
-          const startOfWeek = new Date(now);
-          startOfWeek.setDate(now.getDate() - now.getDay());
-          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-          switch (this.filtrePeriode) {
-            case 'today':
-              matchPeriode = dateAction >= startOfDay;
-              break;
-            case 'yesterday':
-              matchPeriode = dateAction >= startOfYesterday && dateAction < startOfDay;
-              break;
-            case 'week':
-              matchPeriode = dateAction >= startOfWeek;
-              break;
-            case 'month':
-              matchPeriode = dateAction >= startOfMonth;
-              break;
-            case 'custom':
-              const debut = this.dateDebut ? new Date(this.dateDebut) : null;
-              const fin = this.dateFin ? new Date(this.dateFin + 'T23:59:59') : null;
-              matchPeriode = 
-                (!debut || dateAction >= debut) && 
-                (!fin || dateAction <= fin);
-              break;
-          }
+        const maintenant = new Date();
+        
+        switch (this.filtrePeriode) {
+          case 'today':
+            const debutJour = new Date(maintenant);
+            debutJour.setHours(0, 0, 0, 0);
+            matchPeriode = dateAction >= debutJour;
+            break;
+            
+          case 'yesterday':
+            const hier = new Date(maintenant);
+            hier.setDate(maintenant.getDate() - 1);
+            hier.setHours(0, 0, 0, 0);
+            const finHier = new Date(hier);
+            finHier.setHours(23, 59, 59, 999);
+            matchPeriode = dateAction >= hier && dateAction <= finHier;
+            break;
+            
+          case 'week':
+            const debutSemaine = new Date(maintenant);
+            debutSemaine.setDate(maintenant.getDate() - maintenant.getDay());
+            debutSemaine.setHours(0, 0, 0, 0);
+            matchPeriode = dateAction >= debutSemaine;
+            break;
+            
+          case 'month':
+            const debutMois = new Date(maintenant.getFullYear(), maintenant.getMonth(), 1);
+            matchPeriode = dateAction >= debutMois;
+            break;
+            
+          case 'custom':
+            const debut = this.dateDebut ? new Date(this.dateDebut + 'T00:00:00') : null;
+            const fin = this.dateFin ? new Date(this.dateFin + 'T23:59:59') : null;
+            matchPeriode = (!debut || dateAction >= debut) && (!fin || dateAction <= fin);
+            break;
         }
+      }
 
-        return matchTexte && matchAgent && matchType && matchPeriode;
-      })
-      .sort((a, b) => {
-        const valA = this.colonneTri === 'dateAction' 
-          ? new Date(a.dateAction).getTime() 
-          : a[this.colonneTri]?.toString().toLowerCase() || '';
-        const valB = this.colonneTri === 'dateAction' 
-          ? new Date(b.dateAction).getTime() 
-          : b[this.colonneTri]?.toString().toLowerCase() || '';
+      return matchTexte && matchType && matchPeriode;
+    });
 
-        return this.ordreTri === 'asc'
-          ? valA > valB ? 1 : -1
-          : valA < valB ? 1 : -1;
-      });
+    // Tri des résultats
+    return resultats.sort((a, b) => {
+      let valA: any, valB: any;
+      
+      switch (this.colonneTri) {
+        case 'dateAction':
+          valA = new Date(a.dateAction || 0).getTime();
+          valB = new Date(b.dateAction || 0).getTime();
+          break;
+        case 'categorie':
+          valA = this.getCategorieAction(a).toLowerCase();
+          valB = this.getCategorieAction(b).toLowerCase();
+          break;
+        default:
+          valA = (a[this.colonneTri as keyof HistoriqueAction] || '').toString().toLowerCase();
+          valB = (b[this.colonneTri as keyof HistoriqueAction] || '').toString().toLowerCase();
+      }
+
+      if (valA < valB) return this.ordreTri === 'asc' ? -1 : 1;
+      if (valA > valB) return this.ordreTri === 'asc' ? 1 : -1;
+      return 0;
+    });
   }
 
+  // 🔄 GESTION DU TRI
   trierPar(colonne: string): void {
     if (this.colonneTri === colonne) {
       this.ordreTri = this.ordreTri === 'asc' ? 'desc' : 'asc';
@@ -170,152 +246,343 @@ export class HistoriqueActiviteComponent implements OnInit {
     }
   }
 
+  // 📄 GESTION DE LA PAGINATION
   totalPages(): number {
-    return Math.ceil(this.historiqueFiltre().length / this.nombreElementsAffichage);
+    const total = Math.ceil(this.historiqueFiltre().length / this.nombreElementsAffichage);
+    return total || 1;
   }
 
   changerPage(page: number): void {
-    this.pageActuelle = page;
+    if (page >= 1 && page <= this.totalPages()) {
+      this.pageActuelle = page;
+    }
   }
 
   getPagesArray(): number[] {
     const total = this.totalPages();
-    const pages = [];
-    for (let i = 1; i <= total; i++) pages.push(i);
-    return pages;
+    return Array.from({ length: total }, (_, i) => i + 1);
   }
 
-  afficherDetails(action: any): void {
-    this.actionSelectionnee = action;
+  // ✅ GESTION DE LA SÉLECTION
+  toggleSelection(id: number): void {
+    if (this.lignesSelectionnees.has(id)) {
+      this.lignesSelectionnees.delete(id);
+    } else {
+      this.lignesSelectionnees.add(id);
+    }
+    this.mettreAJourSelectionTout();
   }
 
-  listeAgents(): string[] {
-    const agents = this.historique.map(a => a.agent);
-    return [...new Set(agents)].sort();
+  toggleSelectionTout(): void {
+    const donneesFiltrees = this.historiqueFiltre();
+    
+    if (this.toutSelectionner) {
+      // Désélectionner tout
+      donneesFiltrees.forEach(item => this.lignesSelectionnees.delete(item.id));
+    } else {
+      // Sélectionner tout
+      donneesFiltrees.forEach(item => this.lignesSelectionnees.add(item.id));
+    }
+    
+    this.toutSelectionner = !this.toutSelectionner;
   }
 
+  private mettreAJourSelectionTout(): void {
+    const donneesFiltrees = this.historiqueFiltre();
+    const toutesSelectionnees = donneesFiltrees.length > 0 && 
+      donneesFiltrees.every(item => this.lignesSelectionnees.has(item.id));
+    this.toutSelectionner = toutesSelectionnees;
+  }
+
+  // 📊 STATISTIQUES POUR VOTRE HTML
   nombreCreations(): number {
-    return this.historiqueFiltre().filter(a => a.typeAction === 'creation').length;
+    return this.historiqueFiltre().filter(a => 
+      this.getCategorieAction(a) === 'Ajout Visiteur'
+    ).length;
   }
 
   nombreModifications(): number {
-    return this.historiqueFiltre().filter(a => a.typeAction === 'modification').length;
+    return this.historiqueFiltre().filter(a => 
+      this.getCategorieAction(a) === 'Modification Visiteur'
+    ).length;
   }
 
   nombreAgentsActifs(): number {
-    const agents = this.historiqueFiltre().map(a => a.agent);
+    const agents = this.historiqueFiltre()
+      .map(a => a.agent)
+      .filter(agent => agent && agent.trim() !== '');
     return new Set(agents).size;
   }
 
   pourcentageTotal(): number {
-    return this.historique.length === 0 ? 0 : Math.round((this.historiqueFiltre().length / this.historique.length) * 100);
-  }
-
-  pourcentageModifications(): number {
-    const total = this.historiqueFiltre().length;
-    return total === 0 ? 0 : Math.round((this.nombreModifications() / total) * 100);
-  }
-
-  pourcentageAgentsActifs(): number {
-    return this.historiqueFiltre().length === 0 ? 0 :
-      Math.round((this.nombreAgentsActifs() / this.historiqueFiltre().length) * 100);
+    if (this.historique.length === 0) return 0;
+    return Math.round((this.historiqueFiltre().length / this.historique.length) * 100);
   }
 
   evolutionCreations(): number {
-    return 12; // Valeur fictive, à calculer dynamiquement si souhaité
+    // Logique pour calculer l'évolution (à adapter selon vos besoins)
+    return 12;
   }
 
   getCreationTrend(): string {
-    return '↗️ En hausse par rapport à la période précédente';
+    const evolution = this.evolutionCreations();
+    if (evolution > 0) return `↗️ +${evolution}% vs période précédente`;
+    if (evolution < 0) return `↘️ ${evolution}% vs période précédente`;
+    return '➡️ Stable vs période précédente';
   }
 
   getModificationTrend(): string {
     return '📊 Stable par rapport à la dernière période';
   }
 
-  exporterCSV(): void {
-    const data = this.historiqueFiltre().map(item => ({
-      'Agent': item.agent,
-      'Type': item.typeAction,
-      'Action': item.action,
-      'Date': new Date(item.dateAction).toLocaleString('fr-FR')
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
-    XLSX.writeFile(workbook, 'historique_activites.csv');
+  // 📤 EXPORT EXCEL AMÉLIORÉ
+  exporterExcelTout(): void {
+    if (this.historique.length === 0) {
+      alert('⚠️ Aucune donnée à exporter');
+      return;
+    }
+    this.exporterExcel(this.historique, 'historique_complet.xlsx');
   }
 
-  exporterExcel(): void {
-    this.exporterCSV(); // Même logique que CSV
+  exporterExcelFiltre(): void {
+    const donneesFiltrees = this.historiqueFiltre();
+    if (donneesFiltrees.length === 0) {
+      alert('⚠️ Aucune donnée filtrée à exporter');
+      return;
+    }
+    this.exporterExcel(donneesFiltrees, 'historique_filtre.xlsx');
   }
 
-  exporterDetailsJSON(action: any): void {
-    const blob = new Blob([JSON.stringify(action.details, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'details_action.json';
-    link.click();
-    window.URL.revokeObjectURL(url);
+  exporterExcelSelection(): void {
+    if (this.lignesSelectionnees.size === 0) {
+      alert('⚠️ Aucune ligne sélectionnée pour l\'export');
+      return;
+    }
+    
+    const selection = this.historique.filter(item => 
+      this.lignesSelectionnees.has(item.id)
+    );
+    this.exporterExcel(selection, 'historique_selection.xlsx');
   }
 
+  exporterExcel(data: HistoriqueAction[], fileName: string): void {
+    try {
+      const dataToExport = data.map((item, index) => ({
+        'N°': index + 1,
+        'Agent': item.agent || 'N/A',
+        'Type d\'action': this.getCategorieAction(item),
+        'Description': item.action || 'N/A',
+        'Date': item.dateAction ? new Date(item.dateAction).toLocaleString('fr-FR') : 'N/A',
+        'ID': item.id
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      
+      // Ajustement automatique de la largeur des colonnes
+      const columnWidths = [
+        { wch: 5 },   // N°
+        { wch: 20 },  // Agent
+        { wch: 20 },  // Type
+        { wch: 50 },  // Description
+        { wch: 20 },  // Date
+        { wch: 10 }   // ID
+      ];
+      worksheet['!cols'] = columnWidths;
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
+      XLSX.writeFile(workbook, fileName);
+      
+      console.log(`✅ Export Excel réussi : ${fileName}`);
+    } catch (error) {
+      console.error('❌ Erreur lors de l\'export Excel :', error);
+      alert('❌ Erreur lors de l\'export Excel');
+    }
+  }
+
+  // 🔄 RÉINITIALISATION
   reinitialiserFiltres(): void {
     this.filtreTexte = '';
-    this.filtreAgent = '';
     this.filtreTypeAction = '';
     this.filtrePeriode = '';
     this.dateDebut = '';
     this.dateFin = '';
     this.pageActuelle = 1;
+    this.lignesSelectionnees.clear();
+    this.toutSelectionner = false;
+    
+    // Réinitialiser le tri
+    this.colonneTri = 'dateAction';
+    this.ordreTri = 'desc';
   }
 
-
+  // 🔐 GESTION MOT DE PASSE AMÉLIORÉE
   ouvrirModalePassword(): void {
     this.modalePasswordVisible = true;
     this.messageSuccess = '';
     this.messageErreur = '';
     this.ancienMotDePasse = '';
     this.nouveauMotDePasse = '';
+    this.confirmationMotDePasse = '';
+    this.motDePasseVisible = false;
+    this.confirmationVisible = false;
+    this.menuOuvert = false;
   }
 
   fermerModalePassword(): void {
     this.modalePasswordVisible = false;
+    this.ancienMotDePasse = '';
+    this.nouveauMotDePasse = '';
+    this.confirmationMotDePasse = '';
+    this.messageSuccess = '';
+    this.messageErreur = '';
   }
 
   changerMotDePasse(): void {
-    if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
-      this.messageErreur = '❌ Veuillez remplir les deux champs.';
+    // Validation des champs
+    if (!this.ancienMotDePasse?.trim()) {
+      this.messageErreur = '❌ L\'ancien mot de passe est requis';
+      this.messageSuccess = '';
       return;
     }
 
+    if (!this.nouveauMotDePasse?.trim()) {
+      this.messageErreur = '❌ Le nouveau mot de passe est requis';
+      this.messageSuccess = '';
+      return;
+    }
+
+    if (this.nouveauMotDePasse !== this.confirmationMotDePasse) {
+      this.messageErreur = '❌ Les mots de passe ne correspondent pas';
+      this.messageSuccess = '';
+      return;
+    }
+
+    if (this.nouveauMotDePasse.length < 6) {
+      this.messageErreur = '❌ Le mot de passe doit contenir au moins 6 caractères';
+      this.messageSuccess = '';
+      return;
+    }
+
+    // Appel API
     this.adminService.changerMotDePasseActuel(
       this.utilisateur.email,
       this.ancienMotDePasse,
       this.nouveauMotDePasse
     ).subscribe({
       next: () => {
-        this.messageSuccess = '✅ Mot de passe changé avec succès.';
+        this.messageSuccess = '✅ Mot de passe modifié avec succès';
         this.messageErreur = '';
+        
+        // Fermer automatiquement après 2 secondes
+        setTimeout(() => {
+          this.fermerModalePassword();
+        }, 2000);
       },
       error: (err) => {
-        this.messageErreur = err.error?.message || '❌ Erreur lors du changement.';
+        console.error('❌ Erreur changement mot de passe :', err);
+        this.messageErreur = err.error?.message || '❌ Erreur lors du changement de mot de passe';
         this.messageSuccess = '';
       }
     });
   }
 
+  // 🚪 DÉCONNEXION AVEC CONFIRMATION
   logout(): void {
-    localStorage.removeItem('access-token');
-    localStorage.removeItem('role');
-    window.location.href = '/';
+    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+      try {
+        localStorage.removeItem('access-token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('user-data');
+        window.location.href = '/';
+      } catch (error) {
+        console.error('❌ Erreur lors de la déconnexion :', error);
+        window.location.href = '/';
+      }
+    }
   }
 
+  // 🖱️ GESTION DES CLICS EXTERNES
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.relative');
-    if (!clickedInside) this.menuOuvert = false;
+    const menuContainer = target.closest('.relative');
+    
+    if (!menuContainer) {
+      this.menuOuvert = false;
+    }
+  }
+
+  // 🎯 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES
+  changerNombreElementsAffichage(nombre: number): void {
+    this.nombreElementsAffichage = nombre;
+    this.pageActuelle = 1;
+  }
+
+  // 🔍 RECHERCHE AVANCÉE
+  rechercherParAgent(nomAgent: string): void {
+    this.filtreTexte = nomAgent;
+    this.appliquerFiltres();
+  }
+
+  filtrerParPeriodePersonnalisee(debut: string, fin: string): void {
+    this.filtrePeriode = 'custom';
+    this.dateDebut = debut;
+    this.dateFin = fin;
+    this.appliquerFiltres();
+  }
+
+  // 🔄 REFRESH DES DONNÉES
+  raffraichirDonnees(): void {
+    this.chargerHistorique();
+  }
+
+  // 📊 STATISTIQUES POUR DASHBOARD
+  obtenirStatistiquesRapides() {
+    const donnees = this.historiqueFiltre();
+    return {
+      total: donnees.length,
+      ajouts: this.nombreCreations(),
+      modifications: this.nombreModifications(),
+      agents: this.nombreAgentsActifs(),
+      pourcentage: this.pourcentageTotal()
+    };
+  }
+
+  // 🎨 MÉTHODES POUR LES CLASSES CSS DYNAMIQUES
+  getRowClass(action: HistoriqueAction): string {
+    const classes = ['hover:bg-slate-50', 'transition-colors', 'duration-200'];
+    if (this.lignesSelectionnees.has(action.id)) {
+      classes.push('bg-blue-50');
+    }
+    return classes.join(' ');
+  }
+
+  getBadgeClass(categorie: string): string {
+    const baseClasses = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium';
+    switch (categorie) {
+      case 'Ajout Visiteur':
+        return `${baseClasses} bg-green-100 text-green-800`;
+      case 'Modification Visiteur':
+        return `${baseClasses} bg-amber-100 text-amber-800`;
+      case 'Validation Sortie':
+        return `${baseClasses} bg-blue-100 text-blue-800`;
+      default:
+        return `${baseClasses} bg-slate-100 text-slate-800`;
+    }
+  }
+
+  getDotClass(categorie: string): string {
+    const baseClasses = 'w-1.5 h-1.5 rounded-full mr-1.5';
+    switch (categorie) {
+      case 'Ajout Visiteur':
+        return `${baseClasses} bg-green-500`;
+      case 'Modification Visiteur':
+        return `${baseClasses} bg-amber-500`;
+      case 'Validation Sortie':
+        return `${baseClasses} bg-blue-500`;
+      default:
+        return `${baseClasses} bg-slate-500`;
+    }
   }
 }

@@ -1,68 +1,326 @@
-<div class="space-y-6 animate-fadeIn bg-white rounded-lg shadow-md p-6">
-  <h2 class="text-2xl font-bold text-slate-700 flex items-center gap-2 border-b pb-4">
-    <span class="text-amber-500">🚚</span> Enregistrement d'entrée camion
+<!-- Header avec Stock Counter et Bouton Liste -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-4">
+  <h2 class="text-xl lg:text-2xl font-bold text-slate-700 flex items-center gap-2">
+    <span class="text-2xl lg:text-3xl">🚚</span> 
+    Enregistrement d'entrée camion
   </h2>
+  
+  <!-- Stock Counter et Bouton Liste -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+    <div class="stock-counter px-4 py-2 rounded-full border-2 border-slate-200">
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-slate-600">Stock actuel</span>
+        <span class="text-lg font-bold text-blue-600">{{ stockActuel }}</span>
+        <span class="text-sm">📦</span>
+      </div>
+    </div>
+    
+    <!-- Bouton Liste des Camions -->
+    <button type="button" (click)="ouvrirListeCamions()" 
+            class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-full font-semibold shadow-lg transition-all transform hover:scale-105 text-sm">
+      📋 Liste
+    </button>
+  </div>
+</div>
 
-  <!-- Message d'erreur -->
-  <div *ngIf="erreurFormulaire" class="bg-red-100 text-red-700 p-4 rounded-md text-sm border border-red-200 flex items-center gap-2">
-    {{ erreurFormulaire }}
+<div class="bg-white rounded-xl shadow-lg p-4 lg:p-6 border border-slate-200 animate-fadeIn max-h-[calc(100vh-180px)] overflow-y-auto">
+  
+  <!-- Messages -->
+  <div *ngIf="erreurFormulaire" class="bg-red-50 text-red-700 p-4 rounded-lg text-sm border border-red-200 flex items-center gap-2 mb-6">
+    <span>⚠️</span>
+    <span>{{ erreurFormulaire }}</span>
   </div>
 
-  <!-- Message de succès -->
-  <div *ngIf="messageSucces" class="bg-green-100 text-green-700 p-4 rounded-md text-sm border border-green-200 flex items-center gap-2">
-    {{ messageSucces }}
+  <div *ngIf="messageSucces" class="bg-green-50 text-green-700 p-4 rounded-lg text-sm border border-green-200 flex items-center gap-2 mb-6">
+    <span>✅</span>
+    <span>{{ messageSucces }}</span>
   </div>
 
-  <form [formGroup]="entreeForm" (ngSubmit)="enregistrerEntree()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <form [formGroup]="entreeForm" (ngSubmit)="enregistrerEntree()" class="space-y-4">
+    
     <!-- Numéro de châssis -->
-    <div class="form-control md:col-span-2">
-      <label class="label font-semibold text-slate-700">Numéro de châssis</label>
-      <input type="text" class="input input-bordered w-full" formControlName="numeroChassis" placeholder="CHS123456789" />
-      <div *ngIf="isFieldInvalid('numeroChassis')" class="text-red-500 text-xs mt-1">Requis</div>
+    <div class="space-y-1">
+      <label class="block text-sm font-semibold text-slate-700">Numéro de châssis</label>
+      <input type="text" formControlName="numeroChassis"
+             class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm" 
+             placeholder="Ex: CHS123456789">
+      <div *ngIf="isFieldInvalid('numeroChassis')" class="text-red-500 text-xs mt-1">Ce champ est requis</div>
     </div>
 
-    <!-- Marque -->
-    <div class="form-control">
-      <label class="label font-semibold text-slate-700">Marque</label>
-      <select class="select select-bordered w-full" formControlName="marque">
-        <option value="">Choisir une marque</option>
-        <option value="Renault">Renault</option>
-        <option value="Forlend">Forlend</option>
-        <option value="Kaycenne">Kaycenne</option>
-      </select>
-      <div *ngIf="isFieldInvalid('marque')" class="text-red-500 text-xs mt-1">Requis</div>
+    <!-- Sélection Marque avec Ellipses -->
+    <div class="space-y-2">
+      <label class="block text-sm font-semibold text-slate-700">Marque du véhicule</label>
+      <div class="grid grid-cols-3 gap-2">
+        
+        <!-- Renault -->
+        <div class="selection-card border-2 rounded-lg p-3 text-center bg-gradient-to-br from-blue-50 to-blue-100 cursor-pointer transition-all"
+             [class.selected]="marqueSelectionnee === 'Renault'"
+             [class.border-blue-400]="marqueSelectionnee === 'Renault'"
+             [class.border-slate-200]="marqueSelectionnee !== 'Renault'"
+             (click)="selectionnerMarque('Renault')">
+          <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold">
+            R
+          </div>
+          <h3 class="text-sm font-bold text-slate-700 mb-1">Renault</h3>
+          <div class="inline-block px-2 py-0.5 bg-blue-200 text-blue-800 rounded-full text-xs font-semibold">
+            4 modèles
+          </div>
+        </div>
+
+        <!-- Forlend -->
+        <div class="selection-card border-2 rounded-lg p-3 text-center bg-gradient-to-br from-green-50 to-green-100 cursor-pointer transition-all"
+             [class.selected]="marqueSelectionnee === 'Forlend'"
+             [class.border-green-400]="marqueSelectionnee === 'Forlend'"
+             [class.border-slate-200]="marqueSelectionnee !== 'Forlend'"
+             (click)="selectionnerMarque('Forlend')">
+          <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-sm font-bold">
+            F
+          </div>
+          <h3 class="text-sm font-bold text-slate-700 mb-1">Forlend</h3>
+          <div class="inline-block px-2 py-0.5 bg-green-200 text-green-800 rounded-full text-xs font-semibold">
+            4 modèles
+          </div>
+        </div>
+
+        <!-- Kaycenne -->
+        <div class="selection-card border-2 rounded-lg p-3 text-center bg-gradient-to-br from-purple-50 to-purple-100 cursor-pointer transition-all"
+             [class.selected]="marqueSelectionnee === 'Kaycenne'"
+             [class.border-purple-400]="marqueSelectionnee === 'Kaycenne'"
+             [class.border-slate-200]="marqueSelectionnee !== 'Kaycenne'"
+             (click)="selectionnerMarque('Kaycenne')">
+          <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+            K
+          </div>
+          <h3 class="text-sm font-bold text-slate-700 mb-1">Kaycenne</h3>
+          <div class="inline-block px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-xs font-semibold">
+            3 modèles
+          </div>
+        </div>
+      </div>
+      <div *ngIf="isFieldInvalid('marque')" class="text-red-500 text-xs mt-1">Veuillez sélectionner une marque</div>
     </div>
 
-    <!-- Modèle -->
-    <div class="form-control">
-      <label class="label font-semibold text-slate-700">Modèle</label>
-      <select class="select select-bordered w-full" formControlName="modele" [disabled]="!modelesDisponibles.length">
-        <option value="">Choisir un modèle</option>
-        <option *ngFor="let m of modelesDisponibles" [value]="m">{{ m }}</option>
-      </select>
-      <div *ngIf="isFieldInvalid('modele')" class="text-red-500 text-xs mt-1">Requis</div>
+    <!-- Sélection Modèle (apparaît après sélection de marque) -->
+    <div *ngIf="modelesDisponibles.length > 0" class="space-y-2">
+      <label class="block text-sm font-semibold text-slate-700">Modèle du véhicule</label>
+      <div class="grid grid-cols-2 gap-2">
+        <div *ngFor="let modele of modelesDisponibles"
+             class="selection-card border-2 rounded-lg p-2 text-center cursor-pointer transition-all"
+             [class.selected]="modeleSelectionne === modele"
+             [class.border-blue-400]="modeleSelectionne === modele && marqueSelectionnee === 'Renault'"
+             [class.border-green-400]="modeleSelectionne === modele && marqueSelectionnee === 'Forlend'"
+             [class.border-purple-400]="modeleSelectionne === modele && marqueSelectionnee === 'Kaycenne'"
+             [class.border-slate-200]="modeleSelectionne !== modele"
+             [class.bg-gradient-to-br]="true"
+             [class.from-blue-50]="marqueSelectionnee === 'Renault'"
+             [class.to-blue-100]="marqueSelectionnee === 'Renault'"
+             [class.from-green-50]="marqueSelectionnee === 'Forlend'"
+             [class.to-green-100]="marqueSelectionnee === 'Forlend'"
+             [class.from-purple-50]="marqueSelectionnee === 'Kaycenne'"
+             [class.to-purple-100]="marqueSelectionnee === 'Kaycenne'"
+             (click)="selectionnerModele(modele)">
+          <div class="w-8 h-8 mx-auto mb-1 rounded-full flex items-center justify-center text-white text-xs font-bold"
+               [class.bg-gradient-to-br]="true"
+               [class.from-blue-500]="marqueSelectionnee === 'Renault'"
+               [class.to-blue-600]="marqueSelectionnee === 'Renault'"
+               [class.from-green-500]="marqueSelectionnee === 'Forlend'"
+               [class.to-green-600]="marqueSelectionnee === 'Forlend'"
+               [class.from-purple-500]="marqueSelectionnee === 'Kaycenne'"
+               [class.to-purple-600]="marqueSelectionnee === 'Kaycenne'">
+            🚛
+          </div>
+          <h4 class="text-xs font-bold text-slate-700">{{ modele }}</h4>
+        </div>
+      </div>
+      <div *ngIf="isFieldInvalid('modele')" class="text-red-500 text-xs mt-1">Veuillez sélectionner un modèle</div>
     </div>
 
-    <!-- Nom Chauffeur -->
-    <div class="form-control">
-      <label class="label font-semibold text-slate-700">Nom du chauffeur</label>
-      <input type="text" class="input input-bordered w-full" formControlName="nomChauffeur" placeholder="Nom" />
-      <div *ngIf="isFieldInvalid('nomChauffeur')" class="text-red-500 text-xs mt-1">Requis</div>
+    <!-- Informations Chauffeur -->
+    <div class="bg-slate-50 rounded-lg p-3 space-y-3">
+      <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+        <span>👤</span> Informations du chauffeur
+      </h3>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Nom</label>
+          <input type="text" formControlName="nomChauffeur"
+                 class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm" 
+                 placeholder="Nom">
+          <div *ngIf="isFieldInvalid('nomChauffeur')" class="text-red-500 text-xs mt-1">Requis</div>
+        </div>
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Prénom</label>
+          <input type="text" formControlName="prenomChauffeur"
+                 class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm" 
+                 placeholder="Prénom">
+          <div *ngIf="isFieldInvalid('prenomChauffeur')" class="text-red-500 text-xs mt-1">Requis</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Prénom Chauffeur -->
-    <div class="form-control">
-      <label class="label font-semibold text-slate-700">Prénom du chauffeur</label>
-      <input type="text" class="input input-bordered w-full" formControlName="prenomChauffeur" placeholder="Prénom" />
-      <div *ngIf="isFieldInvalid('prenomChauffeur')" class="text-red-500 text-xs mt-1">Requis</div>
-    </div>
-
-    <!-- Bouton -->
-    <div class="form-control md:col-span-2 mt-2">
-      <button type="submit" class="btn btn-success w-full" [disabled]="loading || entreeForm.invalid">
-        <span *ngIf="!loading">✅ Enregistrer l'entrée</span>
-        <span *ngIf="loading" class="loading loading-spinner loading-sm"></span>
-      </button>
-    </div>
+    <!-- Bouton Enregistrer -->
+    <button type="submit" 
+            class="btn-submit w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-3 rounded-lg font-bold text-sm shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="loading || entreeForm.invalid">
+      <span *ngIf="!loading">✅ Enregistrer l'entrée du camion</span>
+      <span *ngIf="loading" class="flex items-center justify-center gap-2">
+        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+          <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path>
+        </svg>
+        Enregistrement...
+      </span>
+    </button>
   </form>
+</div>
+
+<!-- Modal Liste des Camions -->
+<div *ngIf="modalListeCamionsVisible" class="fixed inset-0 bg-black bg-opacity-60 z-50 modal-backdrop" (click)="fermerListeCamions()">
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="modal-content bg-white rounded-2xl max-w-5xl w-full max-h-[85vh] overflow-hidden shadow-2xl" (click)="$event.stopPropagation()">
+      
+      <!-- Header Modal -->
+      <div class="flex justify-between items-center p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
+        <h3 class="text-2xl font-bold text-slate-700 flex items-center gap-2">
+          <span>📋</span> Liste des camions ({{ camionsEnStockage.length }})
+        </h3>
+        <button (click)="fermerListeCamions()" class="text-slate-400 hover:text-red-500 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Contenu Modal -->
+      <div class="p-6 overflow-y-auto max-h-[70vh]">
+        <div *ngIf="camionsEnStockage.length > 0; else aucunCamion" class="space-y-4">
+          <div *ngFor="let camion of camionsEnStockage; let i = index" 
+               class="camion-card bg-slate-50 p-4 rounded-xl hover:bg-slate-100 transition-all border border-slate-200">
+            
+            <!-- Mode Affichage Normal -->
+            <div *ngIf="camionEnEdition !== camion.numeroChassis" class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold">
+                  {{ i + 1 }}
+                </div>
+                <div>
+                  <h4 class="font-bold text-slate-700">{{ camion.marque }} {{ camion.modele }}</h4>
+                  <p class="text-sm text-slate-600">Châssis: {{ camion.numeroChassis }}</p>
+                  <p class="text-xs text-slate-500">Chauffeur: {{ camion.chauffeurEntree?.nom || 'N/A' }} {{ camion.chauffeurEntree?.prenom || 'N/A' }}</p>
+                  <p class="text-xs text-slate-500">Entrée: {{ camion.dateEntree | date:'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+              </div>
+              
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                  En stock
+                </span>
+                <!-- Bouton Modifier - toujours visible pour test, ajouter la condition après -->
+                <button (click)="commencerEdition(camion)" 
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                  ✏️ Modifier
+                </button>
+              </div>
+            </div>
+
+            <!-- Mode Édition -->
+            <div *ngIf="camionEnEdition === camion.numeroChassis" class="space-y-4">
+              <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm">
+                  ✏️
+                </div>
+                <h4 class="font-bold text-orange-600">Modification du camion #{{ i + 1 }}</h4>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Numéro de châssis (non modifiable) -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Numéro de châssis</label>
+                  <input type="text" 
+                         class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed" 
+                         [value]="camion.numeroChassis"
+                         readonly>
+                  <p class="text-xs text-slate-500 mt-1">Non modifiable</p>
+                </div>
+
+                <!-- Marque -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Marque</label>
+                  <select [(ngModel)]="camionEditForm.marque" 
+                          (ngModelChange)="changerMarqueEdition()"
+                          class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200">
+                    <option value="Renault">Renault</option>
+                    <option value="Forlend">Forlend</option>
+                    <option value="Kaycenne">Kaycenne</option>
+                  </select>
+                </div>
+
+                <!-- Modèle -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Modèle</label>
+                  <select [(ngModel)]="camionEditForm.modele"
+                          class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200">
+                    <option *ngFor="let modele of getModelesParMarque(camionEditForm.marque)" [value]="modele">
+                      {{ modele }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Date d'entrée (non modifiable) -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Date d'entrée</label>
+                  <input type="text" 
+                         class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed" 
+                         [value]="camion.dateEntree | date:'dd/MM/yyyy HH:mm'"
+                         readonly>
+                  <p class="text-xs text-slate-500 mt-1">Non modifiable</p>
+                </div>
+
+                <!-- Nom chauffeur -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Nom du chauffeur</label>
+                  <input type="text" 
+                         [(ngModel)]="camionEditForm.nomChauffeur"
+                         class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                         placeholder="Nom du chauffeur">
+                </div>
+
+                <!-- Prénom chauffeur -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Prénom du chauffeur</label>
+                  <input type="text" 
+                         [(ngModel)]="camionEditForm.prenomChauffeur"
+                         class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200"
+                         placeholder="Prénom du chauffeur">
+                </div>
+              </div>
+
+              <!-- Boutons d'action -->
+              <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-200">
+                <button (click)="annulerEdition()" 
+                        class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                  ❌ Annuler
+                </button>
+                <button (click)="sauvegarderModification(camion)" 
+                        [disabled]="!camionEditForm.marque || !camionEditForm.modele || !camionEditForm.nomChauffeur || !camionEditForm.prenomChauffeur"
+                        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  ✅ Sauvegarder
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <ng-template #aucunCamion>
+          <div class="text-center py-12 text-slate-500">
+            <span class="text-6xl">📭</span>
+            <p class="mt-4 text-lg">Aucun camion dans la liste</p>
+            <p class="text-sm text-slate-400">Les camions apparaîtront ici après enregistrement</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
 </div>

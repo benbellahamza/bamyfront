@@ -83,7 +83,7 @@
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
         </svg>
         Modifier le mot de passe
       </h2>
@@ -121,7 +121,7 @@
         <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" 
                class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
         </svg>
         <button type="button"
                 (click)="motDePasseVisible = !motDePasseVisible" 
@@ -185,17 +185,17 @@
   </div>
 </div>
 
-  <!-- ✅ CONTENU PRINCIPAL - HAUTEURS AUGMENTÉES -->
+  <!-- ✅ CONTENU PRINCIPAL - CORRIGÉ POUR PERMETTRE LE SCROLL -->
   <main class="flex-grow mt-20 px-4 pb-16">
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
       
-      <!-- 📝 Bloc Formulaire - HAUTEUR AUGMENTÉE -->
-      <div class="bg-white rounded-2xl shadow-xl p-4 border border-slate-200 h-[calc(100vh-140px)] overflow-hidden">
+      <!-- 📝 Bloc Formulaire - SCROLL ACTIVÉ -->
+      <div class="bg-white rounded-2xl shadow-xl p-4 border border-slate-200 max-h-[calc(100vh-140px)] overflow-y-auto">
         <app-form></app-form>
       </div>
 
-      <!-- 📋 Bloc Liste - HAUTEUR AUGMENTÉE -->
-      <div class="bg-white rounded-2xl shadow-xl p-4 border border-slate-200 h-[calc(100vh-140px)] overflow-hidden">
+      <!-- 📋 Bloc Liste - SCROLL ACTIVÉ -->
+      <div class="bg-white rounded-2xl shadow-xl p-4 border border-slate-200 max-h-[calc(100vh-140px)] overflow-y-auto">
         <app-list></app-list>
       </div>
 
@@ -214,5 +214,61 @@
     overflow-x: hidden;
     margin: 0;
     padding: 0;
+  }
+  
+  /* Scrollbar personnalisée pour les conteneurs */
+  .overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  
+  /* Animation pour le menu */
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { 
+      opacity: 0; 
+      transform: translateY(-10px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+  
+  .animate-slideIn {
+    animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  @keyframes slideIn {
+    from { 
+      opacity: 0; 
+      transform: scale(0.9) translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1) translateY(0); 
+    }
   }
 </style>
