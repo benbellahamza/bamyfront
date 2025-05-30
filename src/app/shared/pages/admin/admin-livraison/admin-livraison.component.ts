@@ -6,17 +6,37 @@ import { saveAs } from 'file-saver';
 
 interface Camion {
   id?: number;
+  // DONNÉES D'ENTRÉE (saisies par l'agent) - OBLIGATOIRES
   numeroChassis: string;
   marque: string;
   modele: string;
-  nomChauffeur: string;
-  prenomChauffeur: string;
+  
+  // CHAUFFEUR D'ENTRÉE - Structure correcte
+  chauffeurEntree?: {
+    id: number;
+    nom: string;
+    prenom?: string;
+  };
+  
+  // Pour la rétrocompatibilité
+  nomChauffeur?: string;
+  prenomChauffeur?: string;
+  
   dateEntree?: string;
-  dateSortie?: string;
-  destination?: string;
-  statut?: 'ENTREE' | 'SORTIE';
   dateEntreeFormatee?: string;
+  
+  // DONNÉES DE SORTIE (saisies par l'agent lors de la sortie) - OPTIONNELLES
+  dateSortie?: string;
   dateSortieFormatee?: string;
+  typeCamion?: string;
+  destination?: string;
+  nomChauffeurLivraison?: string;
+  prenomChauffeurLivraison?: string;
+  cinChauffeurLivraison?: string;
+  nomEntreprise?: string;
+  
+  // STATUT CALCULÉ
+  statut?: 'ENTREE' | 'SORTIE';
 }
 
 @Component({
@@ -26,6 +46,7 @@ interface Camion {
   styleUrls: ['./admin-livraison.component.css']
 })
 export class AdminLivraisonComponent implements OnInit {
+  // Données principales
   camions: Camion[] = [];
   camionsFiltres: Camion[] = [];
   selectedCamions: Camion[] = [];
@@ -36,9 +57,6 @@ export class AdminLivraisonComponent implements OnInit {
   searchTerm: string = '';
   startDate: string = '';
   endDate: string = '';
-
-  // Propriétés pour le tri
-  triActuel: string = 'date_desc';
 
   // Propriétés pour l'utilisateur
   utilisateur = {
@@ -61,13 +79,7 @@ export class AdminLivraisonComponent implements OnInit {
 
   // Propriétés pour la pagination
   currentPage: number = 1;
-  itemsPerPage: number = 12;
-
-  // Propriété pour les erreurs d'export
-  erreurExport: boolean = false;
-
-  // Référence Math pour l'utilisation dans le template
-  Math = Math;
+  itemsPerPage: number = 20; // Augmenté pour l'admin
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -122,7 +134,7 @@ export class AdminLivraisonComponent implements OnInit {
 
   changerMotDePasse() {
     if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
-      this.messageErreur = "Veuillez remplir tous les champs.";
+      this.messageErreur = "Veuillez remplir les deux champs.";
       this.messageSuccess = "";
       return;
     }
@@ -145,11 +157,7 @@ export class AdminLivraisonComponent implements OnInit {
         this.ancienMotDePasse = '';
         this.nouveauMotDePasse = '';
         this.confirmationMotDePasse = '';
-        
-        // Fermer automatiquement la modale après 2 secondes
-        setTimeout(() => {
-          this.fermerModalePassword();
-        }, 2000);
+        setTimeout(() => this.fermerModalePassword(), 3000);
       },
       error: (err) => {
         this.messageErreur = err.error?.error || "❌ Erreur lors de la mise à jour du mot de passe.";
@@ -163,36 +171,27 @@ export class AdminLivraisonComponent implements OnInit {
     return Array.from({ length: total }, (_, i) => i + 1);
   }
 
-  // Nouvelle méthode pour afficher seulement les pages visibles dans la pagination
-  getVisiblePages(): number[] {
-    const totalPages = this.pages.length;
-    const current = this.currentPage;
-    const maxVisible = 5;
-
-    if (totalPages <= maxVisible) {
-      return this.pages;
-    }
-
-    let start = Math.max(1, current - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages, start + maxVisible - 1);
-
-    if (end - start + 1 < maxVisible) {
-      start = Math.max(1, end - maxVisible + 1);
-    }
-
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-  }
-
   chargerCamions(): void {
     this.loading = true;
     this.http.get<Camion[]>('http://localhost:8085/api/livraison/all').subscribe({
       next: (data) => {
-        this.camions = data.map(camion => ({
-          ...camion,
-          statut: (camion.dateSortie ? 'SORTIE' : 'ENTREE') as 'ENTREE' | 'SORTIE',
-          dateEntreeFormatee: this.formatDate(camion.dateEntree),
-          dateSortieFormatee: camion.dateSortie ? this.formatDate(camion.dateSortie) : ''
-        }));
+        this.camions = data.map(camion => {
+          // 🔧 Mapping correct des données du chauffeur
+          const nomChauffeur = camion.chauffeurEntree?.nom || camion.nomChauffeur || '';
+          const prenomChauffeur = camion.chauffeurEntree?.prenom || camion.prenomChauffeur || '';
+
+          return {
+            ...camion,
+            // Ajouter les propriétés mappées pour la rétrocompatibilité
+            nomChauffeur,
+            prenomChauffeur,
+            statut: (camion.dateSortie ? 'SORTIE' : 'ENTREE') as 'ENTREE' | 'SORTIE',
+            dateEntreeFormatee: this.formatDate(camion.dateEntree),
+            dateSortieFormatee: camion.dateSortie ? this.formatDate(camion.dateSortie) : ''
+          };
+        }).sort((a, b) => new Date(b.dateEntree || '').getTime() - new Date(a.dateEntree || '').getTime());
+        
+        console.log('Camions après mapping:', this.camions);
         this.appliquerFiltres();
         this.loading = false;
       },
@@ -213,14 +212,17 @@ export class AdminLivraisonComponent implements OnInit {
 
     // Filtre par terme de recherche
     if (this.searchTerm) {
-      const terme = this.searchTerm.toLowerCase().trim();
+      const terme = this.searchTerm.toLowerCase();
       filtres = filtres.filter(c =>
         c.numeroChassis.toLowerCase().includes(terme) ||
         c.marque.toLowerCase().includes(terme) ||
         c.modele.toLowerCase().includes(terme) ||
-        c.nomChauffeur.toLowerCase().includes(terme) ||
-        c.prenomChauffeur.toLowerCase().includes(terme) ||
-        (c.destination && c.destination.toLowerCase().includes(terme))
+        (c.nomChauffeur && c.nomChauffeur.toLowerCase().includes(terme)) ||
+        (c.prenomChauffeur && c.prenomChauffeur.toLowerCase().includes(terme)) ||
+        (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
+        (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme)) ||
+        (c.destination && c.destination.toLowerCase().includes(terme)) ||
+        (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme))
       );
     }
 
@@ -240,72 +242,14 @@ export class AdminLivraisonComponent implements OnInit {
     }
 
     this.camionsFiltres = filtres;
-    this.trierCamions(); // Appliquer le tri après les filtres
     this.currentPage = 1;
   }
 
-  // ✨ MÉTHODES DE TRI AVANCÉES
-  trierCamions(): void {
-    switch (this.triActuel) {
-      case 'date_desc':
-        this.camionsFiltres.sort((a, b) => {
-          const dateA = new Date(a.dateEntree || '').getTime();
-          const dateB = new Date(b.dateEntree || '').getTime();
-          return dateB - dateA; // Plus récent en premier
-        });
-        break;
-      
-      case 'date_asc':
-        this.camionsFiltres.sort((a, b) => {
-          const dateA = new Date(a.dateEntree || '').getTime();
-          const dateB = new Date(b.dateEntree || '').getTime();
-          return dateA - dateB; // Plus ancien en premier
-        });
-        break;
-      
-      case 'marque_asc':
-        this.camionsFiltres.sort((a, b) => 
-          a.marque.localeCompare(b.marque)
-        );
-        break;
-      
-      case 'marque_desc':
-        this.camionsFiltres.sort((a, b) => 
-          b.marque.localeCompare(a.marque)
-        );
-        break;
-      
-      case 'chauffeur_asc':
-        this.camionsFiltres.sort((a, b) => {
-          const nomA = `${a.nomChauffeur} ${a.prenomChauffeur}`.trim();
-          const nomB = `${b.nomChauffeur} ${b.prenomChauffeur}`.trim();
-          return nomA.localeCompare(nomB);
-        });
-        break;
-      
-      case 'chauffeur_desc':
-        this.camionsFiltres.sort((a, b) => {
-          const nomA = `${a.nomChauffeur} ${a.prenomChauffeur}`.trim();
-          const nomB = `${b.nomChauffeur} ${b.prenomChauffeur}`.trim();
-          return nomB.localeCompare(nomA);
-        });
-        break;
-      
-      case 'statut_asc':
-        this.camionsFiltres.sort((a, b) => {
-          if (a.statut === 'ENTREE' && b.statut === 'SORTIE') return -1;
-          if (a.statut === 'SORTIE' && b.statut === 'ENTREE') return 1;
-          return 0;
-        });
-        break;
-      
-      case 'statut_desc':
-        this.camionsFiltres.sort((a, b) => {
-          if (a.statut === 'SORTIE' && b.statut === 'ENTREE') return -1;
-          if (a.statut === 'ENTREE' && b.statut === 'SORTIE') return 1;
-          return 0;
-        });
-        break;
+  appliquerFiltre(): void {
+    if (this.filtreStatut === 'TOUS') {
+      this.camionsFiltres = this.camions;
+    } else {
+      this.camionsFiltres = this.camions.filter(c => c.statut === this.filtreStatut);
     }
   }
 
@@ -315,55 +259,24 @@ export class AdminLivraisonComponent implements OnInit {
   }
 
   rechercher(): void {
-    this.currentPage = 1; // Réinitialiser à la première page lors de la recherche
     this.appliquerFiltres();
   }
 
   filtrerParDate(): void {
-    this.currentPage = 1; // Réinitialiser à la première page lors du filtrage
     this.appliquerFiltres();
-  }
-
-  // Méthodes pour les statistiques du dashboard
-  getCamionsEntres(): number {
-    return this.camions.filter(c => c.statut === 'ENTREE').length;
-  }
-
-  getCamionsSortis(): number {
-    return this.camions.filter(c => c.statut === 'SORTIE').length;
   }
 
   getCamionsByStatut(statut: 'ENTREE' | 'SORTIE'): Camion[] {
     return this.camions.filter(c => c.statut === statut);
   }
 
-  enregistrerSortie(camion: Camion): void {
-    if (!camion.numeroChassis) return;
-    
-    if (confirm(`Voulez-vous vraiment enregistrer la sortie du camion ${camion.numeroChassis} ?`)) {
-      const payload = {
-        nomChauffeurSortie: camion.nomChauffeur,
-        prenomChauffeurSortie: camion.prenomChauffeur,
-        cinChauffeurSortie: 'CIN_PLACEHOLDER'
-      };
-
-      this.http.post(`http://localhost:8085/api/livraison/sortie/${camion.numeroChassis}`, payload).subscribe({
-        next: () => {
-          this.chargerCamions();
-          this.messageSuccess = `✅ Sortie du camion ${camion.numeroChassis} enregistrée avec succès.`;
-          setTimeout(() => this.messageSuccess = '', 3000);
-        },
-        error: (err) => {
-          console.error('Erreur lors de la sortie', err);
-          this.messageErreur = `❌ Erreur lors de l'enregistrement de la sortie du camion ${camion.numeroChassis}.`;
-          setTimeout(() => this.messageErreur = '', 3000);
-        }
-      });
-    }
+  // Méthodes désactivées pour l'admin (interface consultative)
+  naviguerVersAjout(): void {
+    console.log('Action non autorisée: Seul l\'agent peut ajouter des camions');
   }
 
-  naviguerVersAjout(): void {
-    this.router.navigate(['/agent/ajouterLivraison']);
+  enregistrerSortie(camion: Camion): void {
+    console.log('Action non autorisée: Interface consultative pour l\'admin');
   }
 
   toggleSelection(camion: Camion) {
@@ -378,54 +291,57 @@ export class AdminLivraisonComponent implements OnInit {
     return this.selectedCamions.some(c => c.numeroChassis === camion.numeroChassis);
   }
 
-  // Nouvelles méthodes pour la sélection en masse
-  selectionnerTous() {
-    this.selectedCamions = [...this.camionsFiltres];
-  }
-
-  deselectionnerTous() {
-    this.selectedCamions = [];
-  }
-
   exporterExcel(exportAll: boolean) {
-    this.erreurExport = false;
     const dataToExport = exportAll ? this.camionsFiltres : this.selectedCamions;
 
     if (dataToExport.length === 0) {
-      this.erreurExport = true;
-      // Masquer automatiquement l'erreur après 5 secondes
-      setTimeout(() => {
-        this.erreurExport = false;
-      }, 5000);
+      alert('Aucune donnée à exporter');
       return;
     }
 
     const formattedData = dataToExport.map(c => ({
+      // DONNÉES D'ENTRÉE
       'N° Châssis': c.numeroChassis,
       'Marque': c.marque,
       'Modèle': c.modele,
-      'Chauffeur': `${c.nomChauffeur} ${c.prenomChauffeur}`,
-      'Destination': c.destination || 'N/A',
+      'Nom Chauffeur (Entrée)': c.nomChauffeur,
+      'Prénom Chauffeur (Entrée)': c.prenomChauffeur,
+      'Date Entrée': c.dateEntreeFormatee || '',
+      
+      // DONNÉES DE SORTIE
+      'Type Camion': c.typeCamion || 'En attente',
+      'Destination': c.destination || 'En attente',
+      'Nom Chauffeur Livraison': c.nomChauffeurLivraison || 'En attente',
+      'Prénom Chauffeur Livraison': c.prenomChauffeurLivraison || 'En attente',
+      'CIN Chauffeur Livraison': c.cinChauffeurLivraison || 'En attente',
+      'Nom Entreprise': c.nomEntreprise || 'En attente',
+      'Date Sortie': c.dateSortieFormatee || 'Non sorti',
+      
+      // INFORMATIONS CALCULÉES
       'Statut': c.statut === 'ENTREE' ? 'Présent' : 'Sorti',
-      'Date d\'entrée': c.dateEntreeFormatee || '',
-      'Date de sortie': c.dateSortieFormatee || 'Non sorti',
-      'Durée de présence': c.dateSortieFormatee ? this.calculerDureePresence(c.dateEntree, c.dateSortie) : 'En cours'
+      'Durée de Présence': c.dateSortieFormatee ? this.calculerDureePresence(c.dateEntree, c.dateSortie) : 'En cours'
     }));
 
     try {
       const worksheet = XLSX.utils.json_to_sheet(formattedData);
       
-      // Personnaliser la largeur des colonnes
+      // Personnaliser la largeur des colonnes pour toutes les données
       const columnWidths = [
         { wch: 15 }, // N° Châssis
         { wch: 15 }, // Marque
         { wch: 15 }, // Modèle
-        { wch: 20 }, // Chauffeur
+        { wch: 20 }, // Nom Chauffeur (Entrée)
+        { wch: 20 }, // Prénom Chauffeur (Entrée)
+        { wch: 20 }, // Date Entrée
+        { wch: 15 }, // Type Camion
         { wch: 20 }, // Destination
-        { wch: 10 }, // Statut
-        { wch: 20 }, // Date d'entrée
-        { wch: 20 }, // Date de sortie
-        { wch: 15 }  // Durée de présence
+        { wch: 20 }, // Nom Chauffeur Livraison
+        { wch: 20 }, // Prénom Chauffeur Livraison
+        { wch: 15 }, // CIN Chauffeur Livraison
+        { wch: 20 }, // Nom Entreprise
+        { wch: 20 }, // Date Sortie
+        { wch: 12 }, // Statut
+        { wch: 18 }  // Durée de Présence
       ];
       worksheet['!cols'] = columnWidths;
 
@@ -442,20 +358,47 @@ export class AdminLivraisonComponent implements OnInit {
         : `camions_selection_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
       saveAs(blob, fileName);
-
-      // Afficher un message de succès (optionnel)
-      console.log(`Export réussi: ${dataToExport.length} camion(s) exporté(s)`);
+      
+      // Afficher un message de succès
+      this.messageSuccess = `✅ Export Excel généré avec succès : ${fileName}`;
+      setTimeout(() => this.messageSuccess = '', 3000);
       
     } catch (error) {
       console.error('Erreur lors de l\'export:', error);
-      this.erreurExport = true;
-      setTimeout(() => {
-        this.erreurExport = false;
-      }, 5000);
+      this.messageErreur = '❌ Erreur lors de la génération du fichier Excel';
+      setTimeout(() => this.messageErreur = '', 3000);
     }
   }
 
-  private calculerDureePresence(dateEntree: string | undefined, dateSortie: string | undefined): string {
+  resetFiltres() {
+    this.searchTerm = '';
+    this.startDate = '';
+    this.endDate = '';
+    this.selectedCamions = [];
+    this.filtreStatut = 'TOUS';
+    this.appliquerFiltres();
+  }
+
+  get camionsPage(): Camion[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.camionsFiltres.slice(start, start + this.itemsPerPage);
+  }
+
+  setPage(page: number) {
+    if (page < 1 || page > this.pages.length) return;
+    this.currentPage = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  logout() {
+    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+      localStorage.clear();
+      this.router.navigate(['/']);
+    }
+  }
+
+  // Méthode pour calculer la durée de présence (pour camions sortis)
+  calculerDureePresence(dateEntree: string | undefined, dateSortie: string | undefined): string {
     if (!dateEntree || !dateSortie) return 'N/A';
     
     const entree = new Date(dateEntree);
@@ -475,36 +418,24 @@ export class AdminLivraisonComponent implements OnInit {
     }
   }
 
-  resetFiltres() {
-    this.searchTerm = '';
-    this.startDate = '';
-    this.endDate = '';
-    this.selectedCamions = [];
-    this.filtreStatut = 'TOUS';
-    this.triActuel = 'date_desc';
-    this.appliquerFiltres();
-    this.erreurExport = false;
-  }
-
-  get camionsPage(): Camion[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.camionsFiltres.slice(start, start + this.itemsPerPage);
-  }
-
-  setPage(page: number) {
-    if (page >= 1 && page <= this.pages.length) {
-      this.currentPage = page;
-      // Scroll vers le haut lors du changement de page
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
-
-  logout() {
-    // Confirmer la déconnexion
-    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-      localStorage.clear();
-      sessionStorage.clear();
-      this.router.navigate(['/']);
+  // Méthode pour calculer le temps de présence actuel (pour camions encore présents)
+  calculerTempsPresence(dateEntree: string | undefined): string {
+    if (!dateEntree) return 'N/A';
+    
+    const entree = new Date(dateEntree);
+    const maintenant = new Date();
+    const diffMs = maintenant.getTime() - entree.getTime();
+    
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (diffDays > 0) {
+      return `${diffDays}j ${diffHours}h ${diffMinutes}min`;
+    } else if (diffHours > 0) {
+      return `${diffHours}h ${diffMinutes}min`;
+    } else {
+      return `${diffMinutes}min`;
     }
   }
 
@@ -530,218 +461,12 @@ export class AdminLivraisonComponent implements OnInit {
     }
   }
 
-  // Méthodes utilitaires pour l'interface
-  getTotalCamions(): number {
-    return this.camions.length;
-  }
-
-  getPourcentageEntres(): number {
-    if (this.camions.length === 0) return 0;
-    return Math.round((this.getCamionsEntres() / this.camions.length) * 100);
-  }
-
-  getPourcentageSortis(): number {
-    if (this.camions.length === 0) return 0;
-    return Math.round((this.getCamionsSortis() / this.camions.length) * 100);
-  }
-
-  // Méthode pour actualiser les données
-  actualiserDonnees() {
-    this.loading = true;
-    this.chargerCamions();
-  }
-
-  // Méthode pour formater les dates d'affichage
-  formaterDate(date: string): string {
-    return new Date(date).toLocaleString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',  
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  // Méthodes de tri rapide (raccourcis)
-  trierParDateRecente() {
-    this.triActuel = 'date_desc';
-    this.trierCamions();
-  }
-
-  trierParMarque() {
-    this.triActuel = 'marque_asc';
-    this.trierCamions();
-  }
-
-  trierParChauffeur() {
-    this.triActuel = 'chauffeur_asc';
-    this.trierCamions();
-  }
-
-  trierParStatut() {
-    this.triActuel = 'statut_asc';
-    this.trierCamions();
-  }
-
-  // Méthodes de filtrage rapide
-  afficherSeulementPresents() {
-    this.filtreStatut = 'ENTREE';
-    this.appliquerFiltres();
-  }
-
-  afficherSeulementSortis() {
-    this.filtreStatut = 'SORTIE';
-    this.appliquerFiltres();
-  }
-
-  afficherTous() {
-    this.filtreStatut = 'TOUS';
-    this.appliquerFiltres();
-  }
-
-  // Méthode pour obtenir les camions par période
-  getCamionsParPeriode(jours: number): Camion[] {
-    const dateLimit = new Date();
-    dateLimit.setDate(dateLimit.getDate() - jours);
-    
-    return this.camions.filter(c => {
-      if (!c.dateEntree) return false;
-      const dateEntree = new Date(c.dateEntree);
-      return dateEntree >= dateLimit;
-    });
-  }
-
-  // Méthodes pour les statistiques avancées
-  getCamionsAujourdhui(): number {
-    return this.getCamionsParPeriode(1).length;
-  }
-
-  getCamionsCetteSemaine(): number {
-    return this.getCamionsParPeriode(7).length;
-  }
-
-  getCamionsCeMois(): number {
-    return this.getCamionsParPeriode(30).length;
-  }
-
-  // Méthode pour obtenir la durée moyenne de présence
-  getDureeMoyennePresence(): string {
-    const camionsSortis = this.camions.filter(c => c.dateSortie && c.dateEntree);
-    
-    if (camionsSortis.length === 0) return 'N/A';
-    
-    let totalMs = 0;
-    camionsSortis.forEach(c => {
-      const entree = new Date(c.dateEntree!);
-      const sortie = new Date(c.dateSortie!);
-      totalMs += sortie.getTime() - entree.getTime();
-    });
-    
-    const moyenneMs = totalMs / camionsSortis.length;
-    const moyenneHeures = Math.floor(moyenneMs / (1000 * 60 * 60));
-    const moyenneMinutes = Math.floor((moyenneMs % (1000 * 60 * 60)) / (1000 * 60));
-    
-    return `${moyenneHeures}h ${moyenneMinutes}min`;
-  }
-
-  // Méthode pour rechercher par critères multiples
-  rechercheAvancee(criteres: {
-    chassis?: string;
-    marque?: string;
-    chauffeur?: string;
-    destination?: string;
-    statut?: 'ENTREE' | 'SORTIE';
-    dateDebut?: string;
-    dateFin?: string;
-  }) {
-    let resultats = [...this.camions];
-    
-    if (criteres.chassis) {
-      resultats = resultats.filter(c => 
-        c.numeroChassis.toLowerCase().includes(criteres.chassis!.toLowerCase())
-      );
-    }
-    
-    if (criteres.marque) {
-      resultats = resultats.filter(c => 
-        c.marque.toLowerCase().includes(criteres.marque!.toLowerCase())
-      );
-    }
-    
-    if (criteres.chauffeur) {
-      const terme = criteres.chauffeur.toLowerCase();
-      resultats = resultats.filter(c => 
-        c.nomChauffeur.toLowerCase().includes(terme) ||
-        c.prenomChauffeur.toLowerCase().includes(terme)
-      );
-    }
-    
-    if (criteres.destination) {
-      resultats = resultats.filter(c => 
-        c.destination?.toLowerCase().includes(criteres.destination!.toLowerCase())
-      );
-    }
-    
-    if (criteres.statut) {
-      resultats = resultats.filter(c => c.statut === criteres.statut);
-    }
-    
-    if (criteres.dateDebut || criteres.dateFin) {
-      const debut = criteres.dateDebut ? new Date(criteres.dateDebut) : new Date(0);
-      const fin = criteres.dateFin ? new Date(criteres.dateFin) : new Date();
-      
-      resultats = resultats.filter(c => {
-        if (!c.dateEntree) return false;
-        const dateEntree = new Date(c.dateEntree);
-        return dateEntree >= debut && dateEntree <= fin;
-      });
-    }
-    
-    return resultats;
-  }
-
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.relative');
-    
-    // Fermer le menu utilisateur si on clique en dehors
+    const clickedInside = target.closest('.relative') || target.closest('.w-8.h-8.rounded-full');
     if (!clickedInside && this.menuOuvert) {
       this.menuOuvert = false;
     }
-  }
-
-  // Méthode pour fermer automatiquement les messages d'erreur
-  @HostListener('window:keydown.escape', ['$event'])
-  onEscapeKey(event: KeyboardEvent) {
-    if (this.modalePasswordVisible) {
-      this.fermerModalePassword();
-    }
-    if (this.menuOuvert) {
-      this.menuOuvert = false;
-    }
-  }
-
-  // Méthodes pour les raccourcis clavier
-  @HostListener('window:keydown.control.f', ['$event'])
-  onSearchShortcut(event: KeyboardEvent) {
-    event.preventDefault();
-    // Focus sur la barre de recherche
-    const searchInput = document.querySelector('input[placeholder*="Rechercher"]') as HTMLInputElement;
-    if (searchInput) {
-      searchInput.focus();
-    }
-  }
-
-  @HostListener('window:keydown.control.r', ['$event'])
-  onRefreshShortcut(event: KeyboardEvent) {
-    event.preventDefault();
-    this.actualiserDonnees();
-  }
-
-  @HostListener('window:keydown.control.a', ['$event'])
-  onSelectAllShortcut(event: KeyboardEvent) {
-    event.preventDefault();
-    this.selectionnerTous();
   }
 }

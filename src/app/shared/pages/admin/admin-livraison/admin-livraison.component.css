@@ -32,6 +32,17 @@
   }
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -61,6 +72,10 @@
 
 .animate-slideInRight {
   animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
 }
 
 .animate-spin {
@@ -595,4 +610,60 @@
 .focus-ring:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* Styles spécifiques pour l'admin */
+.admin-sidebar {
+  transition: transform 0.3s ease;
+}
+
+.admin-content {
+  transition: margin-left 0.3s ease;
+}
+
+/* Checkbox personnalisée */
+.checkbox {
+  transition: all 0.2s ease;
+}
+
+.checkbox:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.checkbox:hover {
+  border-color: #3b82f6;
+}
+
+/* Input styles améliorés */
+.input {
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+/* Styles pour les sélections multiples */
+.selected-item {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid #3b82f6;
+}
+
+/* Animation pour les notifications */
+@keyframes notification-slide {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification {
+  animation: notification-slide 0.3s ease-out;
 }

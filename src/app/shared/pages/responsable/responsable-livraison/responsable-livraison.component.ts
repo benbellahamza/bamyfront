@@ -3,13 +3,23 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 interface Camion {
-  id: number;
+  id?: number;
   marque: string;
   modele: string;
   numeroChassis: string;
-  nomChauffeur: string;
-  prenomChauffeur: string;
-  dateEntree: string;
+  
+  // CHAUFFEUR D'ENTRÉE - Structure correcte
+  chauffeurEntree?: {
+    id: number;
+    nom: string;
+    prenom?: string;
+  };
+  
+  // Pour la rétrocompatibilité
+  nomChauffeur?: string;
+  prenomChauffeur?: string;
+  
+  dateEntree?: string;
   dateSortie?: string;
   destination?: string;
   statut?: 'ENTREE' | 'SORTIE';
@@ -137,12 +147,23 @@ export class ResponsableLivraisonComponent implements OnInit {
     this.loading = true;
     this.http.get<Camion[]>('http://localhost:8085/api/livraison/all').subscribe({
       next: (data) => {
-        this.camions = data.map(camion => ({
-          ...camion,
-          statut: (camion.dateSortie ? 'SORTIE' : 'ENTREE') as 'ENTREE' | 'SORTIE',
-          dateEntreeFormatee: this.formatDate(camion.dateEntree),
-          dateSortieFormatee: camion.dateSortie ? this.formatDate(camion.dateSortie) : ''
-        })).sort((a, b) => new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime());
+        this.camions = data.map(camion => {
+          // 🔧 Mapping correct des données du chauffeur
+          const nomChauffeur = camion.chauffeurEntree?.nom || camion.nomChauffeur || '';
+          const prenomChauffeur = camion.chauffeurEntree?.prenom || camion.prenomChauffeur || '';
+
+          return {
+            ...camion,
+            // Ajouter les propriétés mappées pour la rétrocompatibilité
+            nomChauffeur,
+            prenomChauffeur,
+            statut: (camion.dateSortie ? 'SORTIE' : 'ENTREE') as 'ENTREE' | 'SORTIE',
+            dateEntreeFormatee: this.formatDate(camion.dateEntree),
+            dateSortieFormatee: camion.dateSortie ? this.formatDate(camion.dateSortie) : ''
+          };
+        }).sort((a, b) => new Date(b.dateEntree || '').getTime() - new Date(a.dateEntree || '').getTime());
+        
+        console.log('Camions après mapping (responsable):', this.camions);
         this.appliquerFiltre();
         this.loading = false;
       },
@@ -173,8 +194,8 @@ export class ResponsableLivraisonComponent implements OnInit {
   enregistrerSortie(camion: Camion): void {
     if (confirm(`Voulez-vous vraiment enregistrer la sortie du camion ${camion.numeroChassis} ?`)) {
       const payload = {
-        nomChauffeurSortie: camion.nomChauffeur,
-        prenomChauffeurSortie: camion.prenomChauffeur,
+        nomChauffeurSortie: camion.nomChauffeur || '',
+        prenomChauffeurSortie: camion.prenomChauffeur || '',
         cinChauffeurSortie: 'CIN_PLACEHOLDER' // à récupérer ou ajouter dans le formulaire
       };
 
@@ -203,7 +224,9 @@ export class ResponsableLivraisonComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  private formatDate(dateStr: string): string {
+  private formatDate(dateStr: string | undefined): string {
+    if (!dateStr) return '';
+    
     try {
       const date = new Date(dateStr);
       
