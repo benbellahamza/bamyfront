@@ -79,13 +79,25 @@ export class AdminLivraisonComponent implements OnInit {
 
   // Propriétés pour la pagination
   currentPage: number = 1;
-  itemsPerPage: number = 20; // Augmenté pour l'admin
+  itemsPerPage: number = 20; // Augmenté pour voir plus de camions
+
+  // Référence Math pour l'utilisation dans le template
+  Math = Math;
 
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     this.recupererInfosUtilisateur();
     this.chargerCamions();
+  }
+
+  // Méthode trackBy pour optimiser les performances
+  trackByCamion(index: number, camion: Camion): any {
+    if (!camion) {
+      console.warn('❌ Camion undefined à l\'index:', index);
+      return index;
+    }
+    return camion.id || camion.numeroChassis || index;
   }
 
   get nomComplet(): string {
@@ -134,7 +146,7 @@ export class AdminLivraisonComponent implements OnInit {
 
   changerMotDePasse() {
     if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
-      this.messageErreur = "Veuillez remplir les deux champs.";
+      this.messageErreur = "Veuillez remplir tous les champs.";
       this.messageSuccess = "";
       return;
     }
@@ -152,12 +164,16 @@ export class AdminLivraisonComponent implements OnInit {
 
     this.http.post('http://localhost:8085/auth/update-password', payload).subscribe({
       next: (res: any) => {
-        this.messageSuccess = res.message || "✅ Mot de passe mis à jour avec succès.";
+        this.messageSuccess = res.message || "Mot de passe modifié avec succès !";
         this.messageErreur = "";
         this.ancienMotDePasse = '';
         this.nouveauMotDePasse = '';
         this.confirmationMotDePasse = '';
-        setTimeout(() => this.fermerModalePassword(), 3000);
+        
+        // Fermer automatiquement la modale après 2 secondes
+        setTimeout(() => {
+          this.fermerModalePassword();
+        }, 2000);
       },
       error: (err) => {
         this.messageErreur = err.error?.error || "❌ Erreur lors de la mise à jour du mot de passe.";
@@ -171,43 +187,116 @@ export class AdminLivraisonComponent implements OnInit {
     return Array.from({ length: total }, (_, i) => i + 1);
   }
 
+  // Nouvelle méthode pour afficher seulement les pages visibles dans la pagination
+  getVisiblePages(): number[] {
+    const totalPages = this.pages.length;
+    const current = this.currentPage;
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      return this.pages;
+    }
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+
   chargerCamions(): void {
     this.loading = true;
+    console.log('🔄 Chargement des camions...');
+    
     this.http.get<Camion[]>('http://localhost:8085/api/livraison/all').subscribe({
       next: (data) => {
-        this.camions = data.map(camion => {
-          // 🔧 Mapping correct des données du chauffeur
-          const nomChauffeur = camion.chauffeurEntree?.nom || camion.nomChauffeur || '';
-          const prenomChauffeur = camion.chauffeurEntree?.prenom || camion.prenomChauffeur || '';
-
-          return {
-            ...camion,
-            // Ajouter les propriétés mappées pour la rétrocompatibilité
-            nomChauffeur,
-            prenomChauffeur,
-            statut: (camion.dateSortie ? 'SORTIE' : 'ENTREE') as 'ENTREE' | 'SORTIE',
-            dateEntreeFormatee: this.formatDate(camion.dateEntree),
-            dateSortieFormatee: camion.dateSortie ? this.formatDate(camion.dateSortie) : ''
-          };
-        }).sort((a, b) => new Date(b.dateEntree || '').getTime() - new Date(a.dateEntree || '').getTime());
+        console.log('📦 Données brutes reçues:', data);
         
-        console.log('Camions après mapping:', this.camions);
-        this.appliquerFiltres();
+        if (!data || !Array.isArray(data)) {
+          console.error('❌ Données invalides reçues:', data);
+          this.camions = [];
+          this.camionsFiltres = [];
+          this.loading = false;
+          return;
+        }
+        
+        this.camions = data
+          .filter(camion => camion && camion.marque && camion.modele && camion.numeroChassis) // Filtrer les données invalides
+          .map(camion => {
+            // 🔧 Mapping correct des données du chauffeur
+            const nomChauffeur = camion.chauffeurEntree?.nom || camion.nomChauffeur || '';
+            const prenomChauffeur = camion.chauffeurEntree?.prenom || camion.prenomChauffeur || '';
+
+            const camionMapped = {
+              ...camion,
+              // Ajouter les propriétés mappées pour la rétrocompatibilité
+              nomChauffeur,
+              prenomChauffeur,
+              statut: (camion.dateSortie ? 'SORTIE' : 'ENTREE') as 'ENTREE' | 'SORTIE',
+              dateEntreeFormatee: this.formatDate(camion.dateEntree),
+              dateSortieFormatee: camion.dateSortie ? this.formatDate(camion.dateSortie) : ''
+            };
+            
+            console.log('🚛 Camion mappé:', {
+              marque: camionMapped.marque,
+              modele: camionMapped.modele,
+              numeroChassis: camionMapped.numeroChassis,
+              statut: camionMapped.statut
+            });
+            
+            return camionMapped;
+          })
+          .sort((a, b) => new Date(b.dateEntree || '').getTime() - new Date(a.dateEntree || '').getTime());
+        
+        console.log('✅ Total camions valides chargés:', this.camions.length);
+        console.log('📊 Camions par statut:', {
+          entree: this.camions.filter(c => c.statut === 'ENTREE').length,
+          sortie: this.camions.filter(c => c.statut === 'SORTIE').length
+        });
+        
+        // Initialiser la liste filtrée avec tous les camions valides
+        this.camionsFiltres = [...this.camions];
+        console.log('🔍 Camions filtrés initialisés:', this.camionsFiltres.length);
+        
         this.loading = false;
+        
+        // Forcer la mise à jour de la vue
+        setTimeout(() => {
+          console.log('🔄 Mise à jour forcée de la vue');
+        }, 100);
       },
       error: (err) => {
-        console.error('Erreur chargement camions', err);
+        console.error('❌ Erreur chargement camions', err);
+        this.camions = [];
+        this.camionsFiltres = [];
         this.loading = false;
       }
     });
   }
 
   appliquerFiltres(): void {
+    console.log('🔍 Application des filtres...');
+    console.log('📋 Filtres actifs:', {
+      statut: this.filtreStatut,
+      recherche: this.searchTerm,
+      dateDebut: this.startDate,
+      dateFin: this.endDate
+    });
+
     let filtres = [...this.camions];
+    console.log('📦 Camions de départ:', filtres.length);
 
     // Filtre par statut
     if (this.filtreStatut !== 'TOUS') {
-      filtres = filtres.filter(c => c.statut === this.filtreStatut);
+      filtres = filtres.filter(c => {
+        const match = c.statut === this.filtreStatut;
+        console.log(`🚛 ${c.marque} ${c.modele} - Statut: ${c.statut}, Match: ${match}`);
+        return match;
+      });
+      console.log(`✅ Après filtre statut ${this.filtreStatut}:`, filtres.length);
     }
 
     // Filtre par terme de recherche
@@ -224,6 +313,7 @@ export class AdminLivraisonComponent implements OnInit {
         (c.destination && c.destination.toLowerCase().includes(terme)) ||
         (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme))
       );
+      console.log(`✅ Après filtre recherche "${terme}":`, filtres.length);
     }
 
     // Filtre par date
@@ -239,30 +329,29 @@ export class AdminLivraisonComponent implements OnInit {
         const dateEntree = new Date(c.dateEntree);
         return dateEntree >= start && dateEntree <= end;
       });
+      console.log(`✅ Après filtre date:`, filtres.length);
     }
 
     this.camionsFiltres = filtres;
     this.currentPage = 1;
-  }
-
-  appliquerFiltre(): void {
-    if (this.filtreStatut === 'TOUS') {
-      this.camionsFiltres = this.camions;
-    } else {
-      this.camionsFiltres = this.camions.filter(c => c.statut === this.filtreStatut);
-    }
+    
+    console.log('🎯 Résultat final:', this.camionsFiltres.length, 'camions');
   }
 
   filtrerParStatut(statut: 'TOUS' | 'ENTREE' | 'SORTIE'): void {
+    console.log('🎯 Filtrage par statut:', statut);
     this.filtreStatut = statut;
+    this.currentPage = 1;
     this.appliquerFiltres();
   }
 
   rechercher(): void {
+    this.currentPage = 1; // Réinitialiser à la première page lors de la recherche
     this.appliquerFiltres();
   }
 
   filtrerParDate(): void {
+    this.currentPage = 1; // Réinitialiser à la première page lors du filtrage
     this.appliquerFiltres();
   }
 
@@ -270,25 +359,25 @@ export class AdminLivraisonComponent implements OnInit {
     return this.camions.filter(c => c.statut === statut);
   }
 
-  // Méthodes désactivées pour l'admin (interface consultative)
-  naviguerVersAjout(): void {
-    console.log('Action non autorisée: Seul l\'agent peut ajouter des camions');
-  }
-
-  enregistrerSortie(camion: Camion): void {
-    console.log('Action non autorisée: Interface consultative pour l\'admin');
-  }
-
   toggleSelection(camion: Camion) {
     if (this.isSelected(camion)) {
-      this.selectedCamions = this.selectedCamions.filter(c => c.numeroChassis !== camion.numeroChassis);
+      this.selectedCamions = this.selectedCamions.filter(c => c.id !== camion.id);
     } else {
       this.selectedCamions.push(camion);
     }
   }
 
   isSelected(camion: Camion): boolean {
-    return this.selectedCamions.some(c => c.numeroChassis === camion.numeroChassis);
+    return this.selectedCamions.some(c => c.id === camion.id);
+  }
+
+  // Nouvelles méthodes pour la sélection en masse
+  selectionnerTous() {
+    this.selectedCamions = [...this.camionsFiltres];
+  }
+
+  deselectionnerTous() {
+    this.selectedCamions = [];
   }
 
   exporterExcel(exportAll: boolean) {
@@ -318,8 +407,7 @@ export class AdminLivraisonComponent implements OnInit {
       'Date Sortie': c.dateSortieFormatee || 'Non sorti',
       
       // INFORMATIONS CALCULÉES
-      'Statut': c.statut === 'ENTREE' ? 'Présent' : 'Sorti',
-      'Durée de Présence': c.dateSortieFormatee ? this.calculerDureePresence(c.dateEntree, c.dateSortie) : 'En cours'
+      'Statut': c.statut === 'ENTREE' ? 'Présent' : 'Sorti'
     }));
 
     try {
@@ -340,8 +428,7 @@ export class AdminLivraisonComponent implements OnInit {
         { wch: 15 }, // CIN Chauffeur Livraison
         { wch: 20 }, // Nom Entreprise
         { wch: 20 }, // Date Sortie
-        { wch: 12 }, // Statut
-        { wch: 18 }  // Durée de Présence
+        { wch: 12 }  // Statut
       ];
       worksheet['!cols'] = columnWidths;
 
@@ -353,20 +440,14 @@ export class AdminLivraisonComponent implements OnInit {
       const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-      const fileName = exportAll
-        ? `camions_complet_${new Date().toISOString().slice(0, 10)}.xlsx`
-        : `camions_selection_${new Date().toISOString().slice(0, 10)}.xlsx`;
-
+      const fileName = `camions_export_${new Date().toISOString().split('T')[0]}.xlsx`;
       saveAs(blob, fileName);
       
       // Afficher un message de succès
-      this.messageSuccess = `✅ Export Excel généré avec succès : ${fileName}`;
-      setTimeout(() => this.messageSuccess = '', 3000);
+      console.log(`Export réussi: ${dataToExport.length} camion(s) exporté(s)`);
       
     } catch (error) {
       console.error('Erreur lors de l\'export:', error);
-      this.messageErreur = '❌ Erreur lors de la génération du fichier Excel';
-      setTimeout(() => this.messageErreur = '', 3000);
     }
   }
 
@@ -376,66 +457,63 @@ export class AdminLivraisonComponent implements OnInit {
     this.endDate = '';
     this.selectedCamions = [];
     this.filtreStatut = 'TOUS';
-    this.appliquerFiltres();
+    this.currentPage = 1;
+    
+    console.log('🔄 Reset des filtres');
+    console.log('📦 Camions disponibles:', this.camions.length);
+    
+    // Réinitialiser avec tous les camions valides
+    this.camionsFiltres = this.camions.filter(camion => 
+      camion && camion.marque && camion.modele && camion.numeroChassis
+    );
+    
+    console.log('✅ Camions après reset:', this.camionsFiltres.length);
   }
 
   get camionsPage(): Camion[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.camionsFiltres.slice(start, start + this.itemsPerPage);
+    const end = start + this.itemsPerPage;
+    
+    // Filtrer les éléments null/undefined
+    const camionsFiltresValides = this.camionsFiltres.filter(camion => 
+      camion && 
+      camion.marque && 
+      camion.modele && 
+      camion.numeroChassis
+    );
+    
+    const page = camionsFiltresValides.slice(start, end);
+    
+    console.log(`📄 Page ${this.currentPage}:`);
+    console.log(`   - Total camions filtrés: ${this.camionsFiltres.length}`);
+    console.log(`   - Camions valides: ${camionsFiltresValides.length}`);
+    console.log(`   - Affichage: ${start + 1}-${Math.min(end, camionsFiltresValides.length)} sur ${camionsFiltresValides.length}`);
+    console.log(`   - Camions de la page:`, page.map(c => `${c.marque} ${c.modele} (${c.statut})`));
+    
+    // Vérifier s'il y a des éléments undefined
+    page.forEach((camion, index) => {
+      if (!camion || !camion.marque || !camion.modele) {
+        console.error(`❌ Camion invalide à l'index ${index}:`, camion);
+      }
+    });
+    
+    return page;
   }
 
   setPage(page: number) {
-    if (page < 1 || page > this.pages.length) return;
-    this.currentPage = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (page >= 1 && page <= this.pages.length) {
+      this.currentPage = page;
+      // Scroll vers le haut lors du changement de page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   logout() {
+    // Confirmer la déconnexion
     if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
       localStorage.clear();
+      sessionStorage.clear();
       this.router.navigate(['/']);
-    }
-  }
-
-  // Méthode pour calculer la durée de présence (pour camions sortis)
-  calculerDureePresence(dateEntree: string | undefined, dateSortie: string | undefined): string {
-    if (!dateEntree || !dateSortie) return 'N/A';
-    
-    const entree = new Date(dateEntree);
-    const sortie = new Date(dateSortie);
-    const diffMs = sortie.getTime() - entree.getTime();
-    
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (diffDays > 0) {
-      return `${diffDays}j ${diffHours}h ${diffMinutes}min`;
-    } else if (diffHours > 0) {
-      return `${diffHours}h ${diffMinutes}min`;
-    } else {
-      return `${diffMinutes}min`;
-    }
-  }
-
-  // Méthode pour calculer le temps de présence actuel (pour camions encore présents)
-  calculerTempsPresence(dateEntree: string | undefined): string {
-    if (!dateEntree) return 'N/A';
-    
-    const entree = new Date(dateEntree);
-    const maintenant = new Date();
-    const diffMs = maintenant.getTime() - entree.getTime();
-    
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (diffDays > 0) {
-      return `${diffDays}j ${diffHours}h ${diffMinutes}min`;
-    } else if (diffHours > 0) {
-      return `${diffHours}h ${diffMinutes}min`;
-    } else {
-      return `${diffMinutes}min`;
     }
   }
 
@@ -449,13 +527,13 @@ export class AdminLivraisonComponent implements OnInit {
         return 'Date invalide';
       }
       
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      
-      return `${day}/${month}/${year} ${hours}:${minutes}`;
+      return date.toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     } catch (e) {
       return 'Erreur de date';
     }
@@ -464,9 +542,42 @@ export class AdminLivraisonComponent implements OnInit {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.relative') || target.closest('.w-8.h-8.rounded-full');
+    const clickedInside = target.closest('.relative');
+    
+    // Fermer le menu utilisateur si on clique en dehors
     if (!clickedInside && this.menuOuvert) {
       this.menuOuvert = false;
     }
+  }
+
+  @HostListener('window:keydown.escape', ['$event'])
+  onEscapeKey(event: KeyboardEvent) {
+    if (this.modalePasswordVisible) {
+      this.fermerModalePassword();
+    }
+    if (this.menuOuvert) {
+      this.menuOuvert = false;
+    }
+  }
+
+  // Méthodes utilitaires pour améliorer l'interface
+  getTotalCamions(): number {
+    return this.camions.length;
+  }
+
+  getPourcentagePresents(): number {
+    if (this.camions.length === 0) return 0;
+    return Math.round((this.getCamionsByStatut('ENTREE').length / this.camions.length) * 100);
+  }
+
+  getPourcentageSortis(): number {
+    if (this.camions.length === 0) return 0;
+    return Math.round((this.getCamionsByStatut('SORTIE').length / this.camions.length) * 100);
+  }
+
+  // Méthode pour actualiser les données
+  actualiserDonnees() {
+    this.loading = true;
+    this.chargerCamions();
   }
 }
