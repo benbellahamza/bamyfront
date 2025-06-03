@@ -1,3 +1,4 @@
+/* Statuts utilisateur */
 .status-actif {
   color: green;
   font-weight: 500;
@@ -7,7 +8,8 @@
   color: red;
   font-weight: 500;
 }
-/* Animations personnalisées */
+
+/* Animations personnalisées pour le menu */
 @keyframes slideIn {
   0% {
     opacity: 0;
@@ -28,8 +30,87 @@
   backdrop-filter: blur(24px);
 }
 
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
 /* Dégradé de bordure personnalisé */
 .border-gradient {
   background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
   height: 1px;
+}
+
+/* Animations pour la modale mot de passe */
+@keyframes fadeIn {
+  0% { 
+    opacity: 0; 
+  }
+  100% { 
+    opacity: 1; 
+  }
+}
+
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-modalSlideIn {
+  animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Focus states personnalisés pour les inputs */
+input:focus {
+  outline: none;
+}
+
+/* Transitions fluides pour tous les éléments interactifs */
+button, input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Amélioration des hover effects */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+.group:hover .group-hover\:rotate-3 {
+  transform: rotate(3deg);
+}
+
+.group:hover .group-hover\:-rotate-3 {
+  transform: rotate(-3deg);
+}
+
+.group:hover .group-hover\:translate-x-1 {
+  transform: translateX(0.25rem);
+}
+
+.group:hover .group-hover\:rotate-90 {
+  transform: rotate(90deg);
 }
