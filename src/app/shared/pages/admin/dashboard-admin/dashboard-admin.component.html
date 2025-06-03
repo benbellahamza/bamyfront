@@ -59,63 +59,129 @@
   </div>
 </header>
 
- <!-- MENU UTILISATEUR AMÉLIORÉ -->
+ 
+<!-- MENU UTILISATEUR ULTRA MODERNE -->
 <div *ngIf="menuOuvert"
-     class="fixed top-16 right-4 w-72 bg-white text-slate-800 shadow-xl rounded-2xl p-5 z-[100] animate-fadeIn border border-slate-200">
+     class="fixed top-16 right-4 w-80 bg-white/95 backdrop-blur-xl text-slate-800 shadow-2xl rounded-3xl p-0 z-[100] border border-white/20 overflow-hidden animate-slideIn">
   
-  <!-- En-tête du profil -->
-  <div class="flex items-start gap-4 pb-4 border-b border-slate-200">
-    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 text-white flex items-center justify-center font-bold text-xl shadow-lg">
-      {{ utilisateur.nom.charAt(0) }}
-    </div>
-    <div class="flex-1">
-      <div class="font-bold text-lg text-slate-800">{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
-      <div class="flex items-center gap-2 mt-1 mb-2">
-        <span class="px-2 py-0.5 bg-teal-100 text-teal-800 text-xs font-semibold rounded-full flex items-center">
-          <span class="w-1.5 h-1.5 rounded-full bg-teal-500 inline-block mr-1"></span>
-          {{ utilisateur.role }}
-        </span>
+  <!-- Background décoratif -->
+  <div class="absolute inset-0 bg-gradient-to-br from-teal-50/30 via-white to-blue-50/30"></div>
+  <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-teal-400/10 to-blue-400/10 rounded-full -translate-y-8 translate-x-8"></div>
+  <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/10 to-pink-400/10 rounded-full translate-y-4 -translate-x-4"></div>
+  
+  <div class="relative z-10">
+    <!-- En-tête du profil avec effet glassmorphism -->
+    <div class="bg-gradient-to-r from-teal-500 via-teal-600 to-cyan-600 p-6 relative overflow-hidden">
+      <!-- Motifs décoratifs -->
+      <div class="absolute inset-0 bg-white/10"></div>
+      <div class="absolute top-2 right-2 w-20 h-20 bg-white/10 rounded-full"></div>
+      <div class="absolute -top-4 -left-4 w-16 h-16 bg-white/10 rounded-full"></div>
+      
+      <div class="flex items-start gap-4 relative z-10">
+        <!-- Avatar avec bordure animée -->
+        <div class="relative group">
+          <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-pulse opacity-75 group-hover:opacity-100 transition-opacity"></div>
+          <div class="relative w-16 h-16 rounded-full bg-gradient-to-br from-white via-teal-50 to-teal-100 text-teal-700 flex items-center justify-center font-black text-2xl shadow-xl border-2 border-white/50 transform hover:scale-105 transition-transform">
+            {{ utilisateur.nom.charAt(0) }}
+          </div>
+          <!-- Indicateur en ligne -->
+          <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-2 border-white shadow-lg">
+            <div class="w-full h-full bg-green-400 rounded-full animate-ping opacity-75"></div>
+          </div>
+        </div>
+        
+        <div class="flex-1 text-white">
+          <div class="font-bold text-xl mb-1 drop-shadow-sm">
+            {{ utilisateur.nom }} {{ utilisateur.prenom }}
+          </div>
+          
+          <!-- Badge rôle moderne -->
+          <div class="inline-flex items-center gap-2 mb-3">
+            <div class="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white text-sm font-semibold rounded-full border border-white/30 shadow-lg">
+              <div class="flex items-center gap-2">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ utilisateur.role }}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Statut en ligne avec animation -->
+          <div class="flex items-center gap-2 text-sm text-white/90 font-medium">
+            <div class="relative">
+              <div class="w-2 h-2 rounded-full bg-green-400"></div>
+              <div class="absolute inset-0 w-2 h-2 rounded-full bg-green-400 animate-ping opacity-60"></div>
+            </div>
+            <span class="drop-shadow-sm">Connecté maintenant</span>
+          </div>
+        </div>
       </div>
-      <div class="text-xs flex items-center text-teal-600 font-medium">
-        <span class="w-2 h-2 rounded-full bg-teal-500 inline-block mr-1.5"></span>
-        En ligne
+    </div>
+
+    <!-- Infos utilisateur avec icônes modernes -->
+    <div class="p-6 space-y-4">
+      <div class="grid gap-3">
+        <!-- Email -->
+        <div class="flex items-center gap-4 p-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 transition-all duration-300 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="text-xs text-slate-500 font-medium uppercase tracking-wider">Email</div>
+            <div class="text-sm font-semibold text-slate-700 truncate">{{ utilisateur.email }}</div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
- <!-- Infos utilisateur -->
-  <div class="py-3 space-y-3">
-    <div class="text-sm flex items-center gap-3 text-slate-600">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-      {{ utilisateur.email }}
+
+    <!-- Actions avec design moderne -->
+    <div class="px-6 pb-6 space-y-3">
+      <!-- Bouton modifier mot de passe -->
+      <button class="group flex items-center gap-4 w-full p-4 rounded-2xl bg-gradient-to-r from-teal-50 to-cyan-50 hover:from-teal-100 hover:to-cyan-100 border border-teal-200/50 hover:border-teal-300 text-teal-700 hover:text-teal-800 transition-all duration-300 hover:shadow-lg hover:shadow-teal-100 transform hover:-translate-y-0.5"
+              (click)="ouvrirModalePassword()">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+          </svg>
+        </div>
+        <div class="flex-1 text-left">
+          <div class="font-bold text-base">Modifier le mot de passe</div>
+          <div class="text-sm text-teal-600/80">Changer vos identifiants de connexion</div>
+        </div>
+        <svg class="w-5 h-5 text-teal-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+
+      <!-- Séparateur élégant -->
+      <div class="relative my-4">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+        </div>
+      </div>
+
+      <!-- Bouton déconnexion -->
+      <button class="group flex items-center gap-4 w-full p-4 rounded-2xl bg-gradient-to-r from-red-50 to-rose-50 hover:from-red-100 hover:to-rose-100 border border-red-200/50 hover:border-red-300 text-red-700 hover:text-red-800 transition-all duration-300 hover:shadow-lg hover:shadow-red-100 transform hover:-translate-y-0.5"
+              (click)="logout()">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+        </div>
+        <div class="flex-1 text-left">
+          <div class="font-bold text-base">Se déconnecter</div>
+          <div class="text-sm text-red-600/80">Terminer votre session en cours</div>
+        </div>
+        <svg class="w-5 h-5 text-red-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
     </div>
-    <div class="text-sm flex items-center gap-3 text-slate-600">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-      Dernière connexion: aujourd'hui
-    </div>
-  </div>
-<!-- Actions -->
-  <div class="pt-3 border-t border-slate-200 space-y-1">
-    <button class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl hover:bg-slate-100 text-teal-600 transition-colors"
-            (click)="ouvrirModalePassword()">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-      </svg>
-      <span>Modifier mot de passe</span>
-    </button>
-    <button class="flex items-center gap-3 w-full px-3 py-2.5 mt-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
-            (click)="logout()">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-      </svg>
-      <span>Se déconnecter</span>
-    </button>
   </div>
 </div>
-
 <!-- MODALE MOT DE PASSE AMÉLIORÉE -->
 <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
   <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100">

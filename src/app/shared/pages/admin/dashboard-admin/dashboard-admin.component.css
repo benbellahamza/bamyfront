@@ -7,3 +7,29 @@
   color: red;
   font-weight: 500;
 }
+/* Animations personnalisées */
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Effet glassmorphism */
+.backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+}
+
+/* Dégradé de bordure personnalisé */
+.border-gradient {
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  height: 1px;
+}
