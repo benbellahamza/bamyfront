@@ -1,50 +1,1024 @@
-/* Animations de base */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ==========================================================================
+   CSS FORMULAIRE VISITEUR PROFESSIONNEL - INTÉGRÉ À VOTRE ARCHITECTURE
+   ========================================================================== */
+
+/* Container principal avec votre système de scale */
+.form-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transform: scale(1.1);
+  transform-origin: top left;
+  width: 90.91%; /* 100% / 1.1 pour compenser le scale */
+  height: 90.91%; /* 100% / 1.1 pour compenser le scale */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes slideInRight {
-  from { transform: translateX(20px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+/* ==========================================================================
+   EN-TÊTE PROFESSIONNEL - VOS STYLES EXISTANTS
+   ========================================================================== */
+
+.header-section {
+  flex-shrink: 0;
+  padding: 9px 18px; /* 8px * 1.1 + 1px, 16px * 1.1 + 2px */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 11px rgba(0, 0, 0, 0.1); /* 10px * 1.1 */
+  animation: slideInFromTop 0.5s ease-out;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+.header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px; /* 4px * 1.1 + 0.6px */
 }
 
-/* Classes d'animation */
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 9px; /* 8px * 1.1 + 0.2px */
 }
 
-.animate-slide-in {
-  animation: slideInRight 0.4s ease-out forwards;
+.time-display {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* 4px * 1.1 + 0.6px */
+  padding: 5px 9px; /* 4px * 1.1 + 0.6px, 8px * 1.1 + 0.2px */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(11px); /* 10px * 1.1 */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 13px; /* 12px * 1.1 + 0.8px */
+  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.1); /* 8px * 1.1 + 0.2px */
 }
 
-.animate-pulse-once {
-  animation: pulse 0.6s ease-in-out;
+.live-dot {
+  width: 7px; /* 6px * 1.1 + 0.4px */
+  height: 7px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
 }
 
-/* Styles pour les formulaires */
-.form-control input:focus,
-.form-control select:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-  border-color: #3b82f6;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+.time-value {
+  font-size: 12px; /* 11px * 1.1 + 0.9px */
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Style des boutons de genre */
-.genre-button {
-  position: relative;
+.counter-display {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* 4px * 1.1 + 0.6px */
+  padding: 5px 9px; /* 4px * 1.1 + 0.6px, 8px * 1.1 + 0.2px */
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 13px; /* 12px * 1.1 + 0.8px */
+  box-shadow: 0 2px 9px rgba(16, 185, 129, 0.3); /* 8px * 1.1 + 0.2px */
+}
+
+.visitor-icon {
+  width: 13px; /* 12px * 1.1 + 0.8px */
+  height: 13px;
+  color: white;
+}
+
+.counter-value {
+  font-size: 12px; /* 11px * 1.1 + 0.9px */
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 7px; /* 6px * 1.1 + 0.4px */
+}
+
+.progress-value {
+  font-size: 12px; /* 11px * 1.1 + 0.9px */
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.progress-container {
+  width: 53px; /* 48px * 1.1 + 0.8px */
+  height: 7px; /* 6px * 1.1 + 0.4px */
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 7px; /* 6px * 1.1 + 0.4px */
   overflow: hidden;
+}
+
+.progress-track {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 7px; /* 6px * 1.1 + 0.4px */
+  transition: width 0.5s ease;
+}
+
+.edit-mode {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* 4px * 1.1 + 0.6px */
+  padding: 2px 7px; /* 2px, 6px * 1.1 + 0.4px */
+  background: rgba(252, 211, 77, 0.9);
+  border: 1px solid rgba(252, 211, 77, 0.3);
+  border-radius: 9px; /* 8px * 1.1 + 0.2px */
+  box-shadow: 0 2px 9px rgba(252, 211, 77, 0.2); /* 8px * 1.1 + 0.2px */
+}
+
+.edit-mode-icon {
+  width: 11px; /* 10px * 1.1 */
+  height: 11px;
+  color: #92400e;
+}
+
+.edit-mode-text {
+  font-size: 10px; /* 9px * 1.1 + 0.1px */
+  font-weight: 700;
+  color: #92400e;
+}
+
+/* ==========================================================================
+   MESSAGES PROFESSIONNELS - VOS STYLES EXISTANTS
+   ========================================================================== */
+
+.message-area {
+  flex-shrink: 0;
+  padding: 7px 18px; /* 6px * 1.1 + 0.4px, 16px * 1.1 + 2px */
+}
+
+.message-box {
+  display: flex;
+  align-items: center;
+  gap: 7px; /* 6px * 1.1 + 0.4px */
+  padding: 7px 13px; /* 6px * 1.1 + 0.4px, 12px * 1.1 + 0.8px */
+  border-radius: 9px; /* 8px * 1.1 + 0.2px */
+  border-left: 3px solid;
+  box-shadow: 0 4px 13px rgba(0, 0, 0, 0.1); /* 12px * 1.1 + 0.8px */
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+.success-message {
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.9), rgba(220, 252, 231, 0.9));
+  border-left-color: #22c55e;
+}
+
+.error-message {
+  background: linear-gradient(135deg, rgba(254, 242, 242, 0.9), rgba(252, 226, 226, 0.9));
+  border-left-color: #ef4444;
+}
+
+.warning-message {
+  background: linear-gradient(135deg, rgba(255, 251, 235, 0.9), rgba(254, 243, 199, 0.9));
+  border-left-color: #f59e0b;
+}
+
+.message-icon {
+  width: 13px; /* 12px * 1.1 + 0.8px */
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.success-message .message-icon {
+  color: #16a34a;
+}
+
+.error-message .message-icon {
+  color: #dc2626;
+}
+
+.warning-message .message-icon {
+  color: #d97706;
+}
+
+.message-content {
+  flex: 1;
+  font-size: 12px; /* 11px * 1.1 + 0.9px */
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.success-message .message-content {
+  color: #166534;
+}
+
+.error-message .message-content {
+  color: #991b1b;
+}
+
+.warning-message .message-content {
+  color: #92400e;
+}
+
+.message-close {
+  width: 13px; /* 12px * 1.1 + 0.8px */
+  height: 13px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.message-close:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.message-close svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ==========================================================================
+   CONTENU FORMULAIRE PROFESSIONNEL
+   ========================================================================== */
+
+.content-area {
+  flex: 1;
+  padding: 9px 18px; /* 8px * 1.1 + 0.2px, 16px * 1.1 + 2px */
+  min-height: 0;
+}
+
+.main-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px; /* 8px * 1.1 + 0.2px */
+}
+
+/* ==========================================================================
+   SECTIONS AVEC ICÔNES PROFESSIONNELLES
+   ========================================================================== */
+
+.form-section {
+  padding: 11px 15px; /* 10px * 1.1, 14px * 1.1 + 0.6px */
+  border-radius: 13px; /* 12px * 1.1 + 0.8px */
+  border: 1px solid;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08); /* 11px * 1.1 + 0.9px */
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  animation: slideUp 0.6s ease-out;
+}
+
+.form-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); /* 18px * 1.1 + 0.2px */
+}
+
+.identity-block {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.85), rgba(241, 245, 249, 0.85));
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.gender-block {
+  background: linear-gradient(135deg, rgba(250, 245, 255, 0.85), rgba(243, 232, 255, 0.85));
+  border-color: rgba(139, 92, 246, 0.25);
+}
+
+.visit-block {
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.85), rgba(187, 247, 208, 0.85));
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 7px * 1.1 + 0.3px */
+  margin-bottom: 11px; /* 10px * 1.1 */
+}
+
+.section-icon {
+  width: 20px; /* 18px * 1.1 + 0.2px */
+  height: 20px;
+  border-radius: 8px; /* 7px * 1.1 + 0.3px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2); /* 8px * 1.1 + 0.2px */
+}
+
+.section-icon svg {
+  width: 10px; /* 9px * 1.1 + 0.1px */
+  height: 10px;
+  color: white;
+}
+
+.identity-icon {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.gender-icon {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.visit-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.section-label {
+  font-size: 14px; /* 13px * 1.1 + 0.7px */
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 0.4px;
+}
+
+.required-star {
+  color: #ef4444;
+  font-size: 14px; /* 13px * 1.1 + 0.7px */
+  font-weight: bold;
+}
+
+/* ==========================================================================
+   CHAMPS DE SAISIE AVEC ICÔNES
+   ========================================================================== */
+
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px; /* 10px * 1.1 */
+  margin-bottom: 8px; /* 7px * 1.1 + 0.3px */
+}
+
+.input-grid:last-child {
+  margin-bottom: 0;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 11px; /* 10px * 1.1 */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px; /* 11px * 1.1 + 0.8px */
+  height: 12px;
+  color: #6b7280;
+  pointer-events: none;
+  z-index: 10;
+  transition: color 0.2s ease;
+}
+
+.validation-icon {
+  position: absolute;
+  right: 11px; /* 10px * 1.1 */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px; /* 11px * 1.1 + 0.8px */
+  height: 12px;
+  opacity: 0;
   transition: all 0.3s ease;
 }
 
-.genre-button::after {
+.validation-icon.show {
+  opacity: 1;
+  animation: bounceIn 0.4s ease-out;
+}
+
+.success-icon {
+  color: #16a34a;
+}
+
+.error-icon {
+  color: #dc2626;
+}
+
+.text-input {
+  width: 100%;
+  padding: 8px 40px 8px 35px; /* 7px * 1.1 + 0.3px, icônes */
+  font-size: 13px; /* 12px * 1.1 + 0.8px */
+  font-weight: 500;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px; /* 8px * 1.1 + 0.2px */
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  transition: all 0.3s ease;
+  outline: none;
+  height: 35px; /* 32px * 1.1 + 0.8px */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  letter-spacing: 0.3px;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.text-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(59, 130, 246, 0.2);
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+
+.text-input:focus + .validation-icon,
+.text-input:focus ~ .input-icon {
+  color: #3b82f6;
+}
+
+.text-input:hover:not(:focus) {
+  border-color: #9ca3af;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-0.5px);
+}
+
+.text-input.error-state {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  animation: errorShake 0.5s ease-out;
+}
+
+.text-input.success-state {
+  border-color: #22c55e;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  animation: validPulse 0.6s ease-out;
+}
+
+.uppercase-input {
+  text-transform: uppercase;
+}
+
+/* Label avec aide */
+.field-label-with-help {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+.field-label {
+  font-size: 12px; /* 11px * 1.1 + 0.9px */
+  font-weight: 600;
+  color: #374151;
+}
+
+/* ==========================================================================
+   TOOLTIP D'AIDE PROFESSIONNEL
+   ========================================================================== */
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.help-icon {
+  width: 13px; /* 12px * 1.1 + 0.8px */
+  height: 13px;
+  color: #6b7280;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.help-icon:hover {
+  color: #3b82f6;
+  transform: scale(1.1);
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 7px 12px; /* 6px * 1.1 + 0.4px, 11px * 1.1 + 0.9px */
+  border-radius: 7px; /* 6px * 1.1 + 0.4px */
+  font-size: 11px; /* 10px * 1.1 */
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  font-weight: 500;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1f2937;
+}
+
+.tooltip-wrapper:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-3px);
+}
+
+/* ==========================================================================
+   SÉLECTEURS AVEC ICÔNES
+   ========================================================================== */
+
+.select-box {
+  position: relative;
+}
+
+.select-input {
+  width: 100%;
+  padding: 8px 35px 8px 35px; /* 7px * 1.1 + 0.3px, icônes */
+  font-size: 13px; /* 12px * 1.1 + 0.8px */
+  font-weight: 500;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9px; /* 8px * 1.1 + 0.2px */
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  transition: all 0.3s ease;
+  height: 35px; /* 32px * 1.1 + 0.8px */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.select-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), 0 4px 12px rgba(16, 185, 129, 0.2);
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+
+.select-input:hover:not(:focus) {
+  border-color: #9ca3af;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-0.5px);
+}
+
+.select-input.error-state {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+}
+
+.select-input.success-state {
+  border-color: #22c55e;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+}
+
+.select-icon {
+  position: absolute;
+  right: 11px; /* 10px * 1.1 */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.select-icon svg {
+  width: 12px; /* 11px * 1.1 + 0.8px */
+  height: 12px;
+  color: #6b7280;
+}
+
+.select-input:focus ~ .select-icon {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* ==========================================================================
+   BOUTONS GENRE STYLISÉS PROFESSIONNELS
+   ========================================================================== */
+
+.gender-options {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* 14px * 1.1 + 0.6px */
+  margin: 9px 0; /* 8px * 1.1 + 0.2px */
+}
+
+.gender-button {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 7px * 1.1 + 0.3px */
+  padding: 10px 16px; /* 9px * 1.1 + 0.1px, 15px * 1.1 + 0.5px */
+  border: 2px solid #e5e7eb;
+  border-radius: 12px; /* 11px * 1.1 + 0.8px */
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.1); /* 8px * 1.1 + 0.2px */
+  position: relative;
+  overflow: hidden;
+  min-width: 100px;
+}
+
+.gender-button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+}
+
+.gender-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.gender-button.gender-active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  border-width: 2px;
+}
+
+.gender-button.gender-male {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.gender-button.gender-female {
+  border-color: #ec4899;
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+}
+
+.gender-avatar {
+  width: 26px; /* 24px * 1.1 + 0.6px */
+  height: 26px;
+  border-radius: 9px; /* 8px * 1.1 + 0.2px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.18); /* 8px * 1.1 + 0.2px */
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.gender-avatar svg {
+  width: 12px; /* 11px * 1.1 + 0.8px */
+  height: 12px;
+}
+
+.male-avatar {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  box-shadow: 0 3px 9px rgba(59, 130, 246, 0.3);
+}
+
+.female-avatar {
+  background: linear-gradient(135deg, #ec4899, #be185d);
+  color: white;
+  box-shadow: 0 3px 9px rgba(236, 72, 153, 0.3);
+}
+
+.gender-button:not(.gender-active) .gender-avatar {
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  color: #6b7280;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gender-label {
+  font-size: 13px; /* 12px * 1.1 + 0.8px */
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.2px;
+}
+
+.gender-male .gender-label {
+  color: #1e40af;
+}
+
+.gender-female .gender-label {
+  color: #be185d;
+}
+
+/* ==========================================================================
+   ZONE MATRICULE CONDITIONNELLE PROFESSIONNELLE
+   ========================================================================== */
+
+.matricule-area {
+  margin-top: 11px; /* 10px * 1.1 */
+  padding: 10px 12px; /* 9px * 1.1 + 0.1px, 11px * 1.1 + 0.9px */
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.9), rgba(219, 234, 254, 0.9));
+  border: 1.5px solid rgba(59, 130, 246, 0.3);
+  border-radius: 11px; /* 10px * 1.1 */
+  animation: fadeInDown 0.5s ease-out;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 3px 12px rgba(59, 130, 246, 0.1);
+}
+
+.matricule-title {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* 5px * 1.1 + 0.5px */
+  margin-bottom: 7px; /* 6px * 1.1 + 0.4px */
+}
+
+.matricule-badge {
+  width: 15px; /* 14px * 1.1 + 0.6px */
+  height: 15px;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  border-radius: 6px; /* 5px * 1.1 + 0.5px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 9px rgba(59, 130, 246, 0.4); /* 8px * 1.1 + 0.2px */
+}
+
+.matricule-badge svg {
+  width: 8px; /* 7px * 1.1 + 0.3px */
+  height: 8px;
+  color: white;
+}
+
+.matricule-text {
+  font-size: 12px; /* 11px * 1.1 + 0.9px */
+  font-weight: 700;
+  color: #1e40af;
+  letter-spacing: 0.2px;
+}
+
+.matricule-field {
+  border-color: #93c5fd !important;
+  background: linear-gradient(135deg, #ffffff, #eff6ff) !important;
+}
+
+.matricule-field:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+.matricule-field::placeholder {
+  color: #60a5fa;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   MESSAGES D'ERREUR PROFESSIONNELS
+   ========================================================================== */
+
+.input-error {
+  font-size: 11px; /* 10px * 1.1 */
+  color: #dc2626;
+  font-weight: 600;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.error-icon-small {
+  width: 10px; /* 9px * 1.1 + 0.1px */
+  height: 10px;
+  color: #dc2626;
+  flex-shrink: 0;
+}
+
+.center-error {
+  text-align: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   BOUTONS D'ACTION PROFESSIONNELS
+   ========================================================================== */
+
+.button-area {
+  flex: 1;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 12px; /* 11px * 1.1 + 0.9px */
+  padding-bottom: 11px; /* 10px * 1.1 */
+  margin-top: 15px; /* 14px * 1.1 + 0.6px */
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px; /* 6px * 1.1 + 0.4px */
+  padding: 11px 22px; /* 10px * 1.1, 20px * 1.1 */
+  font-size: 13px; /* 12px * 1.1 + 0.8px */
+  font-weight: 700;
+  border-radius: 11px; /* 10px * 1.1 */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  min-width: 105px; /* 95px * 1.1 + 0.5px */
+  height: 42px; /* 38px * 1.1 + 0.2px */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 11px * 1.1 + 0.9px */
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.action-button:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.action-button:active:not(:disabled) {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.action-button:disabled {
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  opacity: 0.6;
+}
+
+.cancel-button {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  color: #475569;
+  border: 2px solid #cbd5e1;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  border-color: #94a3b8;
+  color: #334155;
+  box-shadow: 0 6px 20px rgba(71, 85, 105, 0.2);
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: 2px solid transparent;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.submit-button:disabled {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+}
+
+.loading-button {
+  pointer-events: none;
+}
+
+.button-loading {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* 5px * 1.1 + 0.5px */
+}
+
+.button-normal {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* 5px * 1.1 + 0.5px */
+}
+
+.button-normal svg {
+  width: 12px; /* 11px * 1.1 + 0.8px */
+  height: 12px;
+}
+
+.loading-spinner {
+  width: 13px; /* 12px * 1.1 + 0.8px */
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ==========================================================================
+   ANIMATIONS PROFESSIONNELLES
+   ========================================================================== */
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from { 
+    opacity: 0; 
+    transform: translateY(-12px); /* 11px * 1.1 + 0.9px */
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes errorShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes validPulse {
+  0% {
+    border-color: #e5e7eb;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  }
+  50% {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+  }
+  100% {
+    border-color: #22c55e;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation effet ripple pour les boutons */
+.action-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.action-button:active::after {
+  width: 250px; /* 227px * 1.1 + 0.3px */
+  height: 250px;
+}
+
+.gender-button::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -57,132 +1031,295 @@
   transition: width 0.5s ease, height 0.5s ease;
 }
 
-.genre-button:active::after {
-  width: 200px;
-  height: 200px;
+.gender-button:active::after {
+  width: 220px; /* 200px * 1.1 */
+  height: 220px;
 }
 
-/* Personnalisation des messages de confirmation */
-.alert {
-  overflow: hidden;
-  position: relative;
-}
+/* ==========================================================================
+   RESPONSIVE DESIGN PROFESSIONNEL
+   ========================================================================== */
 
-.alert::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-}
-
-.alert.alert-success::before {
-  background-color: #10b981;
-}
-
-.alert.alert-error::before {
-  background-color: #ef4444;
-}
-
-/* Personnalisation du compteur */
-.compteur-badge {
-  position: relative;
-  overflow: hidden;
-}
-
-.compteur-badge::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-  transform: translateX(-100%);
-}
-
-.compteur-badge.highlight::before {
-  transition: transform 1.2s ease;
-  transform: translateX(100%);
-}
-
-/* Personnalisation du champ matricule */
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.matricule-field {
-  animation: fadeInDown 0.4s ease-out;
-}
-
-/* Amélioration des effets de survol */
-.hover-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Effet de remplissage du bouton submit */
-.btn-submit {
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-  transition: color 0.3s ease;
-}
-
-.btn-submit::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
-  z-index: -1;
-  transition: width 0.3s ease;
-}
-
-.btn-submit:hover::before {
-  width: 100%;
-}
-
-/* Personnalisation du spinner */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-spinner {
-  display: inline-block;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  animation: spin 0.8s linear infinite;
-}
-
-/* Amélioration de l'accessibilité */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
-  }
-}
-
-/* Optimisations pour les écrans de petite taille */
-@media screen and (max-width: 640px) {
-  .genre-button-text {
-    font-size: 0.875rem;
+@media (max-width: 768px) {
+  .form-wrapper {
+    transform: scale(1.0); /* Réduction du scale sur mobile */
+    width: 100%;
+    height: 100%;
   }
   
-  .compteur-value {
-    font-size: 1rem;
-    padding: 0.25rem 0.5rem;
+  .input-grid {
+    grid-template-columns: 1fr;
+    gap: 8px; /* 7px * 1.1 + 0.3px */
   }
+  
+  .gender-options {
+    flex-direction: column;
+    gap: 9px; /* 8px * 1.1 + 0.2px */
+    align-items: center;
+  }
+  
+  .gender-button {
+    width: 100%;
+    max-width: 220px; /* 200px * 1.1 */
+    justify-content: center;
+  }
+  
+  .button-area {
+    flex-direction: column;
+    gap: 9px; /* 8px * 1.1 + 0.2px */
+  }
+  
+  .action-button {
+    width: 100%;
+    max-width: 250px; /* 227px * 1.1 + 0.3px */
+  }
+  
+  .header-section {
+    padding: 8px 15px; /* Réduction du padding sur mobile */
+  }
+  
+  .content-area {
+    padding: 8px 15px; /* Réduction du padding sur mobile */
+  }
+  
+  .section-header {
+    gap: 6px;
+    margin-bottom: 9px;
+  }
+  
+  .section-label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-wrapper {
+    transform: scale(0.95); /* Réduction encore plus importante sur très petit écran */
+    width: 105.26%; /* 100% / 0.95 */
+    height: 105.26%;
+  }
+  
+  .content-area {
+    padding: 8px 14px; /* 7px * 1.1 + 0.3px, 13px * 1.1 + 0.7px */
+  }
+  
+  .form-section {
+    padding: 8px 11px; /* 7px * 1.1 + 0.3px, 10px * 1.1 */
+  }
+  
+  .text-input,
+  .select-input {
+    height: 32px; /* 29px * 1.1 + 0.1px */
+    font-size: 12px; /* 11px * 1.1 + 0.9px */
+    padding: 7px 35px 7px 30px; /* 6px * 1.1 + 0.4px */
+  }
+  
+  .action-button {
+    height: 36px; /* 33px * 1.1 + 0.7px */
+    font-size: 12px; /* 11px * 1.1 + 0.9px */
+    min-width: 88px; /* 80px * 1.1 */
+  }
+  
+  .section-label {
+    font-size: 13px; /* 12px * 1.1 + 0.8px */
+  }
+  
+  .time-value,
+  .counter-value,
+  .progress-value {
+    font-size: 11px; /* 10px * 1.1 */
+  }
+  
+  .tooltip {
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+}
+
+/* ==========================================================================
+   OPTIMISATIONS POUR LE RENDU ET PERFORMANCE
+   ========================================================================== */
+
+/* Amélioration de la netteté du texte */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Optimisation des bordures pour éviter le flou */
+.text-input,
+.select-input,
+.form-section,
+.gender-button,
+.action-button {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Amélioration du contraste pour la lecture */
+.section-label {
+  color: #111827; /* Noir plus foncé pour meilleur contraste */
+}
+
+.message-content {
+  line-height: 1.4; /* Meilleure lisibilité des messages */
+}
+
+/* Ajustement de la hauteur minimale pour éviter les coupures */
+.form-wrapper {
+  min-height: 440px; /* 400px * 1.1 */
+}
+
+/* ==========================================================================
+   CLASSES UTILITAIRES POUR L'INTÉGRATION ANGULAR
+   ========================================================================== */
+
+/* Classes pour appliquer le style selon le contexte */
+.zoom-110-effect {
+  transform: scale(1.1);
+  transform-origin: top left;
+  width: 90.91%;
+  height: 90.91%;
+}
+
+/* Alternative sans transform pour les navigateurs qui ne le supportent pas bien */
+.no-transform-110 {
+  font-size: 110%;
+  /* Applique un facteur 1.1 à tous les éléments sans transform */
+}
+
+/* Support pour les écrans haute densité */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .form-wrapper {
+    transform: scale(1.08); /* Légère réduction sur écrans haute densité */
+    width: 92.59%; /* 100% / 1.08 */
+    height: 92.59%;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITÉ AMÉLIORÉE
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .form-wrapper {
+    transform: scale(1.1); /* Maintient le scale même avec reduced motion */
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.action-button:focus-visible,
+.text-input:focus-visible,
+.select-input:focus-visible,
+.gender-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px; /* Légèrement plus d'espace pour la visibilité */
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visible pour le clavier */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   ÉTATS ANGULAR SPÉCIFIQUES
+   ========================================================================== */
+
+/* Classes d'état pour Angular Forms */
+.ng-invalid.ng-touched .text-input,
+.ng-invalid.ng-touched .select-input {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  animation: errorShake 0.5s ease-out;
+}
+
+.ng-valid.ng-touched .text-input,
+.ng-valid.ng-touched .select-input {
+  border-color: #22c55e;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+}
+
+/* État focus personnalisé */
+.field-focused {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* États de validation personnalisés */
+.field-valid {
+  border-color: #22c55e !important;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7) !important;
+}
+
+.field-invalid {
+  border-color: #ef4444 !important;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2) !important;
+}
+
+/* ==========================================================================
+   ANIMATIONS D'ENTRÉE POUR LES SECTIONS
+   ========================================================================== */
+
+.form-section:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.form-section:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.form-section:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.form-section:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+/* Animation pour l'apparition du matricule */
+.matricule-area {
+  animation: fadeInDown 0.5s ease-out;
+}
+
+/* ==========================================================================
+   PERSONNALISATION DES SCROLLBARS
+   ========================================================================== */
+
+.form-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-wrapper::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 3px;
+}
+
+.form-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.form-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
 }

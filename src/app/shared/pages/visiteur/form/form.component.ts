@@ -11,33 +11,33 @@ import { Subject, debounceTime, takeUntil } from 'rxjs';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit, OnDestroy {
-  // 🎯 Propriétés principales
+  // 🎯 Propriétés principales du formulaire
   visiteurForm!: FormGroup;
   selectedVisiteurId: number | null = null;
   loading = false;
   
-  // 📊 Données d'affichage
+  // 📊 Données d'affichage en temps réel
   compteur: number = 0;
   currentTime: string = '';
   currentFullDate: string = '';
   
-  // 💬 Messages et états
+  // 💬 Messages et notifications
   confirmationMessage = '';
   messageType: 'success' | 'error' | 'warning' = 'success';
   showMessage = false;
   
   // 📈 Progression du formulaire
   formProgress = 0;
-  totalSteps = 5; // Nombre d'étapes dans le formulaire
+  totalSteps = 6; // Nombre d'étapes dans le formulaire (nom, prénom, cin, genre, destination, téléphone)
   
-  // 🎨 États visuels
+  // 🎨 États visuels des champs avec validation en temps réel
   fieldStates: { [key: string]: 'default' | 'valid' | 'invalid' } = {};
   
-  // 🔄 Validation en temps réel
+  // 🔄 Validation en temps réel avec debounce
   private destroy$ = new Subject<void>();
   private validationDebounce$ = new Subject<string>();
   
-  // 👤 Utilisateur connecté
+  // 👤 Utilisateur connecté (vos propriétés existantes)
   utilisateur = {
     nom: '',
     prenom: '',
@@ -45,7 +45,7 @@ export class FormComponent implements OnInit, OnDestroy {
     role: ''
   };
   
-  // 🎛️ Interface utilisateur
+  // 🎛️ Interface utilisateur (vos propriétés existantes)
   menuOuvert = false;
   modalePasswordVisible = false;
   ancienMotDePasse = '';
@@ -71,15 +71,16 @@ export class FormComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // 🚀 Initialisation du composant
+  // 🚀 Initialisation complète du composant
   private initializeComponent(): void {
     this.decodeToken();
-    this.createForm();
+    this.createFormWithAdvancedValidation();
     this.loadCompteur();
     this.startClock();
+    this.setupFormProgressTracking();
   }
 
-  // 🎧 Configuration des écouteurs d'événements
+  // 🎧 Configuration des écouteurs d'événements professionnels
   private setupEventListeners(): void {
     // Écouter l'événement d'édition de visiteur
     window.addEventListener('edit-visiteur', (e: any) => {
@@ -87,15 +88,29 @@ export class FormComponent implements OnInit, OnDestroy {
     });
 
     // Écouter les changements de fenêtre pour la validation
-    window.addEventListener('beforeunload', () => {
+    window.addEventListener('beforeunload', (e) => {
       if (this.visiteurForm.dirty && !this.confirmationMessage) {
+        e.preventDefault();
+        e.returnValue = 'Des modifications non sauvegardées seront perdues.';
         return 'Des modifications non sauvegardées seront perdues.';
       }
       return null;
     });
+
+    // Écouter les raccourcis clavier
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        this.onSubmit();
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.resetForm();
+      }
+    });
   }
 
-  // ⚡ Configuration de la validation avec debounce
+  // ⚡ Configuration de la validation avec debounce avancée
   private setupValidationDebounce(): void {
     this.validationDebounce$
       .pipe(
@@ -103,11 +118,11 @@ export class FormComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe(fieldName => {
-        this.validateField(fieldName);
+        this.validateFieldWithAnimations(fieldName);
       });
   }
 
-  // 🔐 Décodage du token JWT
+  // 🔐 Décodage du token JWT (votre méthode existante)
   decodeToken(): void {
     const token = localStorage.getItem('access-token');
     if (!token) return;
@@ -128,43 +143,45 @@ export class FormComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 📝 Création du formulaire avec validation avancée
-  createForm(): void {
+  // 📝 Création du formulaire avec validation avancée et icônes
+  createFormWithAdvancedValidation(): void {
     this.visiteurForm = this.fb.group({
       nom: ['', [
         Validators.required, 
         Validators.minLength(2),
         Validators.maxLength(50),
-        this.noSpecialCharactersValidator
+        this.noSpecialCharactersValidator,
+        this.nameValidator
       ]],
       prenom: ['', [
         Validators.required, 
         Validators.minLength(2),
         Validators.maxLength(50),
-        this.noSpecialCharactersValidator
+        this.noSpecialCharactersValidator,
+        this.nameValidator
       ]],
       cin: ['', [
         Validators.required, 
         Validators.minLength(5),
         Validators.maxLength(12),
-        this.cinValidator // Validateur CIN modifié
+        this.cinValidatorAdvanced
       ]],
       genre: ['', Validators.required],
       destination: ['', Validators.required],
-      typeVisiteur: [''],
+      typeVisiteur: [''], // Optionnel
       telephone: ['', [
         Validators.required, 
-        this.phoneValidator
+        this.phoneValidatorAdvanced
       ]],
-      matricule: ['']
+      matricule: [''] // Conditionnel selon destination
     });
 
-    this.setupDynamicValidation();
+    this.setupDynamicValidationAdvanced();
     this.initializeFieldStates();
   }
 
-  // 🎯 Configuration de la validation dynamique
-  private setupDynamicValidation(): void {
+  // 🎯 Configuration de la validation dynamique avancée
+  private setupDynamicValidationAdvanced(): void {
     // Surveillance des changements de destination pour le matricule
     this.visiteurForm.get('destination')?.valueChanges
       .pipe(takeUntil(this.destroy$))
@@ -172,18 +189,22 @@ export class FormComponent implements OnInit, OnDestroy {
         const matriculeControl = this.visiteurForm.get('matricule');
         
         if (destination === 'atelier') {
-          // Matricule optionnel pour l'atelier
+          // Matricule optionnel pour l'atelier avec pattern spécifique
           matriculeControl?.clearValidators();
-          matriculeControl?.setValidators([Validators.pattern(/^[A-Z0-9]{3,10}$/)]);
+          matriculeControl?.setValidators([
+            Validators.pattern(/^[A-Z0-9]{3,10}$/),
+            this.matriculeValidator
+          ]);
         } else {
           matriculeControl?.clearValidators();
           matriculeControl?.setValue('');
         }
+        
         matriculeControl?.updateValueAndValidity();
-        this.updateProgress();
+        this.updateProgressWithAnimation();
       });
 
-    // Surveillance de tous les champs pour la progression
+    // Surveillance de tous les champs pour la validation en temps réel
     Object.keys(this.visiteurForm.controls).forEach(key => {
       this.visiteurForm.get(key)?.valueChanges
         .pipe(
@@ -192,9 +213,18 @@ export class FormComponent implements OnInit, OnDestroy {
         )
         .subscribe(() => {
           this.validationDebounce$.next(key);
-          this.updateProgress();
+          this.updateProgressWithAnimation();
         });
     });
+  }
+
+  // 📊 Configuration du suivi de progression
+  private setupFormProgressTracking(): void {
+    this.visiteurForm.statusChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.updateProgressWithAnimation();
+      });
   }
 
   // 🎨 Initialisation des états visuels des champs
@@ -204,15 +234,23 @@ export class FormComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ✅ Validation en temps réel d'un champ
-  private validateField(fieldName: string): void {
+  // ✅ Validation en temps réel d'un champ avec animations
+  private validateFieldWithAnimations(fieldName: string): void {
     const control = this.visiteurForm.get(fieldName);
     if (!control) return;
 
+    const previousState = this.fieldStates[fieldName];
+    
     if (control.valid && control.value) {
       this.fieldStates[fieldName] = 'valid';
+      if (previousState !== 'valid') {
+        this.animateFieldSuccess(fieldName);
+      }
     } else if (control.invalid && control.touched) {
       this.fieldStates[fieldName] = 'invalid';
+      if (previousState !== 'invalid') {
+        this.animateFieldError(fieldName);
+      }
     } else {
       this.fieldStates[fieldName] = 'default';
     }
@@ -220,22 +258,72 @@ export class FormComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  // 📊 Mise à jour de la progression du formulaire
-  private updateProgress(): void {
+  // 🎬 Animation de succès pour un champ
+  private animateFieldSuccess(fieldName: string): void {
+    const element = document.querySelector(`[formControlName="${fieldName}"]`);
+    if (element) {
+      element.classList.add('animate-success');
+      setTimeout(() => element.classList.remove('animate-success'), 600);
+    }
+  }
+
+  // 🎬 Animation d'erreur pour un champ
+  private animateFieldError(fieldName: string): void {
+    const element = document.querySelector(`[formControlName="${fieldName}"]`);
+    if (element) {
+      element.classList.add('animate-error');
+      setTimeout(() => element.classList.remove('animate-error'), 600);
+    }
+  }
+
+  // 📊 Mise à jour de la progression avec animation
+  private updateProgressWithAnimation(): void {
     const controls = this.visiteurForm.controls;
     const requiredFields = ['nom', 'prenom', 'cin', 'genre', 'destination', 'telephone'];
     
     let filledFields = 0;
+    let validFields = 0;
+    
     requiredFields.forEach(field => {
-      if (controls[field]?.value && controls[field]?.valid) {
+      if (controls[field]?.value) {
         filledFields++;
+        if (controls[field]?.valid) {
+          validFields++;
+        }
       }
     });
 
-    this.formProgress = Math.round((filledFields / requiredFields.length) * 100);
+    const newProgress = Math.round((validFields / requiredFields.length) * 100);
+    
+    // Animation de la barre de progression
+    if (newProgress !== this.formProgress) {
+      this.animateProgress(this.formProgress, newProgress);
+      this.formProgress = newProgress;
+    }
   }
 
-  // 🕒 Gestion de l'horloge
+  // 🎬 Animation de la barre de progression
+  private animateProgress(from: number, to: number): void {
+    const progressBar = document.querySelector('.progress-track') as HTMLElement;
+    if (!progressBar) return;
+
+    let current = from;
+    const increment = (to - from) / 20;
+    
+    const animate = () => {
+      current += increment;
+      if ((increment > 0 && current < to) || (increment < 0 && current > to)) {
+        progressBar.style.width = `${current}%`;
+        requestAnimationFrame(animate);
+      } else {
+        progressBar.style.width = `${to}%`;
+      }
+    };
+    
+    animate();
+  }
+
+  // 🕒 Gestion de l'horloge en temps réel (votre méthode existante améliorée)
   startClock(): void {
     this.updateTime();
     setInterval(() => this.updateTime(), 1000);
@@ -260,34 +348,54 @@ export class FormComponent implements OnInit, OnDestroy {
     this.currentFullDate = this.currentFullDate.charAt(0).toUpperCase() + this.currentFullDate.slice(1);
   }
 
-  // 📈 Chargement du compteur avec gestion d'erreur
+  // 📈 Chargement du compteur avec animation (votre méthode existante améliorée)
   loadCompteur(): void {
     this.http.get<number>('http://localhost:8085/api/compteur').subscribe({
       next: (data) => {
+        this.animateCounterChange(this.compteur, data);
         this.compteur = data;
-        this.animateCounter();
       },
       error: (err) => {
-        console.error('Erreur chargement compteur', err);
+        console.error('❌ Erreur chargement compteur', err);
         this.compteur = 0;
         this.showNotification('Impossible de charger le compteur', 'warning');
       }
     });
   }
 
-  // 🎬 Animation du compteur
-  private animateCounter(): void {
-    // Animation simple pour le compteur
-    const element = document.querySelector('[data-counter]');
-    if (element) {
-      element.classList.add('animate-pulse');
-      setTimeout(() => element.classList.remove('animate-pulse'), 1000);
-    }
+  // 🎬 Animation du changement de compteur
+  private animateCounterChange(from: number, to: number): void {
+    const counterElement = document.querySelector('.counter-value');
+    if (!counterElement || from === to) return;
+
+    let current = from;
+    const increment = (to - from) / 10;
+    
+    const animate = () => {
+      current += increment;
+      if ((increment > 0 && current < to) || (increment < 0 && current > to)) {
+        counterElement.textContent = Math.round(current).toString();
+        requestAnimationFrame(animate);
+      } else {
+        counterElement.textContent = to.toString();
+        counterElement.classList.add('animate-pulse-once');
+        setTimeout(() => counterElement.classList.remove('animate-pulse-once'), 1000);
+      }
+    };
+    
+    animate();
   }
 
-  // 🎛️ Gestion de l'édition d'un visiteur
+  // 🎛️ Gestion de l'édition d'un visiteur avec animation
   private handleEditVisiteur(visiteur: any): void {
     this.selectedVisiteurId = visiteur.id;
+
+    // Animation d'entrée en mode édition
+    const formElement = document.querySelector('.main-form');
+    if (formElement) {
+      formElement.classList.add('edit-mode-animation');
+      setTimeout(() => formElement.classList.remove('edit-mode-animation'), 500);
+    }
 
     this.visiteurForm.patchValue({
       nom: visiteur.nom,
@@ -302,23 +410,35 @@ export class FormComponent implements OnInit, OnDestroy {
 
     // Marquer le formulaire comme non modifié après le patch
     this.visiteurForm.markAsPristine();
-    this.updateProgress();
+    this.updateProgressWithAnimation();
+    
+    // Validation de tous les champs après édition
+    setTimeout(() => {
+      Object.keys(this.visiteurForm.controls).forEach(key => {
+        this.validateFieldWithAnimations(key);
+      });
+    }, 100);
   }
 
-  // 📤 Soumission du formulaire avec validation complète
+  // 📤 Soumission du formulaire avec validation complète et animations
   onSubmit(): void {
+    // Empêcher double soumission
+    if (this.loading) return;
+
     // Validation finale avant soumission
     if (this.visiteurForm.invalid) {
       this.markAllFieldsAsTouched();
       this.showNotification('Veuillez corriger les erreurs dans le formulaire', 'error');
       this.scrollToFirstError();
+      this.animateFormError();
       return;
     }
 
     this.loading = true;
+    this.animateSubmitStart();
     this.showNotification('Enregistrement en cours...', 'warning');
 
-    const formData = this.prepareFormData();
+    const formData = this.prepareFormDataAdvanced();
     const serviceCall = this.selectedVisiteurId !== null
       ? this.visiteurService.modifierVisiteur(this.selectedVisiteurId, formData)
       : this.visiteurService.ajouterVisiteur(formData);
@@ -332,40 +452,74 @@ export class FormComponent implements OnInit, OnDestroy {
         this.handleSubmitSuccess(message);
       },
       error: (err) => {
-        console.error('Erreur soumission', err);
+        console.error('❌ Erreur soumission', err);
         this.handleSubmitError(err);
       }
     });
   }
 
-  // 🗃️ Préparation des données du formulaire
-  private prepareFormData(): any {
+  // 🎬 Animation de début de soumission
+  private animateSubmitStart(): void {
+    const submitButton = document.querySelector('.submit-button');
+    if (submitButton) {
+      submitButton.classList.add('submitting');
+    }
+  }
+
+  // 🎬 Animation d'erreur de formulaire
+  private animateFormError(): void {
+    const formElement = document.querySelector('.main-form');
+    if (formElement) {
+      formElement.classList.add('form-error-shake');
+      setTimeout(() => formElement.classList.remove('form-error-shake'), 600);
+    }
+  }
+
+  // 🗃️ Préparation avancée des données du formulaire
+  private prepareFormDataAdvanced(): any {
     const formValue = { ...this.visiteurForm.value };
     
-    // Normalisation des données
-    formValue.nom = formValue.nom?.trim().toUpperCase();
-    formValue.prenom = formValue.prenom?.trim();
+    // Normalisation et validation des données
+    formValue.nom = this.normalizeText(formValue.nom);
+    formValue.prenom = this.capitalizeFirstLetter(formValue.prenom?.trim());
     formValue.cin = formValue.cin?.trim().toUpperCase();
-    formValue.telephone = formValue.telephone?.replace(/\s/g, '');
+    formValue.telephone = this.normalizePhoneNumber(formValue.telephone);
+    
+    // Ajout de métadonnées
+    formValue.dateCreation = new Date().toISOString();
+    formValue.utilisateurCreation = this.utilisateur.email;
     
     return formValue;
   }
 
-  // ✅ Gestion du succès de soumission
+  // 🔧 Méthodes utilitaires de normalisation
+  private normalizeText(text: string): string {
+    return text?.trim().toUpperCase().replace(/\s+/g, ' ');
+  }
+
+  private capitalizeFirstLetter(text: string): string {
+    if (!text) return '';
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  }
+
+  private normalizePhoneNumber(phone: string): string {
+    return phone?.replace(/\s/g, '').replace(/[^\d]/g, '');
+  }
+
+  // ✅ Gestion du succès de soumission avec animations
   private handleSubmitSuccess(message: string): void {
     this.showNotification(message, 'success');
-    this.resetForm();
+    this.animateSuccessSubmit();
+    this.resetFormWithAnimation();
     this.loading = false;
     this.loadCompteur();
     this.refreshVisiteursList();
-    
-    // Animation de succès
-    this.animateSuccessSubmit();
   }
 
-  // ❌ Gestion des erreurs de soumission
+  // ❌ Gestion des erreurs de soumission avec messages détaillés
   private handleSubmitError(error: any): void {
     this.loading = false;
+    this.animateSubmitError();
     
     let errorMessage = 'Erreur lors de la soumission. Veuillez réessayer.';
     
@@ -373,24 +527,53 @@ export class FormComponent implements OnInit, OnDestroy {
       errorMessage = 'Données invalides. Vérifiez vos informations.';
     } else if (error.status === 409) {
       errorMessage = 'Ce visiteur existe déjà (CIN déjà utilisé).';
+      this.highlightFieldError('cin');
+    } else if (error.status === 422) {
+      errorMessage = 'Format de données incorrect.';
     } else if (error.status === 500) {
       errorMessage = 'Erreur serveur. Contactez l\'administrateur.';
+    } else if (error.status === 0) {
+      errorMessage = 'Impossible de contacter le serveur.';
     }
     
     this.showNotification(errorMessage, 'error');
   }
 
-  // 🎬 Animation de succès
+  // 🎬 Animations de succès et d'erreur
   private animateSuccessSubmit(): void {
-    const form = document.querySelector('form');
+    const form = document.querySelector('.main-form');
     if (form) {
-      form.classList.add('animate-pulse');
-      setTimeout(() => form.classList.remove('animate-pulse'), 500);
+      form.classList.add('success-pulse');
+      setTimeout(() => form.classList.remove('success-pulse'), 1000);
     }
   }
 
-  // 🔄 Réinitialisation du formulaire
-  resetForm(): void {
+  private animateSubmitError(): void {
+    const submitButton = document.querySelector('.submit-button');
+    if (submitButton) {
+      submitButton.classList.remove('submitting');
+      submitButton.classList.add('error-shake');
+      setTimeout(() => submitButton.classList.remove('error-shake'), 600);
+    }
+  }
+
+  // 🎯 Mise en évidence d'un champ en erreur
+  private highlightFieldError(fieldName: string): void {
+    const field = document.querySelector(`[formControlName="${fieldName}"]`);
+    if (field) {
+      field.classList.add('highlight-error');
+      setTimeout(() => field.classList.remove('highlight-error'), 3000);
+    }
+  }
+
+  // 🔄 Réinitialisation du formulaire avec animation
+  resetFormWithAnimation(): void {
+    const form = document.querySelector('.main-form');
+    if (form) {
+      form.classList.add('reset-animation');
+      setTimeout(() => form.classList.remove('reset-animation'), 500);
+    }
+
     this.visiteurForm.reset();
     this.selectedVisiteurId = null;
     this.initializeFieldStates();
@@ -400,52 +583,77 @@ export class FormComponent implements OnInit, OnDestroy {
     const matriculeControl = this.visiteurForm.get('matricule');
     matriculeControl?.clearValidators();
     matriculeControl?.updateValueAndValidity();
+
+    // Animation de la barre de progression vers 0
+    this.animateProgress(this.formProgress, 0);
   }
 
-  // 🎯 Marquer tous les champs comme touchés
+  // 🔄 Méthode de réinitialisation publique (votre méthode existante)
+  resetForm(): void {
+    this.resetFormWithAnimation();
+  }
+
+  // 🎯 Marquer tous les champs comme touchés avec animation
   private markAllFieldsAsTouched(): void {
     Object.keys(this.visiteurForm.controls).forEach(key => {
       const control = this.visiteurForm.get(key);
       control?.markAsTouched();
-      this.validateField(key);
+      this.validateFieldWithAnimations(key);
     });
   }
 
-  // 📜 Défiler vers la première erreur
+  // 📜 Défiler vers la première erreur avec animation douce
   private scrollToFirstError(): void {
-    const firstErrorElement = document.querySelector('.field-error, .border-red-500');
+    const firstErrorElement = document.querySelector('.input-error:not([style*="display: none"]), .error-state');
     if (firstErrorElement) {
       firstErrorElement.scrollIntoView({ 
         behavior: 'smooth', 
-        block: 'center' 
+        block: 'center',
+        inline: 'nearest'
       });
+      
+      // Highlight temporaire
+      firstErrorElement.classList.add('highlight-error');
+      setTimeout(() => firstErrorElement.classList.remove('highlight-error'), 2000);
     }
   }
 
-  // 📢 Affichage des notifications
+  // 📢 Affichage des notifications avec auto-hide intelligent
   showNotification(message: string, type: 'success' | 'error' | 'warning' = 'success'): void {
     this.confirmationMessage = message;
     this.messageType = type;
     this.showMessage = true;
 
-    // Auto-hide après 5 secondes
+    // Auto-hide avec timing différent selon le type
+    const hideDelay = type === 'error' ? 7000 : type === 'warning' ? 5000 : 4000;
+    
     setTimeout(() => {
       this.hideNotification();
-    }, 5000);
+    }, hideDelay);
   }
 
-  // 🙈 Masquer les notifications
+  // 🙈 Masquer les notifications avec animation
   hideNotification(): void {
-    this.showMessage = false;
-    this.confirmationMessage = '';
+    const messageElement = document.querySelector('.message-box');
+    if (messageElement) {
+      messageElement.classList.add('fade-out');
+      setTimeout(() => {
+        this.showMessage = false;
+        this.confirmationMessage = '';
+        this.cdr.detectChanges();
+      }, 300);
+    } else {
+      this.showMessage = false;
+      this.confirmationMessage = '';
+    }
   }
 
-  // 🔄 Rafraîchir la liste des visiteurs
+  // 🔄 Rafraîchir la liste des visiteurs (votre méthode existante)
   private refreshVisiteursList(): void {
     window.dispatchEvent(new CustomEvent('refresh-visiteurs'));
   }
 
-  // 🚪 Validation de sortie
+  // 🚪 Validation de sortie (votre méthode existante)
   validerSortie(id: number): void {
     this.visiteurService.validerSortie(id).subscribe({
       next: () => {
@@ -454,13 +662,13 @@ export class FormComponent implements OnInit, OnDestroy {
         this.showNotification('Sortie validée avec succès', 'success');
       },
       error: (err) => {
-        console.error('Erreur validation sortie', err);
+        console.error('❌ Erreur validation sortie', err);
         this.showNotification('Erreur lors de la validation de sortie', 'error');
       }
     });
   }
 
-  // 🗑️ Suppression de visiteur avec confirmation
+  // 🗑️ Suppression de visiteur avec confirmation (votre méthode existante)
   supprimerVisiteur(id: number): void {
     if (confirm("Voulez-vous vraiment supprimer ce visiteur ?")) {
       this.visiteurService.supprimer(id).subscribe({
@@ -470,14 +678,14 @@ export class FormComponent implements OnInit, OnDestroy {
           this.showNotification('Visiteur supprimé avec succès', 'success');
         },
         error: (err) => {
-          console.error('Erreur suppression', err);
+          console.error('❌ Erreur suppression', err);
           this.showNotification('Erreur lors de la suppression', 'error');
         }
       });
     }
   }
 
-  // 🎛️ Interface utilisateur
+  // 🎛️ Interface utilisateur (vos méthodes existantes)
   toggleMenu(): void {
     this.menuOuvert = !this.menuOuvert;
   }
@@ -489,7 +697,7 @@ export class FormComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 🔒 Gestion du mot de passe
+  // 🔒 Gestion du mot de passe (vos méthodes existantes)
   ouvrirModalePassword(): void {
     this.resetPasswordForm();
     this.modalePasswordVisible = true;
@@ -538,7 +746,7 @@ export class FormComponent implements OnInit, OnDestroy {
     });
   }
 
-  // 🔍 Méthodes utilitaires
+  // 🔍 Méthodes utilitaires (vos méthodes existantes améliorées)
   titlecase(str: string): string {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -556,7 +764,9 @@ export class FormComponent implements OnInit, OnDestroy {
     if (errors['pattern']) return `Format invalide pour ${this.getFieldLabel(fieldName)}`;
     if (errors['specialCharacters']) return `${this.getFieldLabel(fieldName)} ne peut pas contenir de caractères spéciaux`;
     if (errors['invalidCin']) return 'Format CIN invalide (ex: A123456, AB123456 ou 123456AB)';
-    if (errors['invalidPhone']) return 'Numéro de téléphone invalide';
+    if (errors['invalidPhone']) return 'Numéro de téléphone invalide (ex: 06XXXXXXXX)';
+    if (errors['invalidName']) return `${this.getFieldLabel(fieldName)} contient des caractères non autorisés`;
+    if (errors['invalidMatricule']) return 'Format matricule invalide (3-10 caractères alphanumériques)';
 
     return 'Champ invalide';
   }
@@ -568,25 +778,47 @@ export class FormComponent implements OnInit, OnDestroy {
       cin: 'Le CIN',
       telephone: 'Le téléphone',
       destination: 'La destination',
-      genre: 'Le genre'
+      genre: 'Le genre',
+      matricule: 'Le matricule'
     };
     return labels[fieldName] || 'Ce champ';
   }
 
-  // 🔧 Validateurs personnalisés
+  // 🔧 Validateurs personnalisés avancés
   private noSpecialCharactersValidator(control: AbstractControl): {[key: string]: any} | null {
     if (!control.value) return null;
     const hasSpecialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(control.value);
     return hasSpecialChars ? { specialCharacters: true } : null;
   }
 
-  // 🆔 Validateur CIN modifié - Plus flexible
-  private cinValidator(control: AbstractControl): {[key: string]: any} | null {
+  // 👤 Validateur de nom avancé
+  private nameValidator(control: AbstractControl): {[key: string]: any} | null {
+    if (!control.value) return null;
+    
+    const nameValue = control.value.toString().trim();
+    
+    // Vérifier les caractères autorisés (lettres, espaces, traits d'union, apostrophes)
+    const validNamePattern = /^[a-zA-ZÀ-ÿ\s\-']+$/;
+    
+    if (!validNamePattern.test(nameValue)) {
+      return { invalidName: true };
+    }
+    
+    // Vérifier qu'il n'y a pas d'espaces consécutifs
+    if (/\s{2,}/.test(nameValue)) {
+      return { invalidName: true };
+    }
+    
+    return null;
+  }
+
+  // 🆔 Validateur CIN avancé et flexible
+  private cinValidatorAdvanced(control: AbstractControl): {[key: string]: any} | null {
     if (!control.value) return null;
     
     const cinValue = control.value.toString().trim().toUpperCase();
     
-    // Différents formats acceptés :
+    // Différents formats acceptés avec validation renforcée :
     // Format 1: 1-2 lettres suivies de 4-8 chiffres (ex: A123456, AB123456)
     // Format 2: 4-8 chiffres suivis de 1-2 lettres (ex: 123456A, 123456AB)
     // Format 3: Uniquement des chiffres (ex: 12345678)
@@ -599,13 +831,113 @@ export class FormComponent implements OnInit, OnDestroy {
     
     const isValidCin = cinPatterns.some(pattern => pattern.test(cinValue));
     
-    return isValidCin ? null : { invalidCin: true };
+    if (!isValidCin) {
+      return { invalidCin: true };
+    }
+    
+    // Validation supplémentaire: éviter les séquences répétitives
+    if (/^(.)\1{4,}$/.test(cinValue)) {
+      return { invalidCin: true };
+    }
+    
+    return null;
   }
 
-  private phoneValidator(control: AbstractControl): {[key: string]: any} | null {
+  // 📱 Validateur téléphone avancé
+  private phoneValidatorAdvanced(control: AbstractControl): {[key: string]: any} | null {
     if (!control.value) return null;
-    const phonePattern = /^(0[5-7])[0-9]{8}$/;
-    const cleanPhone = control.value.replace(/\s/g, '');
-    return phonePattern.test(cleanPhone) ? null : { invalidPhone: true };
+    
+    const phoneValue = control.value.toString().replace(/\s/g, '');
+    
+    // Formats acceptés:
+    // - Numéros mobiles: 06, 07 (9 chiffres après)
+    // - Numéros fixes: 05 (9 chiffres après)
+    const phonePatterns = [
+      /^(0[5-7])[0-9]{8}$/, // Format standard marocain
+      /^\+212[5-7][0-9]{8}$/, // Format international
+      /^00212[5-7][0-9]{8}$/ // Format international alternatif
+    ];
+    
+    const isValidPhone = phonePatterns.some(pattern => pattern.test(phoneValue));
+    
+    if (!isValidPhone) {
+      return { invalidPhone: true };
+    }
+    
+    // Validation supplémentaire: éviter les numéros évidemment faux
+    if (/^(.)\1{8,}$/.test(phoneValue)) {
+      return { invalidPhone: true };
+    }
+    
+    return null;
+  }
+
+  // 🏷️ Validateur matricule
+  private matriculeValidator(control: AbstractControl): {[key: string]: any} | null {
+    if (!control.value) return null;
+    
+    const matriculeValue = control.value.toString().trim().toUpperCase();
+    
+    // Format: 3-10 caractères alphanumériques
+    const matriculePattern = /^[A-Z0-9]{3,10}$/;
+    
+    if (!matriculePattern.test(matriculeValue)) {
+      return { invalidMatricule: true };
+    }
+    
+    return null;
+  }
+
+  // 🎛️ Méthodes d'aide pour l'interface
+  isFieldValid(fieldName: string): boolean {
+    return this.fieldStates[fieldName] === 'valid';
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return this.fieldStates[fieldName] === 'invalid';
+  }
+
+  isFormSubmittable(): boolean {
+    return this.visiteurForm.valid && !this.loading;
+  }
+
+  getFormCompletionPercentage(): number {
+    return this.formProgress;
+  }
+
+  // 🎨 Méthodes pour les animations CSS
+  getFieldAnimationClass(fieldName: string): string {
+    const state = this.fieldStates[fieldName];
+    switch (state) {
+      case 'valid': return 'field-valid-animation';
+      case 'invalid': return 'field-invalid-animation';
+      default: return '';
+    }
+  }
+
+  // 🔄 Méthode pour forcer la re-validation de tous les champs
+  revalidateAllFields(): void {
+    Object.keys(this.visiteurForm.controls).forEach(key => {
+      this.validateFieldWithAnimations(key);
+    });
+  }
+
+  // 📊 Méthodes pour les statistiques du formulaire
+  getFieldsValidCount(): number {
+    return Object.values(this.fieldStates).filter(state => state === 'valid').length;
+  }
+
+  getFieldsInvalidCount(): number {
+    return Object.values(this.fieldStates).filter(state => state === 'invalid').length;
+  }
+
+  // 🎯 Méthode pour obtenir le premier champ invalide
+  getFirstInvalidField(): string | null {
+    for (const [fieldName, state] of Object.entries(this.fieldStates)) {
+      if (state === 'invalid') {
+        return fieldName;
+      }
+    }
+    return null;
   }
 }

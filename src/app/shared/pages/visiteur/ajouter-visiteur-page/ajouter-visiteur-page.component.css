@@ -1,104 +1,520 @@
-🎯 Conteneur principal
-.page-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #f3f4f6, #d1d5db); /* from-slate-100 to-slate-300 */
-  padding-top: 100px; /* espace pour le header global */
-  padding-bottom: 80px; /* espace pour le footer fixe */
+/* ✨ STYLES POUR AJOUTER-VISITEUR-PAGE COMPONENT ✨ */
+
+/* 🎨 Variables CSS personnalisées */
+:host {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --emerald-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-large: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --animation-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animation-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* 🧭 Séparateur entre le formulaire et la liste */
-.separator {
-  margin: 40px auto;
-  border: none;
-  height: 2px;
-  background: #cbd5e1; /* gris clair */
-  width: 85%;
+/* 🌟 Fond d'écran avec animation subtile */
+.min-h-screen {
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* 📄 Chaque élément de la liste */
-.visiteur-item {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+.min-h-screen::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+  z-index: -1;
+  animation: backgroundFloat 20s ease-in-out infinite;
 }
 
-/* 🧾 Informations visiteur */
-.visiteur-info {
-  max-width: 70%;
-  font-size: 15px;
-  color: #1f2937;
-  line-height: 1.6;
+@keyframes backgroundFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(5px) rotate(-1deg); }
 }
 
-/* 🔘 Zone des boutons (Modifier / Supprimer / Sortie) */
-.action-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: center;
+/* 🎯 Header avec effet glassmorphism */
+header {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.125);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-/* 🎨 Boutons standards */
-button.btn {
-  padding: 8px 16px;
-  font-weight: bold;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  transition: 0.3s ease-in-out;
+/* 🏢 Logo avec animation au survol */
+.logo-container {
+  position: relative;
+  transition: all 0.3s var(--animation-smooth);
 }
 
-/* ✅ Bouton sortie */
-.btn-success {
-  background-color: #16a34a;
-  color: #fff;
-}
-.btn-success:hover {
-  background-color: #15803d;
+.logo-container:hover {
+  transform: translateY(-2px);
 }
 
-/* ✏️ Bouton modifier */
+.logo-container:hover .logo-blur {
+  opacity: 0.6;
+  transform: scale(1.1);
+}
+
+.logo-blur {
+  transition: all 0.4s var(--animation-smooth);
+}
+
+/* 👤 Menu utilisateur avec animations avancées */
+.user-menu-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.user-menu-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.user-menu-button:hover::before {
+  left: 100%;
+}
+
+/* 📱 Menu dropdown avec animation fluide */
+.user-dropdown {
+  transform-origin: top right;
+  animation: dropdownSlide 0.3s var(--animation-bounce);
+}
+
+@keyframes dropdownSlide {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.user-dropdown .menu-item {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s var(--animation-smooth);
+}
+
+.user-dropdown .menu-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+  transition: left 0.3s;
+}
+
+.user-dropdown .menu-item:hover::before {
+  left: 100%;
+}
+
+/* 🎪 Section titre avec effet de profondeur */
+.title-section {
+  position: relative;
+  z-index: 1;
+}
+
+.title-badge {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.title-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.title-badge:hover::before {
+  opacity: 1;
+}
+
+/* 📋 Cartes de contenu avec glassmorphism */
+.content-card {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(209, 213, 219, 0.3);
+  box-shadow: var(--shadow-large);
+  position: relative;
+  overflow: hidden;
+}
+
+.content-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+/* 🎨 En-têtes de sections avec gradients */
+.form-header {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow: hidden;
+}
+
+.form-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+}
+
+.list-header {
+  position: relative;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  overflow: hidden;
+}
+
+.list-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+}
+
+/* 🔄 Animations de motifs décoratifs */
+.decorative-circle {
+  animation: floatCircle 6s ease-in-out infinite;
+}
+
+.decorative-circle:nth-child(even) {
+  animation-delay: -3s;
+  animation-duration: 8s;
+}
+
+@keyframes floatCircle {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+}
+
+/* 📱 Scrollbars personnalisées ultra-fines */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(165, 180, 252, 0.5) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(165, 180, 252, 0.5);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(165, 180, 252, 0.8);
+}
+
+.scrollbar-thumb-indigo-300::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #a5b4fc, #818cf8);
+}
+
+.scrollbar-thumb-emerald-300::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #86efac, #6ee7b7);
+}
+
+/* 🎭 Modale avec backdrop ultra-moderne */
+.modal-backdrop {
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  background: rgba(0, 0, 0, 0.4);
+  animation: fadeInBackdrop 0.3s ease-out;
+}
+
+@keyframes fadeInBackdrop {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.modal-content {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.modal-enter {
+  animation: modalEnter 0.4s var(--animation-bounce);
+}
+
+@keyframes modalEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 🎯 Boutons avec effets avancés */
 .btn-primary {
-  background-color: #2563eb;
-  color: white;
-}
-.btn-primary:hover {
-  background-color: #1e40af;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s var(--animation-smooth);
 }
 
-/* ❌ Bouton supprimer */
-.btn-danger {
-  background-color: #dc2626;
-  color: white;
-}
-.btn-danger:hover {
-  background-color: #b91c1c;
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
 }
 
-/* 📱 Responsive pour mobiles */
-@media screen and (max-width: 768px) {
-  .visiteur-item {
-    flex-direction: column;
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* 🌈 Badges et indicateurs avec glow */
+.status-badge {
+  position: relative;
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.status-badge::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: inherit;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: -1;
+}
+
+.status-badge:hover::before {
+  transform: translate(-50%, -50%) scale(1.2);
+  opacity: 0.3;
+}
+
+/* 🎊 Animations d'entrée pour les éléments */
+.animate-in {
+  animation: slideInUp 0.6s var(--animation-bounce);
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
   }
-
-  .visiteur-info,
-  .action-buttons {
-    max-width: 100%;
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  .action-buttons {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: flex-start;
-    margin-top: 10px;
+.slide-in-from-top-2 {
+  animation: slideInFromTop 0.3s var(--animation-smooth);
+}
+
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
   }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.zoom-in-90 {
+  animation: zoomIn90 0.3s var(--animation-bounce);
+}
+
+@keyframes zoomIn90 {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 🔮 Effets de focus améliorés */
+input:focus,
+select:focus,
+button:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 3px rgba(99, 102, 241, 0.1),
+    0 0 0 1px rgba(99, 102, 241, 0.3);
+  transition: box-shadow 0.2s ease;
+}
+
+/* 💫 Effets de hover pour les cartes */
+.hover-lift {
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-large);
+}
+
+/* 🎨 Mode sombre (optionnel) */
+@media (prefers-color-scheme: dark) {
+  :host {
+    --glass-bg: rgba(0, 0, 0, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+  
+  .content-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .modal-content {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* 📱 Optimisations pour mobile */
+@media (max-width: 768px) {
+  /* Réduction des effets sur mobile pour les performances */
+  .min-h-screen::before {
+    animation: none;
+  }
+  
+  .decorative-circle {
+    animation: none;
+  }
+  
+  /* Amélioration de la lisibilité */
+  .content-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  /* Espacement optimisé */
+  .user-dropdown {
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* 🎯 Optimisations pour les écrans haute densité */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .content-card {
+    border-width: 0.5px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+/* ⚡ Optimisations pour les animations réduites */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .min-h-screen::before,
+  .decorative-circle,
+  .status-badge::before {
+    animation: none !important;
+  }
+}
+
+/* 🎪 Classes utilitaires personnalisées */
+.glass-effect {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.gradient-text {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shadow-glow {
+  box-shadow: 
+    0 0 20px rgba(99, 102, 241, 0.3),
+    var(--shadow-medium);
+}
+
+/* 🎭 États de chargement */
+.loading-pulse {
+  animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }

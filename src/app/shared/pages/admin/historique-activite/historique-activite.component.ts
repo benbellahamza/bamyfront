@@ -48,7 +48,7 @@ export class HistoriqueActiviteComponent implements OnInit {
   utilisateur: Utilisateur = { nom: '', prenom: '', email: '', role: '' };
   menuOuvert = false;
   
-  // 🔐 GESTION MOT DE PASSE
+  // 🔐 GESTION MOT DE PASSE - VERSIONS UNIFIÉES
   modalePasswordVisible = false;
   ancienMotDePasse = '';
   nouveauMotDePasse = '';
@@ -115,14 +115,17 @@ export class HistoriqueActiviteComponent implements OnInit {
 
   // 📊 CHARGEMENT DES DONNÉES
   chargerHistorique(): void {
+    this.isLoading = true;
     this.historiqueService.getHistorique().subscribe({
       next: (res: HistoriqueAction[]) => {
         this.historique = res || [];
         this.resetPagination();
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('❌ Erreur chargement historique :', err);
         this.historique = [];
+        this.isLoading = false;
       }
     });
   }
@@ -416,7 +419,7 @@ export class HistoriqueActiviteComponent implements OnInit {
     this.ordreTri = 'desc';
   }
 
-  // 🔐 GESTION MOT DE PASSE AMÉLIORÉE
+  // 🔐 GESTION MOT DE PASSE - VERSION UNIFIÉE AVEC DASHBOARD
   ouvrirModalePassword(): void {
     this.modalePasswordVisible = true;
     this.messageSuccess = '';
@@ -464,7 +467,7 @@ export class HistoriqueActiviteComponent implements OnInit {
       return;
     }
 
-    // Appel API
+    // Appel API - VERSION UNIFIÉE
     this.adminService.changerMotDePasseActuel(
       this.utilisateur.email,
       this.ancienMotDePasse,
@@ -487,7 +490,7 @@ export class HistoriqueActiviteComponent implements OnInit {
     });
   }
 
-  // 🚪 DÉCONNEXION AVEC CONFIRMATION
+  // 🚪 DÉCONNEXION UNIFIÉE
   logout(): void {
     if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
       try {
@@ -502,7 +505,7 @@ export class HistoriqueActiviteComponent implements OnInit {
     }
   }
 
-  // 🖱️ GESTION DES CLICS EXTERNES
+  // 🖱️ GESTION DES CLICS EXTERNES - VERSION UNIFIÉE
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -549,7 +552,7 @@ export class HistoriqueActiviteComponent implements OnInit {
     };
   }
 
-  // 🎨 MÉTHODES POUR LES CLASSES CSS DYNAMIQUES
+  // 🎨 MÉTHODES POUR LES CLASSES CSS DYNAMIQUES - UNIFIÉES
   getRowClass(action: HistoriqueAction): string {
     const classes = ['hover:bg-slate-50', 'transition-colors', 'duration-200'];
     if (this.lignesSelectionnees.has(action.id)) {
