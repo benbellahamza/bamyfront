@@ -10,28 +10,8 @@ import { Router } from '@angular/router';
 })
 export class AjouterVisiteurPageComponent implements OnInit, OnDestroy {
 
-  // 👤 Données utilisateur
-  utilisateur = {
-    nom: '',
-    prenom: '',
-    email: '',
-    role: ''
-  };
-
-  // 🎛️ États de l'interface
-  menuOuvert: boolean = false;
-  modalePasswordVisible = false;
-
-  // 🔒 Gestion du mot de passe
-  motDePasseVisible = false;
-  confirmationVisible = false;
-  confirmationMotDePasse: string = '';
-  ancienMotDePasse: string = '';
-  nouveauMotDePasse: string = '';
-
-  // 💬 Messages
-  messageSuccess: string = '';
-  messageErreur: string = '';
+  // ✅ Configuration de la navigation (vide car pas de sidebar spécifique)
+  navigationItems: any[] = [];
 
   // 🔄 États de chargement
   loading = false;
@@ -46,7 +26,6 @@ export class AjouterVisiteurPageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.recupererInfosUtilisateur();
     this.setupEventListeners();
   }
 
@@ -54,346 +33,128 @@ export class AjouterVisiteurPageComponent implements OnInit, OnDestroy {
     this.cleanupEventListeners();
   }
 
+  // ✅ Callback appelé après changement de mot de passe via le composant unifié
+  onPasswordChanged(): void {
+    console.log('🔐 Mot de passe changé avec succès depuis ajouter visiteur');
+    this.showNotification('Mot de passe mis à jour avec succès !');
+  }
+
   // 🚀 Configuration des écouteurs d'événements
   private setupEventListeners(): void {
-    // Écouteur pour fermer le menu en cliquant à l'extérieur
-    this.clickListener = (event: Event) => {
-      const target = event.target as HTMLElement;
-      const menuContainer = target.closest('.relative');
-      
-      if (!menuContainer && this.menuOuvert) {
-        this.menuOuvert = false;
-      }
-    };
-
     // Écouteur pour fermer avec Escape
     this.keyListener = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        if (this.modalePasswordVisible) {
-          this.fermerModalePassword();
-        } else if (this.menuOuvert) {
-          this.menuOuvert = false;
-        }
+        // Gestion des raccourcis clavier spécifiques à cette page
+        this.handleEscapeKey();
       }
     };
 
-    document.addEventListener('click', this.clickListener);
     document.addEventListener('keydown', this.keyListener);
   }
 
   // 🧹 Nettoyage des écouteurs
   private cleanupEventListeners(): void {
-    if (this.clickListener) {
-      document.removeEventListener('click', this.clickListener);
-    }
     if (this.keyListener) {
       document.removeEventListener('keydown', this.keyListener);
     }
   }
 
-  // 🔐 Récupération et décodage des informations utilisateur depuis le JWT
-  recupererInfosUtilisateur(): void {
-    const token = localStorage.getItem('access-token');
+  // ⌨️ Gestion de la touche Escape
+  private handleEscapeKey(): void {
+    // Logique spécifique à votre page si nécessaire
+    console.log('🔑 Touche Escape pressée dans ajouter-visiteur');
+  }
+
+  // 💬 Affichage des notifications
+  private showNotification(message: string): void {
+    // Implémentation simple - vous pouvez utiliser une bibliothèque de notifications
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fadeIn';
+    notification.textContent = message;
     
-    if (!token) {
-      console.warn('⚠️ Aucun token d\'accès trouvé');
-      this.redirectToLogin();
-      return;
-    }
-
-    try {
-      // Décodage du JWT
-      const payload = token.split('.')[1];
-      const decodedPayload = atob(payload);
-      const decoded = JSON.parse(decodedPayload);
-
-      // Vérification de l'expiration du token
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (decoded.exp && decoded.exp < currentTime) {
-        console.warn('⚠️ Token expiré');
-        this.redirectToLogin();
-        return;
-      }
-
-      // Mise à jour des informations utilisateur
-      this.utilisateur = {
-        nom: decoded.nom || 'Utilisateur',
-        prenom: decoded.prenom || '',
-        email: decoded.sub || decoded.email || '',
-        role: this.formatRole(decoded.scope || decoded.role || 'UTILISATEUR')
-      };
-
-      console.log('✅ Informations utilisateur récupérées:', this.utilisateur);
-
-    } catch (error) {
-      console.error('❌ Erreur lors du décodage du token JWT:', error);
-      this.showErrorMessage('Erreur d\'authentification. Veuillez vous reconnecter.');
-      setTimeout(() => this.redirectToLogin(), 2000);
-    }
-  }
-
-  // 🎨 Formatage du rôle pour l'affichage
-  private formatRole(role: string): string {
-    const roleMap: { [key: string]: string } = {
-      'ADMIN': 'Administrateur',
-      'USER': 'Utilisateur',
-      'UTILISATEUR': 'Utilisateur',
-      'MANAGER': 'Gestionnaire',
-      'SUPERVISOR': 'Superviseur'
-    };
-
-    return roleMap[role.toUpperCase()] || role;
-  }
-
-  // 🚪 Redirection vers la page de connexion
-  private redirectToLogin(): void {
-    localStorage.clear();
-    this.router.navigate(['/']);
-  }
-
-  // 🎛️ Gestion du menu utilisateur
-  toggleMenu(): void {
-    this.menuOuvert = !this.menuOuvert;
-  }
-
-  // 🔒 Ouverture de la modale de changement de mot de passe
-  ouvrirModalePassword(): void {
-    this.resetPasswordForm();
-    this.modalePasswordVisible = true;
-    this.menuOuvert = false;
+    document.body.appendChild(notification);
     
-    // Focus automatique sur le premier champ après un délai
     setTimeout(() => {
-      const firstInput = document.querySelector('.modale-password input') as HTMLInputElement;
-      if (firstInput) {
-        firstInput.focus();
-      }
-    }, 100);
-  }
-
-  // 🔒 Fermeture de la modale de changement de mot de passe
-  fermerModalePassword(): void {
-    this.modalePasswordVisible = false;
-    this.resetPasswordForm();
-  }
-
-  // 🧹 Réinitialisation du formulaire de mot de passe
-  private resetPasswordForm(): void {
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
-    this.confirmationMotDePasse = '';
-    this.messageErreur = '';
-    this.messageSuccess = '';
-    this.motDePasseVisible = false;
-    this.confirmationVisible = false;
-  }
-
-  // 🔄 Changement du mot de passe
-  changerMotDePasse(): void {
-    // Validation des champs
-    if (!this.validatePasswordForm()) {
-      return;
-    }
-
-    this.loading = true;
-    this.messageErreur = '';
-    this.messageSuccess = '';
-
-    const payload = {
-      ancienMotDePasse: this.ancienMotDePasse.trim(),
-      nouveauMotDePasse: this.nouveauMotDePasse.trim()
-    };
-
-    console.log('🔄 Tentative de changement de mot de passe...');
-
-    this.http.post('http://localhost:8085/auth/update-password', payload, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access-token')}`,
-        'Content-Type': 'application/json'
-      }
-    }).subscribe({
-      next: (response: any) => {
-        console.log('✅ Mot de passe changé avec succès');
-        this.messageSuccess = response.message || 'Mot de passe modifié avec succès !';
-        this.messageErreur = '';
-        this.loading = false;
-
-        // Fermeture automatique après 2 secondes
-        setTimeout(() => {
-          this.fermerModalePassword();
-        }, 2000);
-      },
-      error: (error) => {
-        console.error('❌ Erreur lors du changement de mot de passe:', error);
-        this.loading = false;
-        
-        // Gestion des différents types d'erreurs
-        if (error.status === 400) {
-          this.messageErreur = 'Ancien mot de passe incorrect.';
-        } else if (error.status === 401) {
-          this.messageErreur = 'Session expirée. Veuillez vous reconnecter.';
-          setTimeout(() => this.redirectToLogin(), 2000);
-        } else if (error.status === 422) {
-          this.messageErreur = 'Le nouveau mot de passe ne respecte pas les critères de sécurité.';
-        } else {
-          this.messageErreur = error.error?.message || 'Erreur lors de la modification du mot de passe.';
-        }
-        
-        this.messageSuccess = '';
-      }
-    });
-  }
-
-  // ✅ Validation du formulaire de mot de passe
-  private validatePasswordForm(): boolean {
-    // Vérification des champs vides
-    if (!this.ancienMotDePasse.trim()) {
-      this.messageErreur = 'Veuillez saisir votre ancien mot de passe.';
-      return false;
-    }
-
-    if (!this.nouveauMotDePasse.trim()) {
-      this.messageErreur = 'Veuillez saisir un nouveau mot de passe.';
-      return false;
-    }
-
-    if (!this.confirmationMotDePasse.trim()) {
-      this.messageErreur = 'Veuillez confirmer votre nouveau mot de passe.';
-      return false;
-    }
-
-    // Vérification de la correspondance
-    if (this.nouveauMotDePasse !== this.confirmationMotDePasse) {
-      this.messageErreur = 'Les mots de passe ne correspondent pas.';
-      return false;
-    }
-
-    // Vérification de la longueur minimum
-    if (this.nouveauMotDePasse.length < 6) {
-      this.messageErreur = 'Le nouveau mot de passe doit contenir au moins 6 caractères.';
-      return false;
-    }
-
-    // Vérification que le nouveau mot de passe est différent de l'ancien
-    if (this.ancienMotDePasse === this.nouveauMotDePasse) {
-      this.messageErreur = 'Le nouveau mot de passe doit être différent de l\'ancien.';
-      return false;
-    }
-
-    return true;
-  }
-
-  // 🚪 Déconnexion sécurisée
-  logout(): void {
-    // Confirmation de déconnexion
-    if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-      return;
-    }
-
-    console.log('🚪 Déconnexion en cours...');
-
-    // Nettoyage des données locales
-    try {
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Suppression des cookies si nécessaire
-      document.cookie.split(";").forEach((c) => {
-        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-      });
-
-      console.log('✅ Données locales nettoyées');
-
-    } catch (error) {
-      console.error('❌ Erreur lors du nettoyage:', error);
-    }
-
-    // Redirection vers la page de connexion
-    this.router.navigate(['/login']).then(() => {
-      console.log('✅ Redirection effectuée');
-    }).catch((error) => {
-      console.error('❌ Erreur de redirection:', error);
-      // Fallback
-      window.location.href = '/';
-    });
-  }
-
-  // 💬 Affichage des messages d'erreur
-  private showErrorMessage(message: string): void {
-    this.messageErreur = message;
-    this.messageSuccess = '';
-    
-    // Auto-hide après 5 secondes
-    setTimeout(() => {
-      this.messageErreur = '';
-    }, 5000);
-  }
-
-  // 💬 Affichage des messages de succès
-  private showSuccessMessage(message: string): void {
-    this.messageSuccess = message;
-    this.messageErreur = '';
-    
-    // Auto-hide après 3 secondes
-    setTimeout(() => {
-      this.messageSuccess = '';
+      notification.remove();
     }, 3000);
   }
 
-  // 🎯 Gestion des clics extérieurs (alternative au HostListener)
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: Event): void {
-    const target = event.target as HTMLElement;
-    
-    // Fermer le menu si clic à l'extérieur
-    if (this.menuOuvert && !target.closest('.user-menu-container')) {
-      this.menuOuvert = false;
-    }
-  }
-
-  // ⌨️ Gestion des raccourcis clavier
-  @HostListener('document:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent): void {
-    // Escape pour fermer les modales/menus
-    if (event.key === 'Escape') {
-      if (this.modalePasswordVisible) {
-        this.fermerModalePassword();
-      } else if (this.menuOuvert) {
-        this.menuOuvert = false;
-      }
-    }
-
-    // Ctrl+M pour ouvrir le menu utilisateur
-    if (event.ctrlKey && event.key === 'm') {
-      event.preventDefault();
-      this.toggleMenu();
-    }
-  }
-
-  // 🔄 Actualisation de la page
+  // 🎨 Méthodes utilitaires pour l'affichage (si nécessaire)
   refresh(): void {
     window.location.reload();
   }
 
-  // 🎨 Méthodes utilitaires pour l'affichage
-  getInitials(): string {
-    const nom = this.utilisateur.nom.charAt(0).toUpperCase();
-    const prenom = this.utilisateur.prenom.charAt(0).toUpperCase();
-    return nom + (prenom || '');
+  // 🚀 Actions spécifiques à la page
+  onFormSubmitted(): void {
+    // Logique après soumission du formulaire
+    console.log('📝 Formulaire soumis');
   }
 
-  getFullName(): string {
-    return `${this.utilisateur.prenom} ${this.utilisateur.nom}`.trim();
+  onVisitorAdded(): void {
+    // Logique après ajout d'un visiteur
+    console.log('👤 Visiteur ajouté');
+    this.showNotification('Visiteur ajouté avec succès !');
   }
 
-  // 📊 Informations de debug (développement uniquement)
-  getDebugInfo(): any {
-    return {
-      utilisateur: this.utilisateur,
-      menuOuvert: this.menuOuvert,
-      modalePasswordVisible: this.modalePasswordVisible,
-      hasToken: !!localStorage.getItem('access-token'),
-      timestamp: new Date().toISOString()
-    };
+  // 🔄 Rafraîchissement de la liste
+  refreshVisitorList(): void {
+    // Logique pour rafraîchir la liste des visiteurs
+    console.log('🔄 Rafraîchissement de la liste des visiteurs');
+  }
+
+  // 📊 Gestion des erreurs
+  handleError(error: any): void {
+    console.error('❌ Erreur dans ajouter-visiteur:', error);
+    this.showErrorNotification('Une erreur est survenue');
+  }
+
+  // 💬 Notification d'erreur
+  private showErrorNotification(message: string): void {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-20 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fadeIn';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+
+  // 🎯 Navigation vers d'autres pages
+  goToVisitorList(): void {
+    this.router.navigate(['/visiteurs']);
+  }
+
+  goToDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  // 📱 Gestion des événements mobile (si nécessaire)
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any): void {
+    // Logique de redimensionnement si nécessaire
+  }
+
+  // 🎯 Raccourcis clavier pour cette page
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    // Ctrl+S pour sauvegarder (si formulaire)
+    if (event.ctrlKey && event.key === 's') {
+      event.preventDefault();
+      this.quickSave();
+    }
+
+    // Ctrl+R pour rafraîchir la liste
+    if (event.ctrlKey && event.key === 'r') {
+      event.preventDefault();
+      this.refreshVisitorList();
+    }
+  }
+
+  // 💾 Sauvegarde rapide
+  private quickSave(): void {
+    console.log('💾 Sauvegarde rapide activée');
+    // Logique de sauvegarde rapide
   }
 }

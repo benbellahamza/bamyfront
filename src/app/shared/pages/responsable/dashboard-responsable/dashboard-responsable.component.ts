@@ -1,108 +1,83 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-responsable',
-  standalone:false,
+  standalone: false,
   templateUrl: './dashboard-responsable.component.html',
   styleUrls: ['./dashboard-responsable.component.css']
 })
 export class DashboardResponsableComponent implements OnInit {
 
-  menuOuvert: boolean = false;
-  modalePasswordVisible: boolean = false;
-
-  ancienMotDePasse: string = '';
-  nouveauMotDePasse: string = '';
-  messageSuccess: string = '';
-  messageErreur: string = '';
-
-  utilisateur = {
-    nom: '',
-    prenom: '',
-    email: '',
-    role: ''
-  };
+  // ✅ Configuration de la navigation pour le responsable
+  navigationItems = [
+    {
+      label: 'Tableau de bord',
+      route: '/responsable/dashboard',
+      icon: 'dashboard'
+    },
+    {
+      label: 'Gestion équipes',
+      route: '/responsable/equipes',
+      icon: 'users'
+    },
+    {
+      label: 'Validation demandes',
+      route: '/responsable/validations',
+      icon: 'check-circle'
+    },
+    {
+      label: 'Visiteurs',
+      route: '/responsable/visiteur',
+      icon: 'user-group'
+    },
+    {
+      label: 'Livraisons',
+      route: '/responsable/livraison',
+      icon: 'truck'
+    },
+    {
+      label: 'Rapports',
+      route: '/responsable/rapports',
+      icon: 'chart-bar'
+    }
+  ];
 
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
-    this.recupererInfosUtilisateur();
+    // Initialisation du composant
   }
 
-  recupererInfosUtilisateur() {
-    const token = localStorage.getItem('access-token');
-    if (!token) return;
-
-    try {
-      const payload = token.split('.')[1];
-      const decodedPayload = atob(payload);
-      const decoded = JSON.parse(decodedPayload);
-
-      this.utilisateur = {
-        nom: decoded.nom || '',
-        prenom: decoded.prenom || '',
-        email: decoded.sub || '',
-        role: decoded.scope || 'RESPONSABLE'
-      };
-    } catch (e) {
-      console.error('Erreur de décodage du JWT :', e);
-    }
-  }
-
+  /**
+   * ✅ Navigation vers une page spécifique
+   */
   goTo(path: string): void {
     this.router.navigate(['/' + path]);
   }
 
-  ouvrirModalePassword(): void {
-    this.modalePasswordVisible = true;
-    this.messageSuccess = '';
-    this.messageErreur = '';
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
+  /**
+   * ✅ Callback appelé après changement de mot de passe
+   */
+  onPasswordChanged(): void {
+    console.log('🔐 Mot de passe changé avec succès par le responsable');
+    this.showNotification('Mot de passe mis à jour avec succès !');
   }
 
-  fermerModalePassword(): void {
-    this.modalePasswordVisible = false;
-  }
-
-  changerMotDePasse() {
-    if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
-      this.messageErreur = "Veuillez remplir les deux champs.";
-      this.messageSuccess = "";
-      return;
-    }
-
-    const payload = {
-      ancienMotDePasse: this.ancienMotDePasse,
-      nouveauMotDePasse: this.nouveauMotDePasse
-    };
-
-    this.http.post('http://localhost:8085/auth/update-password', payload).subscribe({
-      next: (res: any) => {
-        this.messageSuccess = res.message;
-        this.messageErreur = "";
-        this.ancienMotDePasse = '';
-        this.nouveauMotDePasse = '';
-      },
-      error: (err) => {
-        this.messageErreur = err.error?.error || "❌ Erreur lors de la mise à jour.";
-        this.messageSuccess = "";
-      }
-    });
-  }
-
-  logout() {
-    localStorage.clear();
-    this.router.navigate(['/']);
-  }
-
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: Event) {
-    const clickedInside = (event.target as HTMLElement).closest('.relative');
-    if (!clickedInside) {
-      this.menuOuvert = false;
-    }
+  /**
+   * ✅ Affiche une notification (optionnel)
+   */
+  private showNotification(message: string): void {
+    // Implémentation simple - vous pouvez utiliser une bibliothèque de notifications
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fadeIn';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
   }
 }

@@ -1,0 +1,602 @@
+/* ✅ STYLES OPTIMISÉS POUR L'UTILISATION AVEC LE COMPOSANT UNIFIÉ */
+
+/* 🎨 Variables CSS pour la cohérence */
+:host {
+  --livraison-primary: #f97316; /* Orange */
+  --livraison-secondary: #0ea5e9; /* Blue */
+  --livraison-success: #10b981; /* Emerald */
+  --livraison-warning: #f59e0b; /* Amber */
+  --livraison-danger: #ef4444; /* Red */
+  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-large: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --animation-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --animation-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* 🌟 Fond d'écran avec animation subtile */
+.bg-gradient-to-br {
+  position: relative;
+}
+
+.bg-gradient-to-br::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(249, 115, 22, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+  z-index: -1;
+  animation: backgroundFloat 25s ease-in-out infinite;
+}
+
+@keyframes backgroundFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(0.5deg); }
+  66% { transform: translateY(4px) rotate(-0.5deg); }
+}
+
+/* 📋 Cartes de contenu avec effets améliorés */
+.bg-white {
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(209, 213, 219, 0.3);
+  box-shadow: var(--shadow-medium);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.bg-white::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+.bg-white:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-large);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+/* 🎨 En-têtes avec gradients pour livraisons */
+.bg-gradient-to-r {
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-gradient-to-r::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.bg-gradient-to-r > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* 🚛 Styles spécifiques pour les formulaires de livraison */
+.form-livraison {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.list-livraison {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+/* 📱 Scrollbars personnalisées pour livraisons */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.3) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(249, 115, 22, 0.3), rgba(234, 88, 12, 0.3));
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, rgba(249, 115, 22, 0.6), rgba(234, 88, 12, 0.6));
+}
+
+/* 🎊 Animations d'entrée spécifiques */
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.grid > div {
+  animation: slideInUp 0.6s var(--animation-bounce);
+  animation-fill-mode: both;
+}
+
+.grid > div:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.grid > div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+/* 🎯 Boutons avec effets pour livraisons */
+.btn-livraison {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--livraison-primary) 0%, #ea580c 100%);
+  transition: all 0.3s var(--animation-smooth);
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+}
+
+.btn-livraison::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-livraison:hover::before {
+  left: 100%;
+}
+
+.btn-livraison:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-livraison:active {
+  transform: scale(0.98);
+}
+
+/* 🌈 Badges et indicateurs pour statuts de livraison */
+.status-livraison {
+  position: relative;
+  transition: all 0.3s var(--animation-smooth);
+  backdrop-filter: blur(4px);
+}
+
+.status-livraison::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: inherit;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: -1;
+}
+
+.status-livraison:hover::before {
+  transform: translate(-50%, -50%) scale(1.2);
+  opacity: 0.3;
+}
+
+/* 🚚 Statuts spécifiques aux livraisons */
+.status-entree {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.status-sortie {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+}
+
+.status-attente {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.status-probleme {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+/* 🔮 Effets de focus améliorés pour livraisons */
+input:focus,
+select:focus,
+button:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 3px rgba(249, 115, 22, 0.1),
+    0 0 0 1px rgba(249, 115, 22, 0.3);
+  transition: box-shadow 0.2s ease;
+}
+
+/* 💫 Effets de hover pour les cartes */
+.hover-lift {
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-large);
+}
+
+/* 🎪 Classes utilitaires pour livraisons */
+.glass-effect-livraison {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.gradient-text-livraison {
+  background: linear-gradient(135deg, var(--livraison-primary) 0%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shadow-glow-livraison {
+  box-shadow: 
+    0 0 20px rgba(249, 115, 22, 0.3),
+    var(--shadow-medium);
+}
+
+/* 🎭 États de chargement pour livraisons */
+.loading-pulse-livraison {
+  animation: loadingPulseLivraison 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulseLivraison {
+  0%, 100% { 
+    opacity: 1; 
+    background-color: rgba(249, 115, 22, 0.1);
+  }
+  50% { 
+    opacity: 0.5; 
+    background-color: rgba(249, 115, 22, 0.3);
+  }
+}
+
+/* 🚛 Icônes spécifiques aux livraisons avec animations */
+.icon-truck {
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.icon-truck:hover {
+  transform: translateX(4px);
+  color: var(--livraison-primary);
+}
+
+.icon-loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 📊 Styles pour les formulaires de livraison */
+.form-container {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 1rem;
+  margin: 0.5rem 0;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.form-input:focus {
+  border-color: var(--livraison-primary);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  background: white;
+}
+
+.form-input:hover {
+  border-color: #d1d5db;
+}
+
+/* 📱 Responsive design optimisé */
+@media (max-width: 1280px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .bg-white {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .py-6 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .form-container {
+    padding: 1rem;
+  }
+  
+  .bg-gradient-to-r {
+    padding: 0.75rem;
+  }
+  
+  .bg-gradient-to-r h3 {
+    font-size: 1rem;
+  }
+  
+  .bg-gradient-to-r p {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    gap: 0.75rem;
+  }
+  
+  .bg-white {
+    border-radius: 1rem;
+    margin: 0;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+/* 🎯 Optimisations pour les écrans haute densité */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .bg-white {
+    border-width: 0.5px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+  }
+}
+
+/* ⚡ Optimisations pour les animations réduites */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .bg-gradient-to-br::before,
+  .grid > div,
+  .bg-white:hover,
+  .btn-livraison:hover {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* 🎨 Mode sombre pour livraisons (optionnel) */
+@media (prefers-color-scheme: dark) {
+  :host {
+    --livraison-primary: #fb923c;
+    --livraison-secondary: #38bdf8;
+  }
+  
+  .bg-white {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
+  
+  .form-input {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
+  
+  .form-label {
+    color: #cbd5e1;
+  }
+}
+
+/* 🎯 Styles pour l'impression */
+@media print {
+  .bg-white {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+  
+  .bg-gradient-to-r {
+    background: #374151 !important;
+    color: white !important;
+  }
+  
+  .bg-gradient-to-br::before {
+    display: none !important;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar {
+    display: none !important;
+  }
+}
+
+/* 🎪 Styles pour l'accessibilité */
+@media (prefers-high-contrast: high) {
+  .bg-white {
+    border: 2px solid #000;
+    background: #fff;
+  }
+  
+  .bg-gradient-to-r {
+    background: #000 !important;
+    color: #fff !important;
+  }
+  
+  .form-input {
+    border: 2px solid #000;
+    background: #fff;
+  }
+}
+
+/* 🎯 Styles pour les interactions tactiles */
+@media (hover: none) and (pointer: coarse) {
+  .bg-white:hover {
+    transform: none;
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .btn-livraison:hover {
+    transform: none;
+  }
+  
+  .form-input,
+  .btn-livraison {
+    min-height: 44px; /* Améliore l'accessibilité tactile */
+  }
+}
+
+/* 🔄 Classes pour les états de données */
+.data-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.data-empty {
+  background: rgba(249, 115, 22, 0.05);
+  border: 2px dashed rgba(249, 115, 22, 0.3);
+  color: rgba(249, 115, 22, 0.8);
+  text-align: center;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+.data-error {
+  background: rgba(239, 68, 68, 0.05);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  color: rgba(239, 68, 68, 0.8);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+/* 🎊 Animations de notification */
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification {
+  animation: slideInFromRight 0.3s ease-out;
+  z-index: 9999;
+}
+
+/* 📈 Styles pour les statistiques de livraison */
+.stat-card-livraison {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(234, 88, 12, 0.1) 100%);
+  border-left: 4px solid var(--livraison-primary);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--livraison-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* 🎯 Finalisations */
+.container-livraison {
+  max-width: 100%;
+  margin: 0 auto;
+  transition: all 0.3s var(--animation-smooth);
+}
+
+.section-livraison {
+  margin: 1rem 0;
+  padding: 0.5rem;
+}

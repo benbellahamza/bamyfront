@@ -1,0 +1,297 @@
+/* ✅ ANIMATIONS PERSONNALISÉES POUR LE LAYOUT UNIFIÉ */
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% { 
+    opacity: 0; 
+  }
+  100% { 
+    opacity: 1; 
+  }
+}
+
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ CLASSES D'ANIMATION */
+.animate-slideIn {
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-modalSlideIn {
+  animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* ✅ EFFET GLASSMORPHISM */
+.backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+/* ✅ DÉGRADÉ DE BORDURE PERSONNALISÉ */
+.border-gradient {
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  height: 1px;
+}
+
+/* ✅ FOCUS STATES PERSONNALISÉS POUR LES INPUTS */
+input:focus {
+  outline: none;
+}
+
+/* ✅ TRANSITIONS FLUIDES POUR TOUS LES ÉLÉMENTS INTERACTIFS */
+button, input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ✅ AMÉLIORATION DES HOVER EFFECTS */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+.group:hover .group-hover\:rotate-3 {
+  transform: rotate(3deg);
+}
+
+.group:hover .group-hover\:-rotate-3 {
+  transform: rotate(-3deg);
+}
+
+.group:hover .group-hover\:translate-x-1 {
+  transform: translateX(0.25rem);
+}
+
+.group:hover .group-hover\:rotate-90 {
+  transform: rotate(90deg);
+}
+
+/* ✅ MENU UTILISATEUR - CONTAINER SPÉCIFIQUE */
+.user-menu-container {
+  position: relative;
+}
+
+/* ✅ RESPONSIVE DESIGN POUR LE MENU */
+@media (max-width: 768px) {
+  .user-menu-container .w-80 {
+    width: calc(100vw - 2rem);
+    max-width: 20rem;
+  }
+}
+
+/* ✅ ANIMATION POUR LES ÉLÉMENTS DE NAVIGATION */
+.nav-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item:hover {
+  transform: translateX(4px);
+}
+
+/* ✅ STYLES POUR LES BADGES DE RÔLE */
+.badge-role {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .8;
+  }
+}
+
+/* ✅ STYLES POUR LES INDICATEURS EN LIGNE */
+.status-indicator {
+  position: relative;
+}
+
+.status-indicator::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ✅ AMÉLIORATION DES BOUTONS AVEC EFFETS */
+.btn-primary {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ✅ STYLES POUR LES CHAMPS DE FORMULAIRE */
+.form-input {
+  transition: all 0.3s ease;
+  border: 2px solid #e2e8f0;
+}
+
+.form-input:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-input:hover {
+  border-color: #cbd5e1;
+}
+
+/* ✅ STYLES POUR LES MESSAGES D'ÉTAT */
+.message-success {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border-left: 4px solid #22c55e;
+}
+
+.message-error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  border-left: 4px solid #ef4444;
+}
+
+/* ✅ AMÉLIORATION DE L'ACCESSIBILITÉ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ✅ STYLES POUR LE DARK MODE (optionnel) */
+@media (prefers-color-scheme: dark) {
+  .bg-white\/95 {
+    background-color: rgba(30, 41, 59, 0.95);
+  }
+  
+  .text-slate-800 {
+    color: #f1f5f9;
+  }
+  
+  .border-white\/20 {
+    border-color: rgba(148, 163, 184, 0.2);
+  }
+}
+
+/* ✅ OPTIMISATION POUR L'IMPRESSION */
+@media print {
+  .fixed,
+  .absolute,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    position: static !important;
+    box-shadow: none !important;
+  }
+  
+  .animate-slideIn,
+  .animate-fadeIn,
+  .animate-modalSlideIn,
+  .animate-slideDown {
+    animation: none !important;
+  }
+}
+
+/* ✅ STYLES POUR LES DISPOSITIFS TACTILES */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+  
+  .hover\:shadow-lg:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  button, .btn {
+    min-height: 44px; /* Améliore l'accessibilité tactile */
+  }
+}
+
+/* ✅ STYLES POUR LES ÉCRANS HAUTE DENSITÉ */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* ✅ VARIABLES CSS CUSTOM POUR LA COHÉRENCE */
+:root {
+  --primary-color: #0ea5e9;
+  --primary-dark: #0284c7;
+  --secondary-color: #64748b;
+  --success-color: #22c55e;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --border-radius: 1rem;
+  --border-radius-lg: 1.5rem;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ UTILISATION DES VARIABLES CSS */
+.primary-btn {
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+}
+
+.card {
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+}

@@ -1,12 +1,33 @@
+/* ✅ STYLES OPTIMISÉS POUR LE DASHBOARD RESPONSABLE AVEC COMPOSANT UNIFIÉ */
+
+/* 🎨 Variables CSS spécifiques au responsable */
+:host {
+  --responsable-primary: #3b82f6; /* Blue */
+  --responsable-secondary: #f59e0b; /* Amber */
+  --responsable-accent: #10b981; /* Emerald */
+  --responsable-warning: #ef4444; /* Red */
+  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-large: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --animation-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --animation-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Styles existants optimisés pour l'intégration */
 .container-dashboard {
   text-align: center;
   padding: 30px;
+  transition: all 0.3s var(--animation-smooth);
 }
 
 .title {
   font-size: 28px;
   margin-bottom: 30px;
   font-weight: bold;
+  background: linear-gradient(135deg, var(--responsable-primary) 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .content-box {
@@ -14,14 +35,36 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
+  animation: fadeInUp 0.6s ease-out;
 }
 
 .card {
   width: 300px;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  background: white;
+  box-shadow: var(--shadow-medium);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s var(--animation-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-large);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .card img {
@@ -30,19 +73,431 @@
   object-fit: cover;
   margin-bottom: 15px;
   border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover img {
+  transform: scale(1.05);
 }
 
 .btn-action {
   padding: 12px 25px;
   border: none;
-  background-color: #007BFF;
+  background: linear-gradient(135deg, var(--responsable-primary) 0%, #1d4ed8 100%);
   color: white;
   font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-action::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-action:hover::before {
+  left: 100%;
 }
 
 .btn-action:hover {
-  background-color: #0056b3;
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-action:active {
+  transform: scale(0.98);
+}
+
+/* ✅ NOUVEAUX STYLES POUR L'INTÉGRATION AVEC LE COMPOSANT UNIFIÉ */
+
+/* Animation d'entrée pour les cartes */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* ✅ Styles pour les statistiques du responsable */
+.stat-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-medium);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s var(--animation-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--responsable-primary), #1d4ed8);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-large);
+}
+
+/* ✅ Amélioration des boutons d'action */
+.btn-gradient-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-gradient-blue:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-gradient-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+}
+
+.btn-gradient-orange:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+}
+
+/* ✅ Effets de survol pour les cartes principales */
+.main-card {
+  transition: all 0.3s var(--animation-smooth);
+  position: relative;
+}
+
+.main-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(16, 185, 129, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+.main-card:hover::after {
+  opacity: 1;
+}
+
+/* ✅ Animation de pulse pour les statistiques */
+@keyframes pulse-stat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.stat-number {
+  animation: pulse-stat 3s ease-in-out infinite;
+  font-weight: bold;
+}
+
+/* ✅ Badges et indicateurs spécifiques au responsable */
+.badge-responsable {
+  background: linear-gradient(135deg, var(--responsable-secondary) 0%, #d97706 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.badge-validation {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.badge-equipe {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+}
+
+.badge-performance {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+/* ✅ Responsive design optimisé pour responsable */
+@media (max-width: 768px) {
+  .content-box {
+    gap: 20px;
+    padding: 0 10px;
+  }
+  
+  .card {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+    padding: 15px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 12px;
+  }
+  
+  .card img {
+    height: 150px;
+  }
+  
+  .btn-action {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .title {
+    font-size: 20px;
+  }
+}
+
+/* ✅ États de focus pour l'accessibilité */
+.btn-action:focus,
+.card:focus {
+  outline: 2px solid var(--responsable-primary);
+  outline-offset: 2px;
+}
+
+/* ✅ Transition fluide pour le contenu principal */
+main {
+  transition: all 0.3s var(--animation-smooth);
+}
+
+/* ✅ Style pour les notifications du responsable */
+.notification-responsable {
+  animation: slideInRight 0.3s ease-out;
+  background: linear-gradient(135deg, var(--responsable-primary), #1d4ed8);
+  color: white;
+  border: none;
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ✅ Amélioration des couleurs de fond */
+.bg-gradient-responsable {
+  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 50%, #f0f9ff 100%);
+}
+
+/* ✅ Effet de glassmorphism pour les cartes du responsable */
+.glass-card-responsable {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* ✅ Animation de loading spécifique */
+.loading-shimmer-responsable {
+  background: linear-gradient(90deg, #dbeafe 25%, #bfdbfe 50%, #dbeafe 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ✅ Styles pour les dispositifs tactiles */
+@media (hover: none) and (pointer: coarse) {
+  .card:hover {
+    transform: none;
+  }
+  
+  .btn-action:hover {
+    transform: none;
+  }
+  
+  .card, .btn-action {
+    min-height: 44px; /* Améliore l'accessibilité tactile */
+  }
+}
+
+/* ✅ Styles pour les écrans haute densité */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .card {
+    border-width: 0.5px;
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* ✅ Mode sombre pour responsable (optionnel) */
+@media (prefers-color-scheme: dark) {
+  :host {
+    --responsable-primary: #60a5fa;
+    --responsable-secondary: #fbbf24;
+    --responsable-accent: #34d399;
+  }
+  
+  .card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
+  
+  .title {
+    color: #e2e8f0;
+  }
+}
+
+/* ✅ Optimisations pour les animations réduites */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .card,
+  .btn-action,
+  .stat-number {
+    animation: none !important;
+  }
+}
+
+/* ✅ Styles pour l'impression */
+@media print {
+  .card {
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  
+  .btn-action {
+    display: none;
+  }
+  
+  .title {
+    color: black;
+  }
+}
+
+/* ✅ Amélioration de l'accessibilité */
+@media (prefers-high-contrast: high) {
+  .card {
+    border: 2px solid #000;
+    background: #fff;
+  }
+  
+  .btn-action {
+    background: #000;
+    color: #fff;
+    border: 2px solid #000;
+  }
+  
+  .title {
+    color: #000;
+  }
+}
+
+/* ✅ Variables CSS custom pour la cohérence */
+:root {
+  --responsable-card-bg: rgba(255, 255, 255, 0.95);
+  --responsable-card-border: rgba(255, 255, 255, 0.2);
+  --responsable-hover-transform: translateY(-8px) scale(1.02);
+  --responsable-border-radius: 15px;
+  --responsable-border-radius-lg: 20px;
+}
+
+/* ✅ Utilisation des variables CSS */
+.responsable-card {
+  background: var(--responsable-card-bg);
+  border: 1px solid var(--responsable-card-border);
+  border-radius: var(--responsable-border-radius);
+  transition: transform 0.3s var(--animation-smooth);
+}
+
+.responsable-card:hover {
+  transform: var(--responsable-hover-transform);
+}
+
+/* ✅ Classes utilitaires finales */
+.text-shadow-responsable {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.border-glow-responsable {
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+.gradient-border-responsable {
+  border: 2px solid;
+  border-image: linear-gradient(45deg, var(--responsable-primary), var(--responsable-accent)) 1;
 }

@@ -1,158 +1,168 @@
-<div class="min-h-screen flex flex-col bg-gradient-to-br from-slate-100 to-slate-300">
-
-  <!-- ✅ HEADER RESPONSABLE -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg flex items-center justify-between p-4">
-    <div class="flex items-center gap-3">
-      <div class="bg-white p-2 rounded-lg shadow-md">
-        <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-8 h-8 object-contain" />
-      </div>
-      <span class="text-white font-bold text-xl tracking-wide">BAMY TRUCKS</span>
-    </div>
-
-    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
-      Espace Responsable
-    </h1>
-
-    <div class="relative">
-      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold cursor-pointer shadow-md hover:shadow-lg transition-all"
-           (click)="menuOuvert = !menuOuvert">
-        {{ utilisateur.nom.charAt(0) }}
-      </div>
-    </div>
-  </header>
-
-  <!-- ✅ MENU UTILISATEUR -->
-  <div *ngIf="menuOuvert"
-       class="fixed top-16 right-4 w-72 bg-white text-slate-800 shadow-xl rounded-lg p-4 z-[100] animate-fadeIn border border-slate-200">
-    <div class="flex items-center gap-3 pb-3 border-b border-slate-200">
-      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold text-lg">
-        {{ utilisateur.nom.charAt(0) }}
-      </div>
-      <div>
-        <div class="font-semibold">{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
-        <div class="text-sm text-slate-600">{{ utilisateur.role }}</div>
-      </div>
-    </div>
-    <div class="py-3 space-y-2">
-      <div class="text-sm flex items-center gap-2 text-slate-600">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-        {{ utilisateur.email }}
-      </div>
-    </div>
-    <div class="pt-3 border-t border-slate-200 space-y-2">
-      <button class="w-full text-left py-2 px-3 rounded-md hover:bg-slate-100 text-blue-600 flex items-center gap-2 transition-colors"
-              (click)="ouvrirModalePassword()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-        </svg>
-        Modifier mot de passe
-      </button>
-      <button class="w-full text-left py-2 px-3 rounded-md hover:bg-slate-100 text-red-600 flex items-center gap-2 transition-colors"
-              (click)="logout()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-        Se déconnecter
-      </button>
-    </div>
-  </div>
-
-  <!-- ✅ MODALE MOT DE PASSE -->
-  <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100">
-      <h2 class="text-xl font-bold text-center text-slate-800 mb-6 flex items-center justify-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-        </svg>
-        Modifier le mot de passe
-      </h2>
-      <div class="space-y-4">
-        <div class="relative">
-          <input type="password" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe"
-                 class="input input-bordered w-full pl-10 bg-slate-50 focus:bg-white transition-colors" />
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        </div>
-        <div class="relative">
-          <input type="password" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe"
-                 class="input input-bordered w-full pl-10 bg-slate-50 focus:bg-white transition-colors" />
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-          </svg>
-        </div>
-      </div>
-      <div class="flex justify-end gap-3 mt-6">
-        <button class="btn btn-outline border-slate-300 hover:bg-slate-100" (click)="fermerModalePassword()">Annuler</button>
-        <button class="btn bg-blue-600 text-white hover:bg-blue-700" (click)="changerMotDePasse()">Enregistrer</button>
-      </div>
-      <div *ngIf="messageSuccess" class="mt-4 bg-green-50 text-green-700 p-3 rounded-lg text-sm flex items-center gap-2">
-        ✅ {{ messageSuccess }}
-      </div>
-      <div *ngIf="messageErreur" class="mt-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm flex items-center gap-2">
-        ❌ {{ messageErreur }}
-      </div>
-    </div>
-  </div>
+<!-- ✅ UTILISATION DU COMPOSANT UNIFIÉ -->
+<app-unified-layout 
+  [pageTitle]="'Espace Responsable'" 
+  [navigationItems]="navigationItems"
+  (passwordChanged)="onPasswordChanged()">
 
   <!-- ✅ CONTENU PRINCIPAL -->
-  <main class="min-h-screen bg-gradient-to-br from-blue-100 to-gray-200 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-    <div class="w-full max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 items-center">
+  <main class="fixed inset-0 pt-20 pb-12 overflow-hidden">
+    <div class="h-full bg-gradient-to-br from-blue-100 to-gray-200 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div class="w-full max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 items-center">
 
-        <!-- Carte Visiteur -->
-        <div class="bg-white p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col items-center transform hover:-translate-y-2 border-t-4 border-blue-500">
-          <div class="mb-8 p-4 bg-blue-50 rounded-full">
-            <img src="assets/images/BamyGuest1.png" alt="Visiteur" class="w-64 h-64 object-contain hover:scale-110 transition-transform duration-300" />
+          <!-- ✅ Carte BamyGuest Améliorée -->
+          <div class="bg-white p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col items-center transform hover:-translate-y-2 border-t-4 border-blue-500 group">
+            <div class="mb-8 p-4 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-colors duration-300">
+              <img src="assets/images/BamyGuest1.png" alt="Visiteur" 
+                   class="w-64 h-64 object-contain transition-transform duration-300 group-hover:scale-110" />
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4 group-hover:text-blue-600 transition-colors">BamyGuest</h2>
+            <div class="bg-blue-50 px-4 py-1 rounded-full text-blue-600 text-sm font-semibold mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+              Gestion des visiteurs
+            </div>
+            <div class="w-full flex justify-center">
+              <button (click)="goTo('responsable/visiteur')" 
+                      class="btn btn-wide text-xl py-4 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center group">
+                <span class="group-hover:mr-2 transition-all">Accéder</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-3 group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <h2 class="text-3xl font-bold text-gray-800 mb-4">BamyGuest</h2>
-          <div class="bg-blue-50 px-4 py-1 rounded-full text-blue-600 text-sm font-semibold mb-4">Gestion des visiteurs</div>
-          <div class="w-full flex justify-center">
-            <button (click)="goTo('responsable/visiteur')" class="btn btn-wide text-xl py-4 px-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg hover:shadow-xl">
-              Accéder
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-3" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
+
+          <!-- ✅ Carte BamyDelivery Améliorée -->  
+          <div class="bg-white p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col items-center transform hover:-translate-y-2 border-t-4 border-orange-500 group">
+            <div class="mb-8 p-4 bg-orange-50 rounded-full group-hover:bg-orange-100 transition-colors duration-300">
+              <img src="assets/images/BamyDelivery1.png" alt="Livraison" 
+                   class="w-64 h-64 object-contain transition-transform duration-300 group-hover:scale-110" />
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4 group-hover:text-orange-600 transition-colors">BamyDelivery</h2>
+            <div class="bg-orange-50 px-4 py-1 rounded-full text-orange-600 text-sm font-semibold mb-4 group-hover:bg-orange-600 group-hover:text-white transition-all">
+              Gestion des camions
+            </div>
+            <div class="w-full flex justify-center">
+              <button (click)="goTo('responsable/livraison')" 
+                      class="btn btn-wide text-xl py-4 px-10 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center group">
+                <span class="group-hover:mr-2 transition-all">Accéder</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-3 group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
           </div>
+
         </div>
-
-        <!-- Carte Livraison -->
-        <div class="bg-white p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 flex flex-col items-center transform hover:-translate-y-2 border-t-4 border-orange-500">
-          <div class="mb-8 p-4 bg-orange-50 rounded-full">
-            <img src="assets/images/BamyDelivery1.png" alt="Livraison" class="w-64 h-64 object-contain hover:scale-110 transition-transform duration-300" />
-          </div>
-          <h2 class="text-3xl font-bold text-gray-800 mb-4">BamyDelivery</h2>
-          <div class="bg-orange-50 px-4 py-1 rounded-full text-orange-600 text-sm font-semibold mb-4">Gestion des camions</div>
-          <div class="w-full flex justify-center">
-            <button (click)="goTo('responsable/livraison')" class="btn btn-wide text-xl py-4 px-10 bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-lg hover:shadow-xl">
-              Accéder
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-3" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
       </div>
     </div>
   </main>
 
-  <!-- ✅ FOOTER -->
-  <footer class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-center py-3 text-xs tracking-widest shadow-inner">
-    &copy; BamyGuest
-  </footer>
-</div>
+</app-unified-layout>
 
+<!-- ✅ STYLES INTÉGRÉS POUR LES ANIMATIONS -->
 <style>
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ✅ Animations personnalisées pour le dashboard responsable */
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.8s ease-in-out;
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* ✅ Effet de parallaxe subtil */
+.bg-gradient-to-br {
+  background-attachment: fixed;
+}
+
+/* ✅ Amélioration des cartes */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+.group:hover .group-hover\:translate-x-1 {
+  transform: translateX(0.25rem);
+}
+
+/* ✅ Animation de pulse pour les statistiques */
+@keyframes pulse-gentle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.text-2xl.font-bold {
+  animation: pulse-gentle 3s infinite;
+}
+
+/* ✅ Amélioration des effets hover */
+.hover\:shadow-2xl:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.hover\:-translate-y-2:hover {
+  transform: translateY(-0.5rem);
+}
+
+/* ✅ Responsive design amélioré */
+@media (max-width: 768px) {
+  .grid {
+    gap: 1.5rem;
+  }
+  
+  .p-10 {
+    padding: 1.5rem;
+  }
+  
+  .w-64 {
+    width: 12rem;
+  }
+  
+  .h-64 {
+    height: 12rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+  
+  .text-xl {
+    font-size: 1rem;
+  }
+  
+  .px-10 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .py-4 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
+/* ✅ Optimisation pour les animations réduites */
+@media (prefers-reduced-motion: reduce) {
+  .group-hover\:scale-110,
+  .hover\:-translate-y-2:hover,
+  .group-hover\:translate-x-1 {
+    transform: none !important;
+  }
+  
+  .text-2xl.font-bold {
+    animation: none !important;
+  }
 }
 </style>

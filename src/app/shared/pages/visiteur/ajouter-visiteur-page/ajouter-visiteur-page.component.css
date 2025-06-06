@@ -1,6 +1,6 @@
-/* ✨ STYLES POUR AJOUTER-VISITEUR-PAGE COMPONENT ✨ */
+/* ✅ STYLES OPTIMISÉS POUR L'UTILISATION AVEC LE COMPOSANT UNIFIÉ */
 
-/* 🎨 Variables CSS personnalisées */
+/* 🎨 Variables CSS personnalisées conservées */
 :host {
   --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -14,15 +14,17 @@
   --animation-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* 🌟 Fond d'écran avec animation subtile */
-.min-h-screen {
+/* ✅ Suppression des styles redondants avec le composant unifié */
+/* Supprimé : styles pour header, menu utilisateur, modale mot de passe */
+
+/* 🌟 Fond d'écran avec animation subtile (conservé) */
+.bg-gradient-to-br {
   position: relative;
-  overflow-x: hidden;
 }
 
-.min-h-screen::before {
+.bg-gradient-to-br::before {
   content: '';
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -41,122 +43,7 @@
   66% { transform: translateY(5px) rotate(-1deg); }
 }
 
-/* 🎯 Header avec effet glassmorphism */
-header {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.125);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}
-
-/* 🏢 Logo avec animation au survol */
-.logo-container {
-  position: relative;
-  transition: all 0.3s var(--animation-smooth);
-}
-
-.logo-container:hover {
-  transform: translateY(-2px);
-}
-
-.logo-container:hover .logo-blur {
-  opacity: 0.6;
-  transform: scale(1.1);
-}
-
-.logo-blur {
-  transition: all 0.4s var(--animation-smooth);
-}
-
-/* 👤 Menu utilisateur avec animations avancées */
-.user-menu-button {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s var(--animation-smooth);
-}
-
-.user-menu-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.user-menu-button:hover::before {
-  left: 100%;
-}
-
-/* 📱 Menu dropdown avec animation fluide */
-.user-dropdown {
-  transform-origin: top right;
-  animation: dropdownSlide 0.3s var(--animation-bounce);
-}
-
-@keyframes dropdownSlide {
-  0% {
-    opacity: 0;
-    transform: scale(0.95) translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.user-dropdown .menu-item {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s var(--animation-smooth);
-}
-
-.user-dropdown .menu-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-  transition: left 0.3s;
-}
-
-.user-dropdown .menu-item:hover::before {
-  left: 100%;
-}
-
-/* 🎪 Section titre avec effet de profondeur */
-.title-section {
-  position: relative;
-  z-index: 1;
-}
-
-.title-badge {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s var(--animation-smooth);
-}
-
-.title-badge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.title-badge:hover::before {
-  opacity: 1;
-}
-
-/* 📋 Cartes de contenu avec glassmorphism */
+/* 📋 Cartes de contenu avec glassmorphism (conservé et optimisé) */
 .content-card {
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -165,6 +52,7 @@ header {
   box-shadow: var(--shadow-large);
   position: relative;
   overflow: hidden;
+  transition: all 0.3s var(--animation-smooth);
 }
 
 .content-card::before {
@@ -177,7 +65,12 @@ header {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
 }
 
-/* 🎨 En-têtes de sections avec gradients */
+.content-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-large), 0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+/* 🎨 En-têtes de sections avec gradients (conservé) */
 .form-header {
   position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -214,7 +107,7 @@ header {
     radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
 }
 
-/* 🔄 Animations de motifs décoratifs */
+/* 🔄 Animations de motifs décoratifs (conservé) */
 .decorative-circle {
   animation: floatCircle 6s ease-in-out infinite;
 }
@@ -229,7 +122,7 @@ header {
   50% { transform: translateY(-10px) scale(1.05); }
 }
 
-/* 📱 Scrollbars personnalisées ultra-fines */
+/* 📱 Scrollbars personnalisées ultra-fines (conservé) */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: rgba(165, 180, 252, 0.5) transparent;
@@ -255,53 +148,11 @@ header {
   background: rgba(165, 180, 252, 0.8);
 }
 
-.scrollbar-thumb-indigo-300::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #a5b4fc, #818cf8);
-}
-
 .scrollbar-thumb-emerald-300::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, #86efac, #6ee7b7);
 }
 
-/* 🎭 Modale avec backdrop ultra-moderne */
-.modal-backdrop {
-  backdrop-filter: blur(8px) saturate(180%);
-  -webkit-backdrop-filter: blur(8px) saturate(180%);
-  background: rgba(0, 0, 0, 0.4);
-  animation: fadeInBackdrop 0.3s ease-out;
-}
-
-@keyframes fadeInBackdrop {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-.modal-content {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-}
-
-.modal-enter {
-  animation: modalEnter 0.4s var(--animation-bounce);
-}
-
-@keyframes modalEnter {
-  0% {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* 🎯 Boutons avec effets avancés */
+/* 🎯 Boutons avec effets avancés (conservé) */
 .btn-primary {
   position: relative;
   overflow: hidden;
@@ -327,7 +178,7 @@ header {
   transform: scale(0.98);
 }
 
-/* 🌈 Badges et indicateurs avec glow */
+/* 🌈 Badges et indicateurs avec glow (conservé) */
 .status-badge {
   position: relative;
   transition: all 0.3s var(--animation-smooth);
@@ -353,7 +204,7 @@ header {
   opacity: 0.3;
 }
 
-/* 🎊 Animations d'entrée pour les éléments */
+/* 🎊 Animations d'entrée pour les éléments (conservé) */
 .animate-in {
   animation: slideInUp 0.6s var(--animation-bounce);
 }
@@ -369,37 +220,7 @@ header {
   }
 }
 
-.slide-in-from-top-2 {
-  animation: slideInFromTop 0.3s var(--animation-smooth);
-}
-
-@keyframes slideInFromTop {
-  0% {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.zoom-in-90 {
-  animation: zoomIn90 0.3s var(--animation-bounce);
-}
-
-@keyframes zoomIn90 {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* 🔮 Effets de focus améliorés */
+/* 🔮 Effets de focus améliorés (conservé) */
 input:focus,
 select:focus,
 button:focus {
@@ -431,16 +252,12 @@ button:focus {
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
-  .modal-content {
-    background: rgba(0, 0, 0, 0.8);
-  }
 }
 
 /* 📱 Optimisations pour mobile */
 @media (max-width: 768px) {
   /* Réduction des effets sur mobile pour les performances */
-  .min-h-screen::before {
+  .bg-gradient-to-br::before {
     animation: none;
   }
   
@@ -452,11 +269,6 @@ button:focus {
   .content-card {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-  }
-  
-  /* Espacement optimisé */
-  .user-dropdown {
-    max-width: calc(100vw - 2rem);
   }
 }
 
@@ -481,14 +293,14 @@ button:focus {
     transition-duration: 0.01ms !important;
   }
   
-  .min-h-screen::before,
+  .bg-gradient-to-br::before,
   .decorative-circle,
   .status-badge::before {
     animation: none !important;
   }
 }
 
-/* 🎪 Classes utilitaires personnalisées */
+/* 🎪 Classes utilitaires personnalisées (conservé) */
 .glass-effect {
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
@@ -509,7 +321,7 @@ button:focus {
     var(--shadow-medium);
 }
 
-/* 🎭 États de chargement */
+/* 🎭 États de chargement (conservé) */
 .loading-pulse {
   animation: loadingPulse 1.5s ease-in-out infinite;
 }
@@ -517,4 +329,191 @@ button:focus {
 @keyframes loadingPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
+}
+
+/* 🎯 Styles spécifiques pour l'intégration avec le composant unifié */
+
+/* Container principal optimisé */
+main {
+  transition: all 0.3s var(--animation-smooth);
+}
+
+/* Amélioration des grilles */
+.grid {
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    gap: 1.5rem;
+  }
+}
+
+/* Optimisation des hauteurs */
+.h-full {
+  height: 100%;
+}
+
+.min-h-0 {
+  min-height: 0;
+}
+
+/* Amélioration du overflow */
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+/* Styles pour les notifications (intégration avec le composant unifié) */
+.notification {
+  animation: slideInFromRight 0.3s ease-out;
+  z-index: 9999;
+}
+
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Amélioration des transitions pour une meilleure intégration */
+.transition-all {
+  transition: all 0.3s var(--animation-smooth);
+}
+
+/* Styles pour les composants enfants (app-form et app-list) */
+::ng-deep app-form,
+::ng-deep app-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep app-form .form-container,
+::ng-deep app-list .list-container {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* Amélioration de la compatibilité avec Tailwind */
+.backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Styles pour les états de focus améliorés */
+.focus\:ring-4:focus {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.focus\:border-transparent:focus {
+  border-color: transparent;
+}
+
+/* Amélioration des animations de chargement */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Styles pour la compatibilité cross-browser */
+@supports not (backdrop-filter: blur(10px)) {
+  .content-card {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* Amélioration des performances pour les grandes listes */
+.scrollbar-thin {
+  contain: layout style paint;
+}
+
+/* Styles pour l'impression */
+@media print {
+  .content-card {
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  
+  .decorative-circle {
+    display: none;
+  }
+  
+  .bg-gradient-to-br::before {
+    display: none;
+  }
+}
+
+/* Optimisation pour les petits écrans */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .content-card {
+    margin: 0;
+    border-radius: 1rem;
+  }
+}
+
+/* Amélioration de l'accessibilité */
+@media (prefers-high-contrast: high) {
+  .content-card {
+    border: 2px solid #000;
+    background: #fff;
+  }
+  
+  .form-header,
+  .list-header {
+    background: #000;
+    color: #fff;
+  }
+}
+
+/* Styles pour les interactions tactiles */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:shadow-xl:hover {
+    box-shadow: var(--shadow-large);
+  }
+  
+  .content-card:hover {
+    transform: none;
+  }
+}
+
+/* Classes utilitaires finales */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.text-shadow {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.border-glow {
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.1);
 }
