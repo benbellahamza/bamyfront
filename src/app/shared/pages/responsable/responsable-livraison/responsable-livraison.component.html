@@ -1,430 +1,284 @@
-<div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans">
+<!-- ✅ UTILISATION DU LAYOUT UNIFIÉ -->
+<app-unified-layout 
+  pageTitle="Gestion des Livraisons"
+  (passwordChanged)="onPasswordChanged()">
 
-  <!-- ✅ HEADER UNIFIÉ -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-lg flex items-center justify-between p-4">
-    <div class="flex items-center gap-3">
-      <div class="bg-white p-2 rounded-lg shadow-md">
-        <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-8 h-8 object-contain" />
-      </div>
-      <span class="text-white font-bold text-xl tracking-wide">BAMY TRUCKS</span>
-    </div>
-    <h1 class="absolute left-1/2 transform -translate-x-1/2 text-xl font-bold font-mono tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-white">
-      Gestion des Livraisons
-    </h1>
-    <!-- BOUTON UTILISATEUR AMÉLIORÉ -->
-    <div class="relative">
-      <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-700 hover:bg-slate-600 cursor-pointer transition-all shadow-md"
-           (click)="menuOuvert = !menuOuvert">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-bold shadow-inner">
-          {{ utilisateur.nom.charAt(0) }}
-        </div>
-        <span class="text-sm font-medium hidden md:inline-block">{{ utilisateur.nom }} {{ utilisateur.prenom }}</span>
-        <span class="inline-block transition-transform duration-300" [ngClass]="{'rotate-180': menuOuvert}">▼</span>
-      </div>
-    </div>
-  </header>
-
-  <!-- MENU UTILISATEUR AMÉLIORÉ -->
-  <div *ngIf="menuOuvert"
-       class="fixed top-16 right-4 w-72 bg-white text-slate-800 shadow-xl rounded-2xl p-5 z-[100] animate-fadeIn border border-slate-200">
+  <!-- ✅ CONTENU PRINCIPAL DE LA PAGE -->
+  <div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans pt-20 pb-28">
     
-    <!-- En-tête du profil -->
-    <div class="flex items-start gap-4 pb-4 border-b border-slate-200">
-      <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-bold text-xl shadow-lg">
-        {{ utilisateur.nom.charAt(0) }}
-      </div>
-      <div class="flex-1">
-        <div class="font-bold text-lg text-slate-800">{{ utilisateur.nom }} {{ utilisateur.prenom }}</div>
-        <div class="flex items-center gap-2 mt-1 mb-2">
-          <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full flex items-center">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block mr-1"></span>
-            {{ utilisateur.role }}
-          </span>
-        </div>
-        <div class="text-xs flex items-center text-amber-600 font-medium">
-          <span class="w-2 h-2 rounded-full bg-amber-500 inline-block mr-1.5"></span>
-          En ligne
-        </div>
-      </div>
-    </div>
-    
-    <!-- Infos utilisateur -->
-    <div class="py-3 space-y-3">
-      <div class="text-sm flex items-center gap-3 text-slate-600">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-        {{ utilisateur.email }}
-      </div>
-      <div class="text-sm flex items-center gap-3 text-slate-600">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        Dernière connexion: aujourd'hui
-      </div>
-    </div>
-    
-    <!-- Actions -->
-    <div class="pt-3 border-t border-slate-200 space-y-1">
-      <button class="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl hover:bg-slate-100 text-amber-600 transition-colors"
-              (click)="ouvrirModalePassword()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
-        </svg>
-        <span>Modifier mot de passe</span>
-      </button>
-      <button class="flex items-center gap-3 w-full px-3 py-2.5 mt-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
-              (click)="logout()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-        <span>Se déconnecter</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- MODALE MOT DE PASSE AMÉLIORÉE -->
-  <div *ngIf="modalePasswordVisible" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-[200] backdrop-blur-sm">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl animate-slideIn border border-slate-100">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
-          </svg>
-          Modifier le mot de passe
-        </h2>
-        <button class="text-slate-400 hover:text-red-500 transition-colors" 
-                (click)="fermerModalePassword()">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 px-6">
       
-      <div class="space-y-4">
-        <!-- Ancien mot de passe -->
-        <div class="relative">
-          <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="ancienMotDePasse" placeholder="Ancien mot de passe" 
-                 class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          <button type="button"
-                  (click)="motDePasseVisible = !motDePasseVisible" 
-                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600">
-            <svg *ngIf="!motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            <svg *ngIf="motDePasseVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-            </svg>
-          </button>
-        </div>
-        
-        <!-- Nouveau mot de passe -->
-        <div class="relative">
-          <input [type]="motDePasseVisible ? 'text' : 'password'" [(ngModel)]="nouveauMotDePasse" placeholder="Nouveau mot de passe" 
-                 class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
-          </svg>
-        </div>
-        
-        <!-- Confirmation du mot de passe -->
-        <div class="relative">
-          <input [type]="confirmationVisible ? 'text' : 'password'" [(ngModel)]="confirmationMotDePasse" placeholder="Confirmer le mot de passe" 
-                 class="input input-bordered w-full pl-10 pr-10 bg-slate-50 focus:bg-white transition-colors" />
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-        </div>
-      </div>
-      
-      <div class="flex justify-end gap-3 mt-6">
-        <button class="btn btn-outline border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-colors" 
-                (click)="fermerModalePassword()">
-          Annuler
-        </button>
-        <button class="btn bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-none shadow-md"
-                [disabled]="!ancienMotDePasse || !nouveauMotDePasse || nouveauMotDePasse !== confirmationMotDePasse"
-                (click)="changerMotDePasse()">
-          Enregistrer
-        </button>
-      </div>
-      
-      <div *ngIf="messageSuccess" class="mt-4 bg-green-50 text-green-700 p-3 rounded-lg text-sm flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        {{ messageSuccess }}
-      </div>
-      
-      <div *ngIf="messageErreur" class="mt-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        {{ messageErreur }}
-      </div>
-    </div>
-  </div>
-
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 mt-20 px-6 pb-28">
-    <!-- DASHBOARD STATS REDESSINÉS -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      <!-- TOTAL CAMIONS -->
-      <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-md overflow-hidden">
-        <div class="flex items-stretch h-full">
-          <!-- Icône côté gauche -->
-          <div class="bg-gradient-to-br from-blue-500 to-blue-600 w-16 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
-          </div>
-          
-          <!-- Contenu principal -->
-          <div class="flex-1 p-4 flex items-center">
-            <div>
-              <div class="text-sm text-blue-600 font-medium">Total camions</div>
-              <div class="flex items-baseline mt-1">
-                <div class="text-2xl font-bold text-slate-800">{{ camions.length }}</div>
-                <div class="ml-2 text-xs text-blue-500">camions</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- CAMIONS ENTRÉS -->
-      <div class="bg-gradient-to-br from-green-50 to-white rounded-xl shadow-md overflow-hidden">
-        <div class="flex items-stretch h-full">
-          <!-- Icône côté gauche -->
-          <div class="bg-gradient-to-br from-green-500 to-green-600 w-16 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </div>
-          
-          <!-- Contenu principal -->
-          <div class="flex-1 p-4 flex items-center">
-            <div>
-              <div class="text-sm text-green-600 font-medium">Camions entrés</div>
-              <div class="flex items-baseline mt-1">
-                <div class="text-2xl font-bold text-slate-800">{{ getCamionsByStatut('ENTREE').length }}</div>
-                <div class="ml-2 text-xs text-green-500">entrés</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- CAMIONS SORTIS -->
-      <div class="bg-gradient-to-br from-amber-50 to-white rounded-xl shadow-md overflow-hidden">
-        <div class="flex items-stretch h-full">
-          <!-- Icône côté gauche -->
-          <div class="bg-gradient-to-br from-amber-500 to-amber-600 w-16 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </div>
-          
-          <!-- Contenu principal -->
-          <div class="flex-1 p-4 flex items-center">
-            <div>
-              <div class="text-sm text-amber-600 font-medium">Camions sortis</div>
-              <div class="flex items-baseline mt-1">
-                <div class="text-2xl font-bold text-slate-800">{{ getCamionsByStatut('SORTIE').length }}</div>
-                <div class="ml-2 text-xs text-amber-500">sortis</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FILTRES RECHERCHE -->
-    <div class="bg-white shadow-md rounded-xl p-3 mb-4 border border-slate-200">
-      <div class="flex flex-wrap items-center gap-2">
-        <!-- Filtres de statut -->
-        <div class="flex items-center gap-2 shrink-0">
-          <button 
-            class="px-3 py-2 rounded-lg text-sm transition-all filter-btn"
-            [ngClass]="{
-              'bg-blue-600 text-white active': filtreStatut === 'TOUS',
-              'bg-slate-100 text-slate-700 hover:bg-slate-200': filtreStatut !== 'TOUS'
-            }"
-            (click)="filtrerParStatut('TOUS')">
-            Tous les camions
-          </button>
-          <button 
-            class="px-3 py-2 rounded-lg text-sm transition-all filter-btn"
-            [ngClass]="{
-              'bg-green-600 text-white active': filtreStatut === 'ENTREE',
-              'bg-slate-100 text-slate-700 hover:bg-slate-200': filtreStatut !== 'ENTREE'
-            }"
-            (click)="filtrerParStatut('ENTREE')">
-            Camions entrés
-          </button>
-          <button 
-            class="px-3 py-2 rounded-lg text-sm transition-all filter-btn"
-            [ngClass]="{
-              'bg-amber-600 text-white active': filtreStatut === 'SORTIE',
-              'bg-slate-100 text-slate-700 hover:bg-slate-200': filtreStatut !== 'SORTIE'
-            }"
-            (click)="filtrerParStatut('SORTIE')">
-            Camions sortis
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- CHARGEMENT ANIMÉ -->
-    <div *ngIf="loading" class="flex flex-col items-center justify-center py-16">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mb-4"></div>
-      <div class="text-amber-600 font-medium text-lg">Chargement des camions...</div>
-    </div>
-
-    <!-- ALERTE SI AUCUN CAMION -->
-    <div *ngIf="!loading && camionsFiltres.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-      </svg>
-      <div class="text-slate-500 font-medium text-lg mb-2">Aucun camion trouvé</div>
-      <div class="text-slate-400 text-sm mb-4">{{ filtreStatut === 'TOUS' ? 'Aucun camion enregistré' : 'Aucun camion avec le statut sélectionné' }}</div>
-      <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
-              (click)="naviguerVersAjout()">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Ajouter un camion
-      </button>
-    </div>
-
-    <!-- LISTE DES CAMIONS -->
-    <div *ngIf="!loading && camionsFiltres.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      <div *ngFor="let camion of camionsFiltres" 
-           class="bg-white rounded-xl shadow-md hover:shadow-lg border border-slate-200 overflow-hidden transition-all transform hover:-translate-y-1 card-hover">
-        <!-- BARRE DE STATUT -->
-        <div [class.bg-green-500]="camion.statut === 'ENTREE'" [class.bg-amber-500]="camion.statut === 'SORTIE'" class="h-1.5 w-full"></div>
-        
-        <div class="p-4">
-          <!-- ENTÊTE DE CARTE -->
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <div [class.bg-green-100]="camion.statut === 'ENTREE'" [class.text-green-600]="camion.statut === 'ENTREE'" 
-                   [class.bg-amber-100]="camion.statut === 'SORTIE'" [class.text-amber-600]="camion.statut === 'SORTIE'" 
-                   class="p-1.5 rounded-full">
-                <svg *ngIf="camion.statut === 'ENTREE'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <svg *ngIf="camion.statut === 'SORTIE'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-              </div>
-              <h3 class="font-bold text-slate-800 truncate max-w-[140px]">
-                {{ camion.statut === 'ENTREE' ? '📥 Entrée' : '📤 Sortie' }}
-              </h3>
-            </div>
-            
-            <div class="badge" [ngClass]="{
-              'badge-success bg-green-100 text-green-800': camion.statut === 'ENTREE',
-              'badge-warning bg-amber-100 text-amber-800': camion.statut === 'SORTIE'
-            }">
-              {{ camion.marque }}
-            </div>
-          </div>
-          
-          <!-- INFORMATIONS CAMION -->
-          <div class="space-y-2 text-sm text-slate-600">
-            <div class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-              </svg>
-              <div><span class="font-medium">N° Châssis :</span> {{ camion.numeroChassis }}</div>
-            </div>
-            <div class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <!-- ✅ DASHBOARD STATS REDESSINÉS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <!-- TOTAL CAMIONS -->
+        <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-md overflow-hidden animate-slideIn stat-card">
+          <div class="flex items-stretch h-full">
+            <!-- Icône côté gauche -->
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 w-16 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
-              <div class="truncate max-w-[170px]"><span class="font-medium">Modèle :</span> {{ camion.modele }}</div>
-            </div>
-            <div class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <div>
-                <span class="font-medium">Chauffeur :</span> 
-                <span *ngIf="camion.nomChauffeur" class="text-slate-800">
-                  {{ camion.nomChauffeur }}{{ camion.prenomChauffeur ? ' ' + camion.prenomChauffeur : '' }}
-                </span>
-                <span *ngIf="!camion.nomChauffeur" class="text-red-600 font-bold">
-                  Données manquantes
-                </span>
-              </div>
-            </div>
-            <div *ngIf="camion.destination" class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <div class="truncate max-w-[170px]"><span class="font-medium">Destination :</span> {{ camion.destination }}</div>
-            </div>
-          </div>
-          
-          <!-- HORAIRES ENTRÉE/SORTIE -->
-          <div class="mt-3 pt-2 border-t border-slate-100 space-y-2">
-            <div class="flex items-center gap-2 text-sm text-green-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              <div class="font-medium">Entrée : {{ camion.dateEntreeFormatee }}</div>
             </div>
             
-            <div class="flex items-center gap-2 text-sm" [class.text-amber-600]="camion.dateSortieFormatee" [class.text-red-600]="!camion.dateSortieFormatee">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              <div class="font-medium">
-                Sortie : 
-                <span *ngIf="camion.dateSortieFormatee">{{ camion.dateSortieFormatee }}</span>
-                <span *ngIf="!camion.dateSortieFormatee" class="text-red-600 font-bold">Non sorti</span>
+            <!-- Contenu principal -->
+            <div class="flex-1 p-4 flex items-center">
+              <div>
+                <div class="text-sm text-blue-600 font-medium">Total camions</div>
+                <div class="flex items-baseline mt-1">
+                  <div class="text-2xl font-bold text-slate-800">{{ camions.length }}</div>
+                  <div class="ml-2 text-xs text-blue-500">camions</div>
+                </div>
               </div>
             </div>
           </div>
-          
-          <!-- BOUTONS D'ACTION -->
-          <div class="mt-4 pt-2 border-t border-slate-100">
-            <button *ngIf="camion.statut === 'ENTREE'" 
-                    class="w-full px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm transition-colors flex items-center justify-center gap-2 btn-premium"
-                    (click)="enregistrerSortie(camion)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        </div>
+        
+        <!-- CAMIONS ENTRÉS -->
+        <div class="bg-gradient-to-br from-green-50 to-white rounded-xl shadow-md overflow-hidden animate-slideIn stat-card">
+          <div class="flex items-stretch h-full">
+            <!-- Icône côté gauche -->
+            <div class="bg-gradient-to-br from-green-500 to-green-600 w-16 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            
+            <!-- Contenu principal -->
+            <div class="flex-1 p-4 flex items-center">
+              <div>
+                <div class="text-sm text-green-600 font-medium">Camions entrés</div>
+                <div class="flex items-baseline mt-1">
+                  <div class="text-2xl font-bold text-slate-800">{{ getCamionsByStatut('ENTREE').length }}</div>
+                  <div class="ml-2 text-xs text-green-500">entrés</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- CAMIONS SORTIS -->
+        <div class="bg-gradient-to-br from-amber-50 to-white rounded-xl shadow-md overflow-hidden animate-slideIn stat-card">
+          <div class="flex items-stretch h-full">
+            <!-- Icône côté gauche -->
+            <div class="bg-gradient-to-br from-amber-500 to-amber-600 w-16 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              Enregistrer la sortie
-            </button>
-            <div *ngIf="camion.statut === 'SORTIE'" class="text-center text-sm text-amber-600 font-medium py-2">
-              ✅ Camion sorti
+            </div>
+            
+            <!-- Contenu principal -->
+            <div class="flex-1 p-4 flex items-center">
+              <div>
+                <div class="text-sm text-amber-600 font-medium">Camions sortis</div>
+                <div class="flex items-baseline mt-1">
+                  <div class="text-2xl font-bold text-slate-800">{{ getCamionsByStatut('SORTIE').length }}</div>
+                  <div class="ml-2 text-xs text-amber-500">sortis</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </main>
 
-  <!-- FOOTER -->
-  <footer class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white py-3 text-center shadow-inner z-10">
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-4 text-sm">
-      <div class="flex items-center gap-2">
-        <div class="bg-white p-1 rounded">
-          <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-4 h-4 object-contain" />
+      <!-- ✅ FILTRES RECHERCHE -->
+      <div class="bg-white shadow-md rounded-xl p-3 mb-4 border border-slate-200 animate-fadeIn">
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Filtres de statut -->
+          <div class="flex items-center gap-2 shrink-0">
+            <button 
+              class="px-3 py-2 rounded-lg text-sm transition-all filter-btn"
+              [ngClass]="{
+                'bg-blue-600 text-white active': filtreStatut === 'TOUS',
+                'bg-slate-100 text-slate-700 hover:bg-slate-200': filtreStatut !== 'TOUS'
+              }"
+              (click)="filtrerParStatut('TOUS')">
+              Tous les camions
+            </button>
+            <button 
+              class="px-3 py-2 rounded-lg text-sm transition-all filter-btn"
+              [ngClass]="{
+                'bg-green-600 text-white active': filtreStatut === 'ENTREE',
+                'bg-slate-100 text-slate-700 hover:bg-slate-200': filtreStatut !== 'ENTREE'
+              }"
+              (click)="filtrerParStatut('ENTREE')">
+              Camions entrés
+            </button>
+            <button 
+              class="px-3 py-2 rounded-lg text-sm transition-all filter-btn"
+              [ngClass]="{
+                'bg-amber-600 text-white active': filtreStatut === 'SORTIE',
+                'bg-slate-100 text-slate-700 hover:bg-slate-200': filtreStatut !== 'SORTIE'
+              }"
+              (click)="filtrerParStatut('SORTIE')">
+              Camions sortis
+            </button>
+          </div>
         </div>
-        <span class="font-bold">BAMY TRUCKS</span>
       </div>
-      <div class="text-slate-400 hidden sm:block">|</div>
-      <div class="text-xs">Système de Gestion des Livraisons</div>
-      <div class="text-slate-400 hidden sm:block">|</div>
-      <div class="text-xs">&copy; 2025 BamyGuest</div>
-    </div>
-  </footer>
-</div>
+
+      <!-- ✅ CHARGEMENT ANIMÉ -->
+      <div *ngIf="loading" class="flex flex-col items-center justify-center py-16 animate-fadeIn">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mb-4"></div>
+        <div class="text-amber-600 font-medium text-lg">Chargement des camions...</div>
+      </div>
+
+      <!-- ✅ ALERTE SI AUCUN CAMION -->
+      <div *ngIf="!loading && camionsFiltres.length === 0" class="flex flex-col items-center justify-center py-16 text-center empty-state animate-fadeIn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+        </svg>
+        <div class="text-slate-500 font-medium text-lg mb-2">Aucun camion trouvé</div>
+        <div class="text-slate-400 text-sm mb-4">{{ filtreStatut === 'TOUS' ? 'Aucun camion enregistré' : 'Aucun camion avec le statut sélectionné' }}</div>
+        <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 btn-premium"
+                (click)="naviguerVersAjout()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Ajouter un camion
+        </button>
+      </div>
+
+      <!-- ✅ LISTE DES CAMIONS -->
+      <div *ngIf="!loading && camionsFiltres.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 grid-responsive">
+        <div *ngFor="let camion of camionsFiltres; let i = index" 
+             class="bg-white rounded-xl shadow-md hover:shadow-lg border border-slate-200 overflow-hidden transition-all transform hover:-translate-y-1 card-hover"
+             [style.animation-delay]="(i * 0.1) + 's'"
+             [ngClass]="{
+               'card-entree': camion.statut === 'ENTREE',
+               'card-sortie': camion.statut === 'SORTIE'
+             }">
+          
+          <!-- BARRE DE STATUT -->
+          <div [class.bg-green-500]="camion.statut === 'ENTREE'" [class.bg-amber-500]="camion.statut === 'SORTIE'" class="h-1.5 w-full"></div>
+          
+          <div class="p-4">
+            <!-- ENTÊTE DE CARTE -->
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <div [class.bg-green-100]="camion.statut === 'ENTREE'" [class.text-green-600]="camion.statut === 'ENTREE'" 
+                     [class.bg-amber-100]="camion.statut === 'SORTIE'" [class.text-amber-600]="camion.statut === 'SORTIE'" 
+                     class="p-1.5 rounded-full transition-all icon-hover"
+                     [ngClass]="{
+                       'status-entree': camion.statut === 'ENTREE',
+                       'status-sortie': camion.statut === 'SORTIE'
+                     }">
+                  <svg *ngIf="camion.statut === 'ENTREE'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <svg *ngIf="camion.statut === 'SORTIE'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </div>
+                <h3 class="font-bold text-slate-800 truncate max-w-[140px]">
+                  {{ camion.statut === 'ENTREE' ? '📥 Entrée' : '📤 Sortie' }}
+                </h3>
+              </div>
+              
+              <div class="badge transition-all hover:scale-105" [ngClass]="{
+                'badge-success bg-green-100 text-green-800': camion.statut === 'ENTREE',
+                'badge-warning bg-amber-100 text-amber-800': camion.statut === 'SORTIE'
+              }">
+                {{ camion.marque }}
+              </div>
+            </div>
+            
+            <!-- INFORMATIONS CAMION -->
+            <div class="space-y-2 text-sm text-slate-600">
+              <div class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                <div><span class="font-medium">N° Châssis :</span> {{ camion.numeroChassis }}</div>
+              </div>
+              <div class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                <div class="truncate max-w-[170px]"><span class="font-medium">Modèle :</span> {{ camion.modele }}</div>
+              </div>
+              <div class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <div>
+                  <span class="font-medium">Chauffeur :</span> 
+                  <span *ngIf="camion.nomChauffeur" class="text-slate-800">
+                    {{ camion.nomChauffeur }}{{ camion.prenomChauffeur ? ' ' + camion.prenomChauffeur : '' }}
+                  </span>
+                  <span *ngIf="!camion.nomChauffeur" class="text-red-600 font-bold">
+                    Données manquantes
+                  </span>
+                </div>
+              </div>
+              <div *ngIf="camion.destination" class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <div class="truncate max-w-[170px]"><span class="font-medium">Destination :</span> {{ camion.destination }}</div>
+              </div>
+            </div>
+            
+            <!-- HORAIRES ENTRÉE/SORTIE -->
+            <div class="mt-3 pt-2 border-t border-slate-100 space-y-2">
+              <div class="flex items-center gap-2 text-sm text-green-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <div class="font-medium">Entrée : {{ camion.dateEntreeFormatee }}</div>
+              </div>
+              
+              <div class="flex items-center gap-2 text-sm" [class.text-amber-600]="camion.dateSortieFormatee" [class.text-red-600]="!camion.dateSortieFormatee">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <div class="font-medium">
+                  Sortie : 
+                  <span *ngIf="camion.dateSortieFormatee">{{ camion.dateSortieFormatee }}</span>
+                  <span *ngIf="!camion.dateSortieFormatee" class="text-red-600 font-bold">Non sorti</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- BOUTONS D'ACTION -->
+            <div class="mt-4 pt-2 border-t border-slate-100">
+              <button *ngIf="camion.statut === 'ENTREE'" 
+                      class="w-full px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm transition-colors flex items-center justify-center gap-2 btn-premium micro-interaction focus-ring"
+                      (click)="enregistrerSortie(camion)">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Enregistrer la sortie
+              </button>
+              <div *ngIf="camion.statut === 'SORTIE'" class="text-center text-sm text-amber-600 font-medium py-2">
+                ✅ Camion sorti
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ MESSAGES DE FEEDBACK -->
+      <div *ngIf="messageSuccess" class="fixed bottom-20 right-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg shadow-lg animate-slideIn z-50 alert alert-success toast">
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="font-semibold">{{ messageSuccess }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="messageErreur" class="fixed bottom-20 right-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg animate-slideIn z-50 alert alert-error toast">
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="font-semibold">{{ messageErreur }}</span>
+        </div>
+      </div>
+      
+    </main>
+  </div>
+
+</app-unified-layout>

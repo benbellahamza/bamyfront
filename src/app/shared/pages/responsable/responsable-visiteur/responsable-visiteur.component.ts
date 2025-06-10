@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -34,25 +34,6 @@ export class ResponsableVisiteurComponent implements OnInit {
   endDate: string = '';
   loading: boolean = false;
 
-  utilisateur = {
-    nom: '',
-    prenom: '',
-    email: '',
-    role: ''
-  };
-
-  menuOuvert: boolean = false;
-  modalePasswordVisible = false;
-
-    motDePasseVisible = false;
-  confirmationVisible = false;
-  confirmationMotDePasse: string = '';
-
-  ancienMotDePasse: string = '';
-  nouveauMotDePasse: string = '';
-  messageSuccess: string = '';
-  messageErreur: string = '';
-
   erreurExport: boolean = false;
   currentPage: number = 1;
   itemsPerPage: number = 10;
@@ -60,76 +41,16 @@ export class ResponsableVisiteurComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
-    this.recupererInfosUtilisateur();
     this.getVisiteurs();
   }
 
-  get nomComplet(): string {
-    return `${this.utilisateur.nom} ${this.utilisateur.prenom}`.trim();
-  }
-
-  recupererInfosUtilisateur() {
-    const token = localStorage.getItem('access-token');
-    if (!token) {
-      this.router.navigate(['/']);
-      return;
-    }
-
-    try {
-      const payload = token.split('.')[1];
-      const decodedPayload = atob(payload);
-      const decoded = JSON.parse(decodedPayload);
-
-      this.utilisateur = {
-        nom: decoded.nom || '',
-        prenom: decoded.prenom || '',
-        email: decoded.sub || '',
-        role: decoded.scope || 'RESPONSABLE'
-      };
-    } catch (e) {
-      console.error('Erreur de décodage du JWT :', e);
-      this.logout();
-    }
-  }
-
-  ouvrirModalePassword() {
-    this.modalePasswordVisible = true;
-    this.messageErreur = '';
-    this.messageSuccess = '';
-    this.menuOuvert = false;
-  }
-
-  fermerModalePassword() {
-    this.modalePasswordVisible = false;
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
-  }
-
-  changerMotDePasse() {
-    if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
-      this.messageErreur = "Veuillez remplir les deux champs.";
-      this.messageSuccess = "";
-      return;
-    }
-
-    const payload = {
-      ancienMotDePasse: this.ancienMotDePasse,
-      nouveauMotDePasse: this.nouveauMotDePasse
-    };
-
-    this.http.post('http://localhost:8085/auth/update-password', payload).subscribe({
-      next: (res: any) => {
-        this.messageSuccess = res.message || "✅ Mot de passe mis à jour avec succès.";
-        this.messageErreur = "";
-        this.ancienMotDePasse = '';
-        this.nouveauMotDePasse = '';
-        setTimeout(() => this.fermerModalePassword(), 3000);
-      },
-      error: (err) => {
-        this.messageErreur = err.error?.error || "❌ Erreur lors de la mise à jour du mot de passe.";
-        this.messageSuccess = "";
-      }
-    });
+  /**
+   * Gestionnaire pour le changement de mot de passe depuis le layout unifié
+   */
+  onPasswordChanged(): void {
+    console.log('✅ Mot de passe changé avec succès depuis le layout unifié');
+    // Vous pouvez ajouter ici toute logique supplémentaire nécessaire
+    // après un changement de mot de passe réussi
   }
 
   get pages(): number[] {
@@ -153,32 +74,32 @@ export class ResponsableVisiteurComponent implements OnInit {
   }
 
   rechercher() {
-  const terme = this.searchTerm.toLowerCase().trim();
-  
-  if (!terme) {
-    this.visiteursFiltres = [...this.visiteurs];
-    this.appliquerFiltresDate();
-    return;
-  }
-  
-  // Diviser les termes de recherche pour permettre la recherche par nom ET prénom
-  const termes = terme.split(' ').filter(t => t.length > 0);
-  
-  this.visiteursFiltres = this.visiteurs.filter(visiteur => {
-    const nomComplet = (visiteur.nom + ' ' + visiteur.prenom).toLowerCase();
-    const prenomNom = (visiteur.prenom + ' ' + visiteur.nom).toLowerCase();
-    const cin = visiteur.cin.toLowerCase();
+    const terme = this.searchTerm.toLowerCase().trim();
     
-    // Vérifie si tous les termes de recherche sont présents dans les champs
-    return termes.every(t => 
-      nomComplet.includes(t) || 
-      prenomNom.includes(t) || 
-      cin.includes(t)
-    );
-  });
-  
-  this.appliquerFiltresDate();
-}
+    if (!terme) {
+      this.visiteursFiltres = [...this.visiteurs];
+      this.appliquerFiltresDate();
+      return;
+    }
+    
+    // Diviser les termes de recherche pour permettre la recherche par nom ET prénom
+    const termes = terme.split(' ').filter(t => t.length > 0);
+    
+    this.visiteursFiltres = this.visiteurs.filter(visiteur => {
+      const nomComplet = (visiteur.nom + ' ' + visiteur.prenom).toLowerCase();
+      const prenomNom = (visiteur.prenom + ' ' + visiteur.nom).toLowerCase();
+      const cin = visiteur.cin.toLowerCase();
+      
+      // Vérifie si tous les termes de recherche sont présents dans les champs
+      return termes.every(t => 
+        nomComplet.includes(t) || 
+        prenomNom.includes(t) || 
+        cin.includes(t)
+      );
+    });
+    
+    this.appliquerFiltresDate();
+  }
 
   filtrerParDate() {
     if (this.startDate || this.endDate) {
@@ -277,17 +198,6 @@ export class ResponsableVisiteurComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  logout() {
-    localStorage.clear();
-    this.router.navigate(['/']);
-  }
-
-  getInitiales(): string {
-    return this.utilisateur.nom && this.utilisateur.prenom 
-      ? `${this.utilisateur.nom.charAt(0)}${this.utilisateur.prenom.charAt(0)}` 
-      : '';
-  }
-
   // Méthodes pour obtenir les statistiques
   getVisiteursSortis(): number {
     if (!this.visiteurs) return 0;
@@ -323,15 +233,6 @@ export class ResponsableVisiteurComponent implements OnInit {
       }
     } catch (e) {
       return 'Erreur de date';
-    }
-  }
-
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: Event) {
-    const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.relative') || target.closest('.w-10.h-10.rounded-full');
-    if (!clickedInside && this.menuOuvert) {
-      this.menuOuvert = false;
     }
   }
 }

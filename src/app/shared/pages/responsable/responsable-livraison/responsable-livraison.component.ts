@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -39,108 +39,23 @@ export class ResponsableLivraisonComponent implements OnInit {
   filtreStatut: 'TOUS' | 'ENTREE' | 'SORTIE' = 'TOUS';
   loading: boolean = false;
 
-  // Propriétés pour l'utilisateur
-  utilisateur = {
-    nom: '',
-    prenom: '',
-    email: '',
-    role: ''
-  };
-
-  // Propriétés pour le menu et la modale
-  menuOuvert: boolean = false;
-  modalePasswordVisible = false;
-  motDePasseVisible = false;
-  confirmationVisible = false;
-  confirmationMotDePasse: string = '';
-  ancienMotDePasse: string = '';
-  nouveauMotDePasse: string = '';
+  // Messages de feedback
   messageSuccess: string = '';
   messageErreur: string = '';
 
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
-    this.recupererInfosUtilisateur();
     this.chargerCamions();
   }
 
-  get nomComplet(): string {
-    return `${this.utilisateur.nom} ${this.utilisateur.prenom}`.trim();
-  }
-
-  recupererInfosUtilisateur() {
-    const token = localStorage.getItem('access-token');
-    if (!token) {
-      this.router.navigate(['/']);
-      return;
-    }
-
-    try {
-      const payload = token.split('.')[1];
-      const decodedPayload = atob(payload);
-      const decoded = JSON.parse(decodedPayload);
-
-      this.utilisateur = {
-        nom: decoded.nom || '',
-        prenom: decoded.prenom || '',
-        email: decoded.sub || '',
-        role: decoded.scope || 'RESPONSABLE'
-      };
-    } catch (e) {
-      console.error('Erreur de décodage du JWT :', e);
-      this.logout();
-    }
-  }
-
-  ouvrirModalePassword() {
-    this.modalePasswordVisible = true;
-    this.messageErreur = '';
-    this.messageSuccess = '';
-    this.menuOuvert = false;
-  }
-
-  fermerModalePassword() {
-    this.modalePasswordVisible = false;
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
-    this.confirmationMotDePasse = '';
-    this.messageErreur = '';
-    this.messageSuccess = '';
-  }
-
-  changerMotDePasse() {
-    if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
-      this.messageErreur = "Veuillez remplir les deux champs.";
-      this.messageSuccess = "";
-      return;
-    }
-
-    if (this.nouveauMotDePasse !== this.confirmationMotDePasse) {
-      this.messageErreur = "Les mots de passe ne correspondent pas.";
-      this.messageSuccess = "";
-      return;
-    }
-
-    const payload = {
-      ancienMotDePasse: this.ancienMotDePasse,
-      nouveauMotDePasse: this.nouveauMotDePasse
-    };
-
-    this.http.post('http://localhost:8085/auth/update-password', payload).subscribe({
-      next: (res: any) => {
-        this.messageSuccess = res.message || "✅ Mot de passe mis à jour avec succès.";
-        this.messageErreur = "";
-        this.ancienMotDePasse = '';
-        this.nouveauMotDePasse = '';
-        this.confirmationMotDePasse = '';
-        setTimeout(() => this.fermerModalePassword(), 3000);
-      },
-      error: (err) => {
-        this.messageErreur = err.error?.error || "❌ Erreur lors de la mise à jour du mot de passe.";
-        this.messageSuccess = "";
-      }
-    });
+  /**
+   * Gestionnaire pour le changement de mot de passe depuis le layout unifié
+   */
+  onPasswordChanged(): void {
+    console.log('✅ Mot de passe changé avec succès depuis le layout unifié');
+    // Vous pouvez ajouter ici toute logique supplémentaire nécessaire
+    // après un changement de mot de passe réussi
   }
 
   chargerCamions(): void {
@@ -169,6 +84,8 @@ export class ResponsableLivraisonComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur chargement camions', err);
+        this.messageErreur = '❌ Erreur lors du chargement des camions.';
+        setTimeout(() => this.messageErreur = '', 3000);
         this.loading = false;
       }
     });
@@ -219,11 +136,6 @@ export class ResponsableLivraisonComponent implements OnInit {
     this.router.navigate(['/agent/ajouterLivraison']);
   }
 
-  logout() {
-    localStorage.clear();
-    this.router.navigate(['/']);
-  }
-
   private formatDate(dateStr: string | undefined): string {
     if (!dateStr) return '';
     
@@ -243,15 +155,6 @@ export class ResponsableLivraisonComponent implements OnInit {
       return `${day}/${month}/${year} ${hours}:${minutes}`;
     } catch (e) {
       return 'Erreur de date';
-    }
-  }
-
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: Event) {
-    const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.relative') || target.closest('.w-8.h-8.rounded-full');
-    if (!clickedInside && this.menuOuvert) {
-      this.menuOuvert = false;
     }
   }
 }
