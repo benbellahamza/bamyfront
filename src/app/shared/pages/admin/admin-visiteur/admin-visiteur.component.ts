@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -24,153 +24,71 @@ interface Visiteur {
   styleUrls: ['./admin-visiteur.component.css']
 })
 export class AdminVisiteurComponent implements OnInit {
+  // ✅ CONFIGURATION POUR LE LAYOUT UNIFIÉ
+  navigationItems = [
+    {
+      label: 'Tableau de bord',
+      route: '/admin/dashboard',
+      icon: 'dashboard',
+      active: false
+    },
+    {
+      label: 'Historique des actions',
+      route: '/admin/historique',
+      icon: 'history',
+      active: false
+    },
+    {
+      label: 'Gestion des visiteurs',
+      route: '/admin/visiteur',
+      icon: 'users',
+      active: true  // Page actuelle
+    },
+    {
+      label: 'Gestion des livraisons',
+      route: '/admin/livraison',
+      icon: 'truck',
+      active: false
+    }
+  ];
 
+  // 📊 DONNÉES PRINCIPALES
   visiteurs: Visiteur[] = [];
   visiteursFiltres: Visiteur[] = [];
   selectedVisiteurs: Visiteur[] = [];
 
+  // 🔍 FILTRES ET RECHERCHE
   searchTerm: string = '';
   startDate: string = '';
   endDate: string = '';
   loading: boolean = false;
 
-  motDePasseVisible = false;
-  confirmationVisible = false;
-  confirmationMotDePasse: string = '';
-
-  utilisateur = {
-    nom: '',
-    prenom: '',
-    email: '',
-    role: ''
-  };
-
-  menuOuvert: boolean = false;
-  modalePasswordVisible = false;
-
-  ancienMotDePasse: string = '';
-  nouveauMotDePasse: string = '';
-  messageSuccess: string = '';
-  messageErreur: string = '';
-
-  erreurExport: boolean = false;
-
+  // 🔢 PAGINATION
   currentPage: number = 1;
   itemsPerPage: number = 12; // Augmenté pour la nouvelle grille
 
-  // Référence Math pour l'utilisation dans le template
-  Math = Math;
+  // ⚠️ GESTION DES ERREURS
+  erreurExport: boolean = false;
+
+  // 🛠️ UTILITAIRES
+  Math = Math; // Référence Math pour l'utilisation dans le template
 
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
-    this.recupererInfosUtilisateur();
     this.getVisiteurs();
   }
 
-  get nomComplet(): string {
-    return `${this.utilisateur.nom} ${this.utilisateur.prenom}`.trim();
+  /**
+   * ✅ Callback pour le changement de mot de passe du layout unifié
+   */
+  onPasswordChanged(): void {
+    console.log('✅ Mot de passe utilisateur changé depuis le layout unifié');
+    // Ici vous pouvez ajouter une logique spécifique si nécessaire
+    // Par exemple, recharger certaines données ou afficher une notification
   }
 
-  recupererInfosUtilisateur() {
-    const token = localStorage.getItem('access-token');
-    if (!token) return;
-
-    try {
-      const payload = token.split('.')[1];
-      const decodedPayload = atob(payload);
-      const decoded = JSON.parse(decodedPayload);
-
-      this.utilisateur = {
-        nom: decoded.nom || '',
-        prenom: decoded.prenom || '',
-        email: decoded.sub || '',
-        role: decoded.scope || 'ADMIN'
-      };
-    } catch (e) {
-      console.error('Erreur de décodage du JWT :', e);
-    }
-  }
-
-  ouvrirModalePassword() {
-    this.modalePasswordVisible = true;
-    this.messageErreur = '';
-    this.messageSuccess = '';
-    this.menuOuvert = false; // Fermer le menu utilisateur
-  }
-
-  fermerModalePassword() {
-    this.modalePasswordVisible = false;
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
-    this.confirmationMotDePasse = '';
-    this.messageErreur = '';
-    this.messageSuccess = '';
-  }
-
-  changerMotDePasse() {
-    if (!this.ancienMotDePasse || !this.nouveauMotDePasse) {
-      this.messageErreur = "Veuillez remplir tous les champs.";
-      this.messageSuccess = "";
-      return;
-    }
-
-    if (this.nouveauMotDePasse !== this.confirmationMotDePasse) {
-      this.messageErreur = "Les mots de passe ne correspondent pas.";
-      this.messageSuccess = "";
-      return;
-    }
-
-    const payload = {
-      ancienMotDePasse: this.ancienMotDePasse,
-      nouveauMotDePasse: this.nouveauMotDePasse
-    };
-
-    this.http.post('http://localhost:8085/auth/update-password', payload).subscribe({
-      next: (res: any) => {
-        this.messageSuccess = res.message || "Mot de passe modifié avec succès !";
-        this.messageErreur = "";
-        this.ancienMotDePasse = '';
-        this.nouveauMotDePasse = '';
-        this.confirmationMotDePasse = '';
-        
-        // Fermer automatiquement la modale après 2 secondes
-        setTimeout(() => {
-          this.fermerModalePassword();
-        }, 2000);
-      },
-      error: (err) => {
-        this.messageErreur = err.error?.error || "❌ Erreur lors de la mise à jour du mot de passe.";
-        this.messageSuccess = "";
-      }
-    });
-  }
-
-  get pages(): number[] {
-    const total = Math.ceil(this.visiteursFiltres.length / this.itemsPerPage);
-    return Array.from({ length: total }, (_, i) => i + 1);
-  }
-
-  // Nouvelle méthode pour afficher seulement les pages visibles dans la pagination
-  getVisiblePages(): number[] {
-    const totalPages = this.pages.length;
-    const current = this.currentPage;
-    const maxVisible = 5;
-
-    if (totalPages <= maxVisible) {
-      return this.pages;
-    }
-
-    let start = Math.max(1, current - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages, start + maxVisible - 1);
-
-    if (end - start + 1 < maxVisible) {
-      start = Math.max(1, end - maxVisible + 1);
-    }
-
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-  }
-
+  // 📊 CHARGEMENT DES DONNÉES
   getVisiteurs() {
     this.loading = true;
     this.http.get<Visiteur[]>('http://localhost:8085/api/visiteurs').subscribe({
@@ -186,6 +104,7 @@ export class AdminVisiteurComponent implements OnInit {
     });
   }
 
+  // 🔍 RECHERCHE ET FILTRAGE
   rechercher() {
     this.currentPage = 1; // Réinitialiser à la première page lors de la recherche
     const terme = this.searchTerm.toLowerCase().trim();
@@ -266,6 +185,7 @@ export class AdminVisiteurComponent implements OnInit {
     this.visiteursFiltres = resultat;
   }
 
+  // ✅ GESTION DE LA SÉLECTION
   toggleSelection(visiteur: Visiteur) {
     if (this.isSelected(visiteur)) {
       this.selectedVisiteurs = this.selectedVisiteurs.filter(v => v.id !== visiteur.id);
@@ -278,7 +198,6 @@ export class AdminVisiteurComponent implements OnInit {
     return this.selectedVisiteurs.some(v => v.id === visiteur.id);
   }
 
-  // Nouvelles méthodes pour la sélection en masse
   selectionnerTous() {
     this.selectedVisiteurs = [...this.visiteursFiltres];
   }
@@ -287,7 +206,7 @@ export class AdminVisiteurComponent implements OnInit {
     this.selectedVisiteurs = [];
   }
 
-  // Méthodes pour les statistiques du dashboard
+  // 📊 STATISTIQUES POUR LE DASHBOARD
   getVisiteursSortis(): number {
     return this.visiteurs.filter(v => v.dateSortie).length;
   }
@@ -296,6 +215,21 @@ export class AdminVisiteurComponent implements OnInit {
     return this.visiteurs.filter(v => !v.dateSortie).length;
   }
 
+  getTotalVisiteurs(): number {
+    return this.visiteurs.length;
+  }
+
+  getPourcentageSortis(): number {
+    if (this.visiteurs.length === 0) return 0;
+    return Math.round((this.getVisiteursSortis() / this.visiteurs.length) * 100);
+  }
+
+  getPourcentagePresents(): number {
+    if (this.visiteurs.length === 0) return 0;
+    return Math.round((this.getVisiteursPresents() / this.visiteurs.length) * 100);
+  }
+
+  // 📤 EXPORT EXCEL
   exporterExcel(exportAll: boolean) {
     this.erreurExport = false;
     const dataToExport = exportAll ? this.visiteursFiltres : this.selectedVisiteurs;
@@ -380,6 +314,7 @@ export class AdminVisiteurComponent implements OnInit {
     }
   }
 
+  // 🔄 RÉINITIALISATION
   resetFiltres() {
     this.searchTerm = '';
     this.startDate = '';
@@ -388,6 +323,31 @@ export class AdminVisiteurComponent implements OnInit {
     this.visiteursFiltres = [...this.visiteurs];
     this.currentPage = 1;
     this.erreurExport = false;
+  }
+
+  // 📄 GESTION DE LA PAGINATION
+  get pages(): number[] {
+    const total = Math.ceil(this.visiteursFiltres.length / this.itemsPerPage);
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  getVisiblePages(): number[] {
+    const totalPages = this.pages.length;
+    const current = this.currentPage;
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      return this.pages;
+    }
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
   get visiteursPage(): Visiteur[] {
@@ -403,59 +363,13 @@ export class AdminVisiteurComponent implements OnInit {
     }
   }
 
-  logout() {
-    // Confirmer la déconnexion
-    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-      localStorage.clear();
-      sessionStorage.clear();
-      this.router.navigate(['/']);
-    }
-  }
-
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: Event) {
-    const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.relative');
-    
-    // Fermer le menu utilisateur si on clique en dehors
-    if (!clickedInside && this.menuOuvert) {
-      this.menuOuvert = false;
-    }
-  }
-
-  // Méthode pour fermer automatiquement les messages d'erreur
-  @HostListener('window:keydown.escape', ['$event'])
-  onEscapeKey(event: KeyboardEvent) {
-    if (this.modalePasswordVisible) {
-      this.fermerModalePassword();
-    }
-    if (this.menuOuvert) {
-      this.menuOuvert = false;
-    }
-  }
-
-  // Méthodes utilitaires pour l'interface
-  getTotalVisiteurs(): number {
-    return this.visiteurs.length;
-  }
-
-  getPourcentageSortis(): number {
-    if (this.visiteurs.length === 0) return 0;
-    return Math.round((this.getVisiteursSortis() / this.visiteurs.length) * 100);
-  }
-
-  getPourcentagePresents(): number {
-    if (this.visiteurs.length === 0) return 0;
-    return Math.round((this.getVisiteursPresents() / this.visiteurs.length) * 100);
-  }
-
-  // Méthode pour actualiser les données
+  // 🔄 ACTUALISATION DES DONNÉES
   actualiserDonnees() {
     this.loading = true;
     this.getVisiteurs();
   }
 
-  // Méthode pour formater les dates d'affichage
+  // 🛠️ MÉTHODES UTILITAIRES
   formaterDate(date: string): string {
     return new Date(date).toLocaleString('fr-FR', {
       day: '2-digit',
@@ -464,5 +378,208 @@ export class AdminVisiteurComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  // ✅ MÉTHODES SUPPLÉMENTAIRES POUR L'INTERFACE
+  
+  /**
+   * Obtient le nom complet de l'utilisateur (pour compatibilité)
+   */
+  get nomComplet(): string {
+    // Cette méthode peut être supprimée car l'utilisateur est géré par le layout unifié
+    return 'Utilisateur Admin';
+  }
+
+  /**
+   * Calcule les statistiques rapides pour l'affichage
+   */
+  obtenirStatistiquesRapides() {
+    return {
+      total: this.visiteurs.length,
+      sortis: this.getVisiteursSortis(),
+      presents: this.getVisiteursPresents(),
+      selectionnes: this.selectedVisiteurs.length,
+      pourcentageSortis: this.getPourcentageSortis(),
+      pourcentagePresents: this.getPourcentagePresents()
+    };
+  }
+
+  /**
+   * Filtre les visiteurs par statut
+   */
+  filtrerParStatut(statut: 'tous' | 'presents' | 'sortis') {
+    this.currentPage = 1;
+    
+    switch (statut) {
+      case 'presents':
+        this.visiteursFiltres = this.visiteurs.filter(v => !v.dateSortie);
+        break;
+      case 'sortis':
+        this.visiteursFiltres = this.visiteurs.filter(v => v.dateSortie);
+        break;
+      default:
+        this.visiteursFiltres = [...this.visiteurs];
+        break;
+    }
+    
+    // Appliquer les autres filtres si nécessaire
+    if (this.searchTerm) {
+      this.rechercher();
+    }
+    if (this.startDate && this.endDate) {
+      this.appliquerFiltresDate();
+    }
+  }
+
+  /**
+   * Obtient la classe CSS pour le badge de statut
+   */
+  getBadgeStatutClass(visiteur: Visiteur): string {
+    return visiteur.dateSortie ? 
+      'bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1' : 
+      'bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1';
+  }
+
+  /**
+   * Obtient le texte du statut
+   */
+  getStatutTexte(visiteur: Visiteur): string {
+    return visiteur.dateSortie ? 'Sorti' : 'Présent';
+  }
+
+  /**
+   * Vérifie si un visiteur est présent depuis longtemps
+   */
+  estPresentDepuisLongtemps(visiteur: Visiteur): boolean {
+    if (visiteur.dateSortie) return false;
+    
+    const maintenant = new Date();
+    const entree = new Date(visiteur.dateEntree);
+    const diffHeures = (maintenant.getTime() - entree.getTime()) / (1000 * 60 * 60);
+    
+    return diffHeures > 8; // Plus de 8 heures
+  }
+
+  /**
+   * Calcule la durée de présence pour un visiteur encore présent
+   */
+  calculerDureePresence(dateEntree: string): string {
+    const entree = new Date(dateEntree);
+    const maintenant = new Date();
+    const diffMs = maintenant.getTime() - entree.getTime();
+    
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (diffHours > 0) {
+      return `${diffHours}h ${diffMinutes}min`;
+    } else {
+      return `${diffMinutes}min`;
+    }
+  }
+
+  /**
+   * Exporte les statistiques en PDF (fonctionnalité future)
+   */
+  exporterStatistiquesPDF() {
+    console.log('🔄 Export PDF des statistiques (à implémenter)');
+    // Implémentation future pour l'export PDF
+  }
+
+  /**
+   * Recherche avancée par période prédéfinie
+   */
+  filtrerParPeriodePredéfinie(periode: 'aujourd\'hui' | 'hier' | 'semaine' | 'mois') {
+    const maintenant = new Date();
+    let debut: Date;
+    let fin: Date = new Date(maintenant);
+
+    switch (periode) {
+      case 'aujourd\'hui':
+        debut = new Date(maintenant);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'hier':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 1);
+        debut.setHours(0, 0, 0, 0);
+        fin = new Date(debut);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'semaine':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 7);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'mois':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 30);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      default:
+        return;
+    }
+
+    this.startDate = debut.toISOString().split('T')[0];
+    this.endDate = fin.toISOString().split('T')[0];
+    this.filtrerParDate();
+  }
+
+  /**
+   * Valide les données d'un visiteur
+   */
+  private validerVisiteur(visiteur: Visiteur): boolean {
+    return !!(visiteur.nom && visiteur.prenom && visiteur.cin && visiteur.destination);
+  }
+
+  /**
+   * Nettoie les données avant l'export
+   */
+  private nettoyerDonneesExport(visiteurs: Visiteur[]): Visiteur[] {
+    return visiteurs.filter(v => this.validerVisiteur(v));
+  }
+
+  /**
+   * Obtient les visiteurs avec des problèmes potentiels
+   */
+  getVisiteursAvecProblemes(): Visiteur[] {
+    return this.visiteurs.filter(v => 
+      !this.validerVisiteur(v) || this.estPresentDepuisLongtemps(v)
+    );
+  }
+
+  /**
+   * Recherche par type de visiteur
+   */
+  filtrerParType(type: string) {
+    this.currentPage = 1;
+    
+    if (!type || type === 'tous') {
+      this.appliquerTousFiltres();
+      return;
+    }
+
+    this.visiteursFiltres = this.visiteurs.filter(v => 
+      (v.typeVisiteur || 'Particulier').toLowerCase() === type.toLowerCase()
+    );
+  }
+
+  /**
+   * Obtient les types de visiteurs uniques
+   */
+  getTypesVisiteurs(): string[] {
+    const types = this.visiteurs.map(v => v.typeVisiteur || 'Particulier');
+    return [...new Set(types)].sort();
+  }
+
+  /**
+   * Méthode de nettoyage lors de la destruction du composant
+   */
+  ngOnDestroy(): void {
+    // Nettoyer les subscriptions si nécessaire
+    console.log('🧹 Nettoyage du composant admin visiteur');
   }
 }

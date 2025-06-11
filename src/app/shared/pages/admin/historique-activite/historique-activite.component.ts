@@ -26,6 +26,32 @@ interface Utilisateur {
   styleUrls: ['./historique-activite.component.css']
 })
 export class HistoriqueActiviteComponent implements OnInit {
+  // ✅ CONFIGURATION POUR LE LAYOUT UNIFIÉ
+  navigationItems = [
+    {
+      label: 'Tableau de bord',
+      route: '/admin/dashboard',
+      icon: 'dashboard',
+      active: false
+    },
+    {
+      label: 'Historique des actions',
+      route: '/admin/historique',
+      icon: 'history',
+      active: true
+    },
+    {
+      label: 'Gestion des visiteurs',
+      route: '/admin/visiteur',
+      icon: 'users'
+    },
+    {
+      label: 'Gestion des livraisons',
+      route: '/admin/livraison',
+      icon: 'truck'
+    }
+  ];
+
   // 📊 DONNÉES PRINCIPALES
   historique: HistoriqueAction[] = [];
   
@@ -43,20 +69,6 @@ export class HistoriqueActiviteComponent implements OnInit {
   // 🔄 TRI
   colonneTri = 'dateAction';
   ordreTri: 'asc' | 'desc' = 'desc';
-  
-  // 👤 UTILISATEUR
-  utilisateur: Utilisateur = { nom: '', prenom: '', email: '', role: '' };
-  menuOuvert = false;
-  
-  // 🔐 GESTION MOT DE PASSE - VERSIONS UNIFIÉES
-  modalePasswordVisible = false;
-  ancienMotDePasse = '';
-  nouveauMotDePasse = '';
-  confirmationMotDePasse = '';
-  motDePasseVisible = false;
-  confirmationVisible = false;
-  messageSuccess = '';
-  messageErreur = '';
   
   // ✅ SÉLECTION
   lignesSelectionnees = new Set<number>();
@@ -76,41 +88,16 @@ export class HistoriqueActiviteComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.recupererInfosUtilisateur();
     this.chargerHistorique();
   }
 
-  // 👤 GESTION UTILISATEUR
-  recupererInfosUtilisateur(): void {
-    const token = localStorage.getItem('access-token');
-    if (!token) {
-      this.utilisateur = {
-        nom: 'Utilisateur',
-        prenom: '',
-        email: 'email@domain.com',
-        role: 'ADMIN'
-      };
-      return;
-    }
-    
-    try {
-      const payload = atob(token.split('.')[1]);
-      const decoded = JSON.parse(payload);
-      this.utilisateur = {
-        nom: decoded.nom || 'Utilisateur',
-        prenom: decoded.prenom || '',
-        email: decoded.sub || 'email@domain.com',
-        role: decoded.scope || 'ADMIN'
-      };
-    } catch (error) {
-      console.error('❌ Erreur de décodage du JWT :', error);
-      this.utilisateur = {
-        nom: 'Utilisateur',
-        prenom: '',
-        email: 'email@domain.com',
-        role: 'ADMIN'
-      };
-    }
+  /**
+   * ✅ Callback pour le changement de mot de passe du layout unifié
+   */
+  onPasswordChanged(): void {
+    console.log('✅ Mot de passe utilisateur changé depuis le layout unifié');
+    // Ici vous pouvez ajouter une logique spécifique si nécessaire
+    // Par exemple, recharger certaines données ou afficher une notification
   }
 
   // 📊 CHARGEMENT DES DONNÉES
@@ -419,122 +406,6 @@ export class HistoriqueActiviteComponent implements OnInit {
     this.ordreTri = 'desc';
   }
 
-  // 🔐 GESTION MOT DE PASSE - VERSION UNIFIÉE AVEC DASHBOARD
-  ouvrirModalePassword(): void {
-    this.modalePasswordVisible = true;
-    this.messageSuccess = '';
-    this.messageErreur = '';
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
-    this.confirmationMotDePasse = '';
-    this.motDePasseVisible = false;
-    this.confirmationVisible = false;
-    this.menuOuvert = false;
-  }
-
-  fermerModalePassword(): void {
-    this.modalePasswordVisible = false;
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
-    this.confirmationMotDePasse = '';
-    this.messageSuccess = '';
-    this.messageErreur = '';
-  }
-
-  changerMotDePasse(): void {
-    // Validation des champs
-    if (!this.ancienMotDePasse?.trim()) {
-      this.messageErreur = '❌ L\'ancien mot de passe est requis';
-      this.messageSuccess = '';
-      return;
-    }
-
-    if (!this.nouveauMotDePasse?.trim()) {
-      this.messageErreur = '❌ Le nouveau mot de passe est requis';
-      this.messageSuccess = '';
-      return;
-    }
-
-    if (this.nouveauMotDePasse !== this.confirmationMotDePasse) {
-      this.messageErreur = '❌ Les mots de passe ne correspondent pas';
-      this.messageSuccess = '';
-      return;
-    }
-
-    if (this.nouveauMotDePasse.length < 6) {
-      this.messageErreur = '❌ Le mot de passe doit contenir au moins 6 caractères';
-      this.messageSuccess = '';
-      return;
-    }
-
-    // Appel API - VERSION UNIFIÉE
-    this.adminService.changerMotDePasseActuel(
-      this.utilisateur.email,
-      this.ancienMotDePasse,
-      this.nouveauMotDePasse
-    ).subscribe({
-      next: () => {
-        this.messageSuccess = '✅ Mot de passe modifié avec succès';
-        this.messageErreur = '';
-        
-        // Fermer automatiquement après 2 secondes
-        setTimeout(() => {
-          this.fermerModalePassword();
-        }, 2000);
-      },
-      error: (err) => {
-        console.error('❌ Erreur changement mot de passe :', err);
-        this.messageErreur = err.error?.message || '❌ Erreur lors du changement de mot de passe';
-        this.messageSuccess = '';
-      }
-    });
-  }
-
-  // 🚪 DÉCONNEXION UNIFIÉE
-  logout(): void {
-    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-      try {
-        localStorage.removeItem('access-token');
-        localStorage.removeItem('role');
-        localStorage.removeItem('user-data');
-        window.location.href = '/';
-      } catch (error) {
-        console.error('❌ Erreur lors de la déconnexion :', error);
-        window.location.href = '/';
-      }
-    }
-  }
-
-  // 🖱️ GESTION DES CLICS EXTERNES - VERSION UNIFIÉE
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    const menuContainer = target.closest('.relative');
-    
-    if (!menuContainer) {
-      this.menuOuvert = false;
-    }
-  }
-
-  // 🎯 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES
-  changerNombreElementsAffichage(nombre: number): void {
-    this.nombreElementsAffichage = nombre;
-    this.pageActuelle = 1;
-  }
-
-  // 🔍 RECHERCHE AVANCÉE
-  rechercherParAgent(nomAgent: string): void {
-    this.filtreTexte = nomAgent;
-    this.appliquerFiltres();
-  }
-
-  filtrerParPeriodePersonnalisee(debut: string, fin: string): void {
-    this.filtrePeriode = 'custom';
-    this.dateDebut = debut;
-    this.dateFin = fin;
-    this.appliquerFiltres();
-  }
-
   // 🔄 REFRESH DES DONNÉES
   raffraichirDonnees(): void {
     this.chargerHistorique();
@@ -587,5 +458,24 @@ export class HistoriqueActiviteComponent implements OnInit {
       default:
         return `${baseClasses} bg-slate-500`;
     }
+  }
+
+  // 🔧 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES
+  changerNombreElementsAffichage(nombre: number): void {
+    this.nombreElementsAffichage = nombre;
+    this.pageActuelle = 1;
+  }
+
+  // 🔍 RECHERCHE AVANCÉE
+  rechercherParAgent(nomAgent: string): void {
+    this.filtreTexte = nomAgent;
+    this.appliquerFiltres();
+  }
+
+  filtrerParPeriodePersonnalisee(debut: string, fin: string): void {
+    this.filtrePeriode = 'custom';
+    this.dateDebut = debut;
+    this.dateFin = fin;
+    this.appliquerFiltres();
   }
 }
