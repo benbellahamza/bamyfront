@@ -1,332 +1,313 @@
 <!-- ✅ UTILISATION DU LAYOUT UNIFIÉ -->
 <app-unified-layout 
-  pageTitle="Liste Des Visiteurs"
+  [pageTitle]="'Gestion des Visiteurs'"
+  [navigationItems]="navigationItems"
   (passwordChanged)="onPasswordChanged()">
 
-  <!-- ✅ CONTENU PRINCIPAL DE LA PAGE -->
-  <div class="flex flex-col min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 font-sans pt-20 pb-28">
-    
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 px-6">
+  <!-- ✅ CONTENU PRINCIPAL -->
+  <main class="mt-20 h-screen overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100">
+    <div class="flex flex-col h-full">
       
-      <!-- ✅ DASHBOARD STATS REDESSINÉS -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <!-- TOTAL VISITEURS -->
-        <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-md overflow-hidden animate-slideIn">
-          <div class="flex items-stretch h-full">
-            <!-- Icône côté gauche -->
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 w-16 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            
-            <!-- Contenu principal -->
-            <div class="flex-1 p-4 flex items-center">
+      <!-- ✅ HEADER AVEC STATISTIQUES -->
+      <div class="bg-white border-b border-slate-200 p-4 shadow-sm flex-shrink-0">
+        <div class="grid grid-cols-4 gap-4">
+          <!-- Total visiteurs -->
+          <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+            <div class="flex items-center justify-between">
               <div>
-                <div class="text-sm text-blue-600 font-medium">Total visiteurs</div>
-                <div class="flex items-baseline mt-1">
-                  <div class="text-2xl font-bold text-slate-800">{{ visiteurs.length }}</div>
-                  <div class="ml-2 text-xs text-blue-500">visiteurs</div>
-                </div>
+                <p class="text-blue-600 text-sm font-medium">Total Visiteurs</p>
+                <p class="text-2xl font-bold text-blue-700">{{ visiteurs.length }}</p>
+              </div>
+              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
               </div>
             </div>
           </div>
-        </div>
-        
-        <!-- VISITEURS SORTIS -->
-        <div class="bg-gradient-to-br from-green-50 to-white rounded-xl shadow-md overflow-hidden animate-slideIn">
-          <div class="flex items-stretch h-full">
-            <!-- Icône côté gauche -->
-            <div class="bg-gradient-to-br from-green-500 to-green-600 w-16 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            
-            <!-- Contenu principal -->
-            <div class="flex-1 p-4 flex items-center">
+
+          <!-- Visiteurs sortis -->
+          <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
+            <div class="flex items-center justify-between">
               <div>
-                <div class="text-sm text-green-600 font-medium">Visiteurs sortis</div>
-                <div class="flex items-baseline mt-1">
-                  <div class="text-2xl font-bold text-slate-800">{{ getVisiteursSortis() }}</div>
-                  <div class="ml-2 text-xs text-green-500">visiteurs</div>
-                </div>
+                <p class="text-green-600 text-sm font-medium">Visiteurs Sortis</p>
+                <p class="text-2xl font-bold text-green-700">{{ getVisiteursSortis() }}</p>
+              </div>
+              <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
               </div>
             </div>
           </div>
-        </div>
-        
-        <!-- VISITEURS PRÉSENTS -->
-        <div class="bg-gradient-to-br from-red-50 to-white rounded-xl shadow-md overflow-hidden animate-slideIn">
-          <div class="flex items-stretch h-full">
-            <!-- Icône côté gauche -->
-            <div class="bg-gradient-to-br from-red-500 to-red-600 w-16 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            
-            <!-- Contenu principal -->
-            <div class="flex-1 p-4 flex items-center">
+
+          <!-- Encore présents -->
+          <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200">
+            <div class="flex items-center justify-between">
               <div>
-                <div class="text-sm text-red-600 font-medium">Visiteurs présents</div>
-                <div class="flex items-baseline mt-1">
-                  <div class="text-2xl font-bold text-slate-800">{{ getVisiteursPresents() }}</div>
-                  <div class="ml-2 text-xs text-red-500">visiteurs</div>
-                </div>
+                <p class="text-amber-600 text-sm font-medium">Encore Présents</p>
+                <p class="text-2xl font-bold text-amber-700">{{ getVisiteursPresents() }}</p>
+              </div>
+              <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sélectionnés -->
+          <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-purple-600 text-sm font-medium">Sélectionnés</p>
+                <p class="text-2xl font-bold text-purple-700">{{ selectedVisiteurs.length }}</p>
+              </div>
+              <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ✅ FILTRES RECHERCHE (UNE LIGNE) -->
-      <div class="bg-white shadow-md rounded-xl p-3 mb-4 border border-slate-200 animate-fadeIn">
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- Recherche -->
-          <div class="w-full sm:w-auto flex-1 relative">
+      <!-- ✅ TOOLBAR -->
+      <div class="bg-white border-b border-slate-200 p-4 flex-shrink-0">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <!-- Titre et recherche -->
+          <div class="flex items-center gap-4 flex-1 min-w-0">
+            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 flex-shrink-0">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+              </svg>
+              Outils
+            </h2>
+            
+            <!-- Barre de recherche -->
+            <div class="relative flex-1 max-w-md">
+              <input 
+                type="text" 
+                [(ngModel)]="searchTerm" 
+                (input)="rechercher()" 
+                placeholder="Rechercher..."
+                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+              />
+              <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Filtres de date -->
             <input 
-              type="text" 
-              [(ngModel)]="searchTerm" 
-              (input)="rechercher()" 
-              placeholder="Rechercher..." 
-              class="w-full pl-8 py-2 pr-3 bg-slate-50 focus:bg-white rounded-lg border border-slate-300 focus:border-blue-500 outline-none transition-all text-sm form-input"
+              type="date" 
+              [(ngModel)]="startDate" 
+              (change)="filtrerParDate()" 
+              class="px-3 py-2 border border-slate-300 rounded-lg text-xs focus:border-blue-500"
             />
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          
-          <!-- Dates compactes -->
-          <div class="flex items-center space-x-1 shrink-0">
-            <div class="relative">
-              <input 
-                type="date" 
-                [(ngModel)]="startDate" 
-                (change)="filtrerParDate()" 
-                class="w-32 pl-7 py-2 bg-slate-50 focus:bg-white rounded-lg border border-slate-300 focus:border-blue-500 outline-none transition-all text-sm form-input"
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <div class="relative">
-              <input 
-                type="date" 
-                [(ngModel)]="endDate" 
-                (change)="filtrerParDate()" 
-                class="w-32 pl-7 py-2 bg-slate-50 focus:bg-white rounded-lg border border-slate-300 focus:border-blue-500 outline-none transition-all text-sm form-input"
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-          </div>
-          
-          <!-- Boutons d'action -->
-          <div class="flex items-center gap-2 ml-auto shrink-0">
+            <span class="text-slate-400 text-xs">→</span>
+            <input 
+              type="date" 
+              [(ngModel)]="endDate" 
+              (change)="filtrerParDate()" 
+              class="px-3 py-2 border border-slate-300 rounded-lg text-xs focus:border-blue-500"
+            />
+            
+            <!-- Filtres rapides -->
+            <button (click)="filtrerParPeriodePredefinie('aujourdhui')"
+                    class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-all">
+              Aujourd'hui
+            </button>
+            <button (click)="filtrerParPeriodePredefinie('semaine')"
+                    class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-all">
+              7j
+            </button>
+            
+            <!-- Actions -->
             <button 
-              class="px-3 py-2 flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow text-xs transition-colors btn-primary"
+              (click)="selectionnerTous()"
+              class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs">
+              Tout
+            </button>
+            <button 
+              (click)="deselectionnerTous()"
+              class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs">
+              Aucun
+            </button>
+            <button 
               (click)="exporterExcel(true)"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Exporter tout
+              class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium">
+              Export ({{ visiteursFiltres.length }})
             </button>
-            
             <button 
-              class="px-3 py-2 flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow text-xs transition-colors btn-success"
-              (click)="exporterExcel(false)"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Exporter ({{ selectedVisiteurs.length }})
-            </button>
-            
-            <button 
-              class="px-3 py-2 flex items-center gap-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs transition-colors"
               (click)="resetFiltres()"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              class="px-2 py-1 bg-slate-500 hover:bg-slate-600 text-white rounded text-xs">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Message d'erreur -->
+        <div *ngIf="erreurExport" class="mt-3 bg-red-50 border border-red-200 text-red-800 p-2 rounded text-xs">
+          Aucune donnée à exporter.
+        </div>
+      </div>
+
+      <!-- ✅ CONTENU PRINCIPAL -->
+      <div class="flex-1 overflow-y-auto p-4">
+        
+        <!-- Loading -->
+        <div *ngIf="loading" class="flex items-center justify-center h-full">
+          <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-500 mx-auto mb-4"></div>
+            <p class="text-lg font-semibold text-slate-600">Chargement...</p>
+          </div>
+        </div>
+
+        <!-- Liste des visiteurs -->
+        <div *ngIf="!loading && visiteursFiltres.length > 0" class="h-full">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-slate-800">Liste des visiteurs</h3>
+            <div class="text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded">
+              {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, visiteursFiltres.length) }} sur {{ visiteursFiltres.length }}
+            </div>
+          </div>
+
+          <!-- Grille visiteurs -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            <div *ngFor="let v of visiteursPage; trackBy: trackByVisiteurId" 
+                 class="bg-white rounded-lg shadow border border-slate-200 overflow-hidden hover:shadow-md transition-all">
+              
+              <!-- Header carte -->
+              <div class="bg-slate-50 px-4 py-3 border-b border-slate-200">
+                <div class="flex items-center justify-between">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      class="w-4 h-4 text-blue-600 rounded" 
+                      [checked]="isSelected(v)" 
+                      (change)="toggleSelection(v)" 
+                    />
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-xs">
+                        {{ v.nom.charAt(0) }}{{ v.prenom.charAt(0) }}
+                      </div>
+                      <div>
+                        <p class="font-bold text-slate-800 text-sm">{{ v.nom }} {{ v.prenom }}</p>
+                        <p class="text-xs text-slate-500">{{ v.cin }}</p>
+                      </div>
+                    </div>
+                  </label>
+                  
+                  <div [ngClass]="v.dateSortie ? 
+                    'bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium' : 
+                    'bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-medium'">
+                    {{ v.dateSortie ? 'Sorti' : 'Présent' }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Body carte -->
+              <div class="p-4 space-y-3">
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span class="text-slate-500">Genre:</span>
+                    <span class="font-medium text-slate-800 ml-1">{{ v.genre }}</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-500">Type:</span>
+                    <span class="font-medium text-slate-800 ml-1">{{ v.typeVisiteur || 'Particulier' }}</span>
+                  </div>
+                </div>
+                
+                <div class="text-xs">
+                  <span class="text-slate-500">Destination:</span>
+                  <span class="font-medium text-slate-800 ml-1">{{ v.destination }}</span>
+                </div>
+                
+                <div *ngIf="v.telephone" class="text-xs">
+                  <span class="text-slate-500">Téléphone:</span>
+                  <span class="font-medium text-slate-800 ml-1">{{ v.telephone }}</span>
+                </div>
+
+                <div class="border-t border-slate-100 pt-3 space-y-2 text-xs">
+                  <div>
+                    <span class="text-slate-500">Entrée:</span>
+                    <span class="font-medium text-slate-800 ml-1">{{ v.dateEntree | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-500">Sortie:</span>
+                    <span *ngIf="v.dateSortie" class="font-medium text-green-700 ml-1">{{ v.dateSortie | date:'dd/MM/yyyy HH:mm' }}</span>
+                    <span *ngIf="!v.dateSortie" class="font-medium text-amber-700 ml-1">Encore présent</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- État vide -->
+        <div *ngIf="!loading && visiteursFiltres.length === 0" class="flex items-center justify-center h-full">
+          <div class="text-center">
+            <div class="bg-slate-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">Aucun visiteur trouvé</h3>
+            <p class="text-slate-600 mb-4">{{ searchTerm || startDate || endDate ? 'Aucun résultat pour vos critères.' : 'Aucun visiteur enregistré.' }}</p>
+            <button 
+              *ngIf="searchTerm || startDate || endDate"
+              (click)="resetFiltres()"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">
               Réinitialiser
             </button>
           </div>
         </div>
       </div>
 
-      <!-- ✅ CHARGEMENT ANIMÉ -->
-      <div *ngIf="loading" class="flex flex-col items-center justify-center py-16 animate-fadeIn">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-        <div class="text-blue-600 font-medium text-lg">Chargement des visiteurs...</div>
-      </div>
-
-      <!-- ✅ LISTE DES VISITEURS (AVEC CLASSES D'ANIMATION) -->
-      <div *ngIf="!loading && visiteursFiltres.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        <div *ngFor="let visiteur of visiteursPage; let i = index" 
-             class="bg-white rounded-xl shadow-md hover:shadow-lg border border-slate-200 overflow-hidden transition-all transform hover:-translate-y-1 card-enhanced"
-             [style.animation-delay]="(i * 0.1) + 's'">
-          
-          <!-- BARRE DE STATUT -->
-          <div [class.bg-green-500]="visiteur.dateSortie" [class.bg-red-500]="!visiteur.dateSortie" class="h-1.5 w-full"></div>
-          
-          <div class="p-4">
-            <!-- ENTÊTE DE CARTE -->
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-2">
-                <div [class.bg-green-100]="visiteur.dateSortie" [class.text-green-600]="visiteur.dateSortie" 
-                     [class.bg-red-100]="!visiteur.dateSortie" [class.text-red-600]="!visiteur.dateSortie" 
-                     class="p-1.5 rounded-full status-indicator">
-                  <svg *ngIf="visiteur.dateSortie" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <svg *ngIf="!visiteur.dateSortie" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h3 class="font-bold text-slate-800 truncate max-w-[140px]">{{ visiteur.nom }} {{ visiteur.prenom }}</h3>
-              </div>
-              
-              <div class="relative cursor-pointer" (click)="toggleSelection(visiteur)">
-                <div class="w-5 h-5 rounded-md border-2 border-blue-400 flex items-center justify-center bg-white transition-all hover:scale-110">
-                  <svg *ngIf="isSelected(visiteur)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <!-- INFORMATIONS VISITEUR -->
-            <div class="space-y-2 text-sm text-slate-600">
-              <div class="flex items-start gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a2 2 0 012 2m4 0a6 6 0 01-8.485 5.657L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1120 9z" />
-                </svg>
-                <div><span class="font-medium">CIN :</span> {{ visiteur.cin }}</div>
-              </div>
-              <div class="flex items-start gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <div class="truncate max-w-[170px]"><span class="font-medium">Destination :</span> {{ visiteur.destination }}</div>
-              </div>
-              <div class="flex items-start gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                <div><span class="font-medium">Téléphone :</span> {{ visiteur.telephone || 'Non renseigné' }}</div>
-              </div>
-              <div class="flex items-start gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
-                </svg>
-                <div><span class="font-medium">Type :</span> {{ visiteur.typeVisiteur || 'Particulier' }}</div>
-              </div>
-            </div>
-            
-            <!-- HORAIRES ENTRÉE/SORTIE -->
-            <div class="mt-3 pt-2 border-t border-slate-100 space-y-2">
-              <div class="flex items-center gap-2 text-sm" [class.text-green-600]="visiteur.dateSortie" [class.text-blue-600]="!visiteur.dateSortie">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <div class="font-medium">Entrée : {{ formatDate(visiteur.dateEntree) }}</div>
-              </div>
-              
-              <div class="flex items-center gap-2 text-sm" [class.text-green-600]="visiteur.dateSortie" [class.text-red-600]="!visiteur.dateSortie">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <div class="font-medium">
-                  Sortie : 
-                  <span *ngIf="visiteur.dateSortie">{{ formatDate(visiteur.dateSortie) }}</span>
-                  <span *ngIf="!visiteur.dateSortie" class="text-red-600 font-bold">Non sorti</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ✅ AUCUN RÉSULTAT -->
-      <div *ngIf="!loading && visiteursFiltres.length === 0" class="flex flex-col items-center justify-center py-16 text-center animate-fadeIn">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        <div class="text-slate-500 font-medium text-lg mb-2">Aucun visiteur trouvé</div>
-        <div class="text-slate-400 text-sm">Modifiez vos critères de recherche ou réinitialisez les filtres</div>
-      </div>
-
-      <!-- ✅ PAGINATION SIMPLIFIÉE -->
-      <div *ngIf="!loading && pages.length > 1" class="mt-6 flex justify-center">
-        <div class="flex items-center bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden">
-          <button 
-            [disabled]="currentPage === 1"
-            (click)="setPage(currentPage - 1)"
-            [class.text-slate-400]="currentPage === 1" 
-            [class.cursor-not-allowed]="currentPage === 1" 
-            [class.text-slate-700]="currentPage !== 1" 
-            [class.hover:bg-slate-100]="currentPage !== 1"
-            class="px-3 py-1.5 transition-colors border-r border-slate-200 flex items-center gap-1 pagination-btn"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            <span class="hidden sm:inline text-sm">Préc</span>
-          </button>
-          
-          <div class="hidden md:flex">
-            <button 
-              *ngFor="let page of pages; let i = index"
-              (click)="setPage(i + 1)"
-              [class.bg-blue-600]="(i + 1) === currentPage" 
-              [class.text-white]="(i + 1) === currentPage" 
-              [class.text-slate-700]="(i + 1) !== currentPage" 
-              [class.hover:bg-slate-100]="(i + 1) !== currentPage"
-              [class.pagination-active]="(i + 1) === currentPage"
-              class="w-8 h-8 flex items-center justify-center font-medium transition-colors text-sm pagination-btn"
-            >
-              {{ i + 1 }}
-            </button>
-          </div>
-          
-          <div class="px-3 py-1.5 font-medium md:hidden text-sm">
+      <!-- ✅ PAGINATION -->
+      <div *ngIf="pages.length > 1" class="bg-white border-t border-slate-200 p-4 flex-shrink-0">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-slate-600">
             Page {{ currentPage }} sur {{ pages.length }}
           </div>
-          
-          <button 
-            [disabled]="currentPage === pages.length"
-            (click)="setPage(currentPage + 1)"
-            [class.text-slate-400]="currentPage === pages.length" 
-            [class.cursor-not-allowed]="currentPage === pages.length" 
-            [class.text-slate-700]="currentPage !== pages.length" 
-            [class.hover:bg-slate-100]="currentPage !== pages.length"
-            class="px-3 py-1.5 transition-colors border-l border-slate-200 flex items-center gap-1 pagination-btn"
-          >
-            <span class="hidden sm:inline text-sm">Suiv</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+          <div class="flex items-center gap-2">
+            <button 
+              (click)="setPage(currentPage - 1)"
+              [disabled]="currentPage === 1"
+              [ngClass]="currentPage === 1 ? 
+                'px-3 py-1 text-slate-400 bg-slate-100 rounded cursor-not-allowed text-sm' : 
+                'px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded transition-all text-sm'">
+              ←
+            </button>
+
+            <button 
+              *ngFor="let page of getVisiblePages()"
+              (click)="setPage(page)"
+              [ngClass]="page === currentPage ? 
+                'px-3 py-1 bg-blue-600 text-white rounded font-medium text-sm' : 
+                'px-3 py-1 bg-slate-100 text-slate-700 rounded hover:bg-slate-200 transition-all text-sm'">
+              {{ page }}
+            </button>
+
+            <button 
+              (click)="setPage(currentPage + 1)"
+              [disabled]="currentPage === pages.length"
+              [ngClass]="currentPage === pages.length ? 
+                'px-3 py-1 text-slate-400 bg-slate-100 rounded cursor-not-allowed text-sm' : 
+                'px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded transition-all text-sm'">
+              →
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- ✅ MESSAGE D'ERREUR EXPORT -->
-      <div *ngIf="erreurExport" class="fixed bottom-20 right-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-lg animate-slideIn z-50 message-error">
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span class="font-semibold">Veuillez sélectionner au moins un visiteur à exporter</span>
-        </div>
-      </div>
-      
-    </main>
-  </div>
+    </div>
+  </main>
 
 </app-unified-layout>

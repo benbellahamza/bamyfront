@@ -141,10 +141,34 @@ h3 {
   margin-top: 20px;
 }
 
+/* Styles pour les en-têtes de tableau */
 thead th {
-  background-color: #f8f9fa;
+  background-color: #1e293b !important;
   font-weight: bold;
   text-align: center;
+  color: white !important;
+}
+
+thead th * {
+  color: white !important;
+}
+
+thead th svg {
+  color: white !important;
+  stroke: white !important;
+}
+
+thead th span {
+  color: white !important;
+}
+
+/* Assurer la visibilité du texte blanc */
+.bg-gradient-to-r.from-slate-800.to-slate-700 {
+  background: linear-gradient(to right, #1e293b, #334155) !important;
+}
+
+.bg-gradient-to-r.from-slate-800.to-slate-700 * {
+  color: white !important;
 }
 
 tbody td {

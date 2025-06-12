@@ -1,9 +1,9 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminService } from 'app/core/services/admin/admin.service';
 
-// 🔧 INTERFACES
+// ✅ INTERFACES
 interface Utilisateur {
   nom: string;
   prenom: string;
@@ -21,36 +21,66 @@ interface NouvelUtilisateur extends Utilisateur {
   templateUrl: './ajouter-utilisateur.component.html',
   styleUrls: ['./ajouter-utilisateur.component.css']
 })
-export class AjouterUtilisateurComponent implements OnInit {
-  // 📋 FORMULAIRE
+export class AjouterUtilisateurComponent implements OnInit, OnDestroy {
+  
+  // ✅ CONFIGURATION NAVIGATION
+  navigationItems = [
+    {
+      label: 'Tableau de bord',
+      route: '/admin/dashboard',
+      icon: 'dashboard',
+      active: false
+    },
+    {
+      label: 'Historique des actions',
+      route: '/admin/historique',
+      icon: 'history',
+      active: false
+    },
+    {
+      label: 'Gestion des visiteurs',
+      route: '/admin/visiteur',
+      icon: 'users',
+      active: false
+    },
+    {
+      label: 'Gestion des livraisons',
+      route: '/admin/livraison',
+      icon: 'truck',
+      active: false
+    },
+    {
+      label: 'Ajouter un utilisateur',
+      route: '/admin/ajouter-utilisateur',
+      icon: 'user-plus',
+      active: true
+    }
+  ];
+
+  // ✅ FORMULAIRE
   userForm!: FormGroup;
   
-  // 🎭 RÔLES DISPONIBLES
+  // ✅ RÔLES DISPONIBLES
   roles: string[] = ['ADMIN', 'AGENT', 'RESPONSABLE'];
   
-  // 💬 MESSAGES
+  // ✅ MESSAGES
   successMessage = '';
   errorMessage = '';
   
-  // 🔐 GESTION MOT DE PASSE
+  // ✅ GESTION MOT DE PASSE
   motDePasseVisible = false;
   confirmationMotDePasse = '';
   confirmationVisible = false;
   
-  // 👤 UTILISATEUR CONNECTÉ
+  // ✅ UTILISATEUR CONNECTÉ
   utilisateur: Utilisateur = { nom: '', prenom: '', email: '', role: '' };
-  menuOuvert = false;
   
-  // 🔐 MODALE MOT DE PASSE
-  modalePasswordVisible = false;
-  ancienMotDePasse = '';
-  nouveauMotDePasse = '';
-  messagePasswordSuccess = '';
-  messagePasswordErreur = '';
-  
-  // 🛠️ UTILITAIRES
+  // ✅ UTILITAIRES
   isLoading = false;
   currentYear = new Date().getFullYear();
+
+  // ✅ SUBSCRIPTIONS
+  private subscriptions: any[] = [];
 
   constructor(
     private fb: FormBuilder, 
@@ -64,7 +94,20 @@ export class AjouterUtilisateurComponent implements OnInit {
     this.recupererInfosUtilisateur();
   }
 
-  // 🏗️ INITIALISATION DU FORMULAIRE
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => {
+      if (sub && typeof sub.unsubscribe === 'function') {
+        sub.unsubscribe();
+      }
+    });
+  }
+
+  // ✅ CALLBACK LAYOUT UNIFIÉ
+  onPasswordChanged(): void {
+    console.log('Mot de passe changé depuis le layout unifié');
+  }
+
+  // ✅ INITIALISATION DU FORMULAIRE
   private initializeForm(): void {
     this.userForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
@@ -75,7 +118,7 @@ export class AjouterUtilisateurComponent implements OnInit {
     });
   }
 
-  // 👤 RÉCUPÉRATION INFOS UTILISATEUR
+  // ✅ RÉCUPÉRATION INFOS UTILISATEUR
   recupererInfosUtilisateur(): void {
     const token = localStorage.getItem('access-token');
     if (!token) {
@@ -108,7 +151,7 @@ export class AjouterUtilisateurComponent implements OnInit {
     }
   }
 
-  // 📝 SOUMISSION DU FORMULAIRE
+  // ✅ SOUMISSION DU FORMULAIRE
   onSubmit(): void {
     if (this.userForm.invalid) {
       this.marquerTousLesChampsCommeTouches();
@@ -128,7 +171,7 @@ export class AjouterUtilisateurComponent implements OnInit {
 
     const nouvelUtilisateur: NouvelUtilisateur = this.userForm.value;
 
-    this.adminService.ajouterUtilisateur(nouvelUtilisateur).subscribe({
+    const subscription = this.adminService.ajouterUtilisateur(nouvelUtilisateur).subscribe({
       next: (res) => {
         this.isLoading = false;
         this.successMessage = '✅ Utilisateur ajouté avec succès !';
@@ -150,16 +193,17 @@ export class AjouterUtilisateurComponent implements OnInit {
         this.successMessage = '';
       }
     });
+    this.subscriptions.push(subscription);
   }
 
-  // 🔍 VALIDATION FORMULAIRE
+  // ✅ VALIDATION FORMULAIRE
   private marquerTousLesChampsCommeTouches(): void {
     Object.keys(this.userForm.controls).forEach(key => {
       this.userForm.get(key)?.markAsTouched();
     });
   }
 
-  // 🎯 GETTERS POUR VALIDATION
+  // ✅ GETTERS POUR VALIDATION
   get nomInvalid(): boolean {
     const control = this.userForm.get('nom');
     return !!(control?.invalid && control?.touched);
@@ -185,7 +229,7 @@ export class AjouterUtilisateurComponent implements OnInit {
     return !!(control?.invalid && control?.touched);
   }
 
-  // 🔐 GESTION VISIBILITÉ MOT DE PASSE
+  // ✅ GESTION VISIBILITÉ MOT DE PASSE
   toggleMotDePasseVisible(): void {
     this.motDePasseVisible = !this.motDePasseVisible;
   }
@@ -200,7 +244,7 @@ export class AjouterUtilisateurComponent implements OnInit {
     return this.userForm.get('password')?.value === this.confirmationMotDePasse;
   }
 
-  // 🔄 RÉINITIALISATION FORMULAIRE
+  // ✅ RÉINITIALISATION FORMULAIRE
   reinitialiserFormulaire(): void {
     this.userForm.reset();
     this.confirmationMotDePasse = '';
@@ -208,115 +252,48 @@ export class AjouterUtilisateurComponent implements OnInit {
     this.errorMessage = '';
   }
 
-  // 🏠 RETOUR AU DASHBOARD
+  // ✅ RETOUR AU DASHBOARD
   retourDashboard(): void {
     this.router.navigate(['/admin/dashboard']);
   }
 
-  // 🔐 GESTION MODALE MOT DE PASSE
-  ouvrirModalePassword(): void {
-    this.modalePasswordVisible = true;
-    this.messagePasswordSuccess = '';
-    this.messagePasswordErreur = '';
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
-    this.menuOuvert = false;
-  }
-
-  fermerModalePassword(): void {
-    this.modalePasswordVisible = false;
-    this.ancienMotDePasse = '';
-    this.nouveauMotDePasse = '';
-    this.messagePasswordSuccess = '';
-    this.messagePasswordErreur = '';
-  }
-
-  changerMotDePasse(): void {
-    if (!this.ancienMotDePasse?.trim()) {
-      this.messagePasswordErreur = '❌ L\'ancien mot de passe est requis';
-      this.messagePasswordSuccess = '';
-      return;
-    }
-
-    if (!this.nouveauMotDePasse?.trim()) {
-      this.messagePasswordErreur = '❌ Le nouveau mot de passe est requis';
-      this.messagePasswordSuccess = '';
-      return;
-    }
-
-    if (this.nouveauMotDePasse.length < 6) {
-      this.messagePasswordErreur = '❌ Le mot de passe doit contenir au moins 6 caractères';
-      this.messagePasswordSuccess = '';
-      return;
-    }
-
-    this.adminService.changerMotDePasseActuel(
-      this.utilisateur.email,
-      this.ancienMotDePasse,
-      this.nouveauMotDePasse
-    ).subscribe({
-      next: () => {
-        this.messagePasswordSuccess = '✅ Mot de passe modifié avec succès';
-        this.messagePasswordErreur = '';
-        
-        setTimeout(() => {
-          this.fermerModalePassword();
-        }, 2000);
-      },
-      error: (err) => {
-        console.error('❌ Erreur changement mot de passe :', err);
-        this.messagePasswordErreur = err.error?.message || '❌ Erreur lors du changement de mot de passe';
-        this.messagePasswordSuccess = '';
-      }
-    });
-  }
-
-  // 🚪 DÉCONNEXION
-  logout(): void {
-    if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-      try {
-        localStorage.removeItem('access-token');
-        localStorage.removeItem('role');
-        localStorage.removeItem('user-data');
-        window.location.href = '/';
-      } catch (error) {
-        console.error('❌ Erreur lors de la déconnexion :', error);
-        window.location.href = '/';
-      }
-    }
-  }
-
-  // 🖱️ GESTION CLICS EXTERNES
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    const menuContainer = target.closest('.relative');
-    
-    if (!menuContainer) {
-      this.menuOuvert = false;
-    }
-  }
-
-  // 🎨 MÉTHODES UTILITAIRES POUR CSS
-  getInputClass(controlName: string): string {
+  // ✅ MÉTHODES UTILITAIRES POUR CSS
+  getInputBorderClass(controlName: string): string {
     const control = this.userForm.get(controlName);
-    const baseClasses = 'input input-bordered w-full pl-10 pr-4 bg-slate-50 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all';
     
     if (control?.invalid && control?.touched) {
-      return `${baseClasses} border-red-300 focus:border-red-500 focus:ring-red-200`;
+      return 'border-red-300 focus:border-red-500 focus:ring-red-200';
     }
     
     if (control?.valid && control?.touched) {
-      return `${baseClasses} border-green-300 focus:border-green-500 focus:ring-green-200`;
+      return 'border-green-300 focus:border-green-500 focus:ring-green-200';
     }
     
-    return baseClasses;
+    return '';
   }
 
-  // 📊 VALIDATION EN TEMPS RÉEL
+  getConfirmationBorderClass(): string {
+    if (!this.confirmationMotDePasse) return '';
+    
+    if (this.confirmationValide) {
+      return 'border-green-300 focus:border-green-500 focus:ring-green-200';
+    } else {
+      return 'border-red-300 focus:border-red-500 focus:ring-red-200';
+    }
+  }
+
+  // ✅ VALIDATION EN TEMPS RÉEL
   get peutSoumettre(): boolean {
     return this.userForm.valid && 
            (!this.confirmationMotDePasse || this.confirmationValide) && 
            !this.isLoading;
   }
+
+  // ✅ MÉTHODES POUR COMPATIBILITÉ (anciennes méthodes supprimées car gérées par le layout unifié)
+  // Le layout unifié gère maintenant :
+  // - ouvrirModalePassword()
+  // - fermerModalePassword()  
+  // - changerMotDePasse()
+  // - logout()
+  // - onClickOutside()
 }

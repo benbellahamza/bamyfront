@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -23,116 +23,168 @@ interface Visiteur {
   templateUrl: './responsable-visiteur.component.html',
   styleUrls: ['./responsable-visiteur.component.css']
 })
-export class ResponsableVisiteurComponent implements OnInit {
+export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
+  
+  // ✅ CONFIGURATION NAVIGATION
+  navigationItems = [
+    {
+      label: 'Dashboard Responsable',
+      route: '/responsable/dashboard',
+      icon: 'dashboard',
+      active: false
+    },
+    {
+      label: 'Liste des visiteurs',
+      route: '/responsable/visiteur',
+      icon: 'users',
+      active: true
+    }
+  ];
 
+  // ✅ DONNÉES PRINCIPALES
   visiteurs: Visiteur[] = [];
   visiteursFiltres: Visiteur[] = [];
   selectedVisiteurs: Visiteur[] = [];
 
+  // ✅ FILTRES ET RECHERCHE
   searchTerm: string = '';
   startDate: string = '';
   endDate: string = '';
   loading: boolean = false;
 
-  erreurExport: boolean = false;
+  // ✅ PAGINATION
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 16;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  // ✅ GESTION DES ERREURS
+  erreurExport: boolean = false;
+
+  // ✅ UTILITAIRES
+  Math = Math;
+
+  // ✅ SUBSCRIPTIONS
+  private subscriptions: any[] = [];
+
+  constructor(
+    private http: HttpClient, 
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.getVisiteurs();
   }
 
-  /**
-   * Gestionnaire pour le changement de mot de passe depuis le layout unifié
-   */
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => {
+      if (sub && typeof sub.unsubscribe === 'function') {
+        sub.unsubscribe();
+      }
+    });
+  }
+
+  // ✅ CALLBACK LAYOUT UNIFIÉ
   onPasswordChanged(): void {
-    console.log('✅ Mot de passe changé avec succès depuis le layout unifié');
-    // Vous pouvez ajouter ici toute logique supplémentaire nécessaire
-    // après un changement de mot de passe réussi
+    console.log('Mot de passe changé');
   }
 
-  get pages(): number[] {
-    const total = Math.ceil(this.visiteursFiltres.length / this.itemsPerPage);
-    return Array.from({ length: total }, (_, i) => i + 1);
-  }
-
-  getVisiteurs() {
+  // ✅ CHARGEMENT DES DONNÉES
+  getVisiteurs(): void {
     this.loading = true;
-    this.http.get<Visiteur[]>('http://localhost:8085/api/visiteurs').subscribe({
+    const subscription = this.http.get<Visiteur[]>('http://localhost:8085/api/visiteurs').subscribe({
       next: (data) => {
-        this.visiteurs = data.sort((a, b) => new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime());
+        this.visiteurs = data.sort((a, b) => 
+          new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime()
+        );
         this.visiteursFiltres = [...this.visiteurs];
         this.loading = false;
       },
       error: (err) => {
-        console.error('Erreur lors du chargement des visiteurs', err);
+        console.error('Erreur chargement visiteurs:', err);
         this.loading = false;
       }
     });
+    this.subscriptions.push(subscription);
   }
 
-  rechercher() {
+  // ✅ RECHERCHE
+  rechercher(): void {
+    this.currentPage = 1;
     const terme = this.searchTerm.toLowerCase().trim();
     
     if (!terme) {
-      this.visiteursFiltres = [...this.visiteurs];
-      this.appliquerFiltresDate();
+      this.appliquerTousFiltres();
       return;
     }
-    
-    // Diviser les termes de recherche pour permettre la recherche par nom ET prénom
-    const termes = terme.split(' ').filter(t => t.length > 0);
-    
-    this.visiteursFiltres = this.visiteurs.filter(visiteur => {
-      const nomComplet = (visiteur.nom + ' ' + visiteur.prenom).toLowerCase();
-      const prenomNom = (visiteur.prenom + ' ' + visiteur.nom).toLowerCase();
-      const cin = visiteur.cin.toLowerCase();
-      
-      // Vérifie si tous les termes de recherche sont présents dans les champs
-      return termes.every(t => 
-        nomComplet.includes(t) || 
-        prenomNom.includes(t) || 
-        cin.includes(t)
-      );
-    });
-    
+
+    this.visiteursFiltres = this.visiteurs.filter(v =>
+      v.nom.toLowerCase().includes(terme) ||
+      v.prenom.toLowerCase().includes(terme) ||
+      v.cin.toLowerCase().includes(terme) ||
+      v.destination.toLowerCase().includes(terme) ||
+      (v.telephone && v.telephone.toLowerCase().includes(terme))
+    );
+
     this.appliquerFiltresDate();
   }
 
-  filtrerParDate() {
-    if (this.startDate || this.endDate) {
-      this.visiteursFiltres = [...this.visiteurs];
-      this.appliquerFiltresDate();
-      if (this.searchTerm) {
-        this.rechercher();
-      }
-    } else if (this.searchTerm) {
-      this.rechercher();
-    } else {
-      this.visiteursFiltres = [...this.visiteurs];
-    }
+  // ✅ FILTRAGE PAR DATE
+  filtrerParDate(): void {
     this.currentPage = 1;
+    this.appliquerFiltresDate();
   }
 
-  appliquerFiltresDate() {
-    if (!this.startDate && !this.endDate) return;
-
-    let start = this.startDate ? new Date(this.startDate) : new Date(0);
-    let end = this.endDate ? new Date(this.endDate) : new Date();
-
-    if (this.endDate) {
-      end.setHours(23, 59, 59, 999);
+  private appliquerFiltresDate(): void {
+    if (!this.startDate || !this.endDate) {
+      if (this.searchTerm) {
+        this.rechercher();
+      } else {
+        this.visiteursFiltres = [...this.visiteurs];
+      }
+      return;
     }
 
-    this.visiteursFiltres = this.visiteursFiltres.filter(v => {
+    const start = new Date(this.startDate);
+    const end = new Date(this.endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const listeBase = this.searchTerm ? this.visiteursFiltres : this.visiteurs;
+    
+    this.visiteursFiltres = listeBase.filter(v => {
       const dateEntree = new Date(v.dateEntree);
       return dateEntree >= start && dateEntree <= end;
     });
   }
 
-  toggleSelection(visiteur: Visiteur) {
+  private appliquerTousFiltres(): void {
+    let resultat = [...this.visiteurs];
+
+    if (this.searchTerm) {
+      const terme = this.searchTerm.toLowerCase().trim();
+      resultat = resultat.filter(v =>
+        v.nom.toLowerCase().includes(terme) ||
+        v.prenom.toLowerCase().includes(terme) ||
+        v.cin.toLowerCase().includes(terme) ||
+        v.destination.toLowerCase().includes(terme) ||
+        (v.telephone && v.telephone.toLowerCase().includes(terme))
+      );
+    }
+
+    if (this.startDate && this.endDate) {
+      const start = new Date(this.startDate);
+      const end = new Date(this.endDate);
+      end.setHours(23, 59, 59, 999);
+
+      resultat = resultat.filter(v => {
+        const dateEntree = new Date(v.dateEntree);
+        return dateEntree >= start && dateEntree <= end;
+      });
+    }
+
+    this.visiteursFiltres = resultat;
+  }
+
+  // ✅ GESTION SÉLECTION
+  toggleSelection(visiteur: Visiteur): void {
     if (this.isSelected(visiteur)) {
       this.selectedVisiteurs = this.selectedVisiteurs.filter(v => v.id !== visiteur.id);
     } else {
@@ -144,47 +196,114 @@ export class ResponsableVisiteurComponent implements OnInit {
     return this.selectedVisiteurs.some(v => v.id === visiteur.id);
   }
 
-  exporterExcel(exportAll: boolean) {
+  selectionnerTous(): void {
+    this.selectedVisiteurs = [...this.visiteursFiltres];
+  }
+
+  deselectionnerTous(): void {
+    this.selectedVisiteurs = [];
+  }
+
+  // ✅ STATISTIQUES
+  getVisiteursSortis(): number {
+    return this.visiteurs.filter(v => v.dateSortie).length;
+  }
+
+  getVisiteursPresents(): number {
+    return this.visiteurs.filter(v => !v.dateSortie).length;
+  }
+
+  // ✅ EXPORT EXCEL
+  exporterExcel(exportAll: boolean): void {
     this.erreurExport = false;
     const dataToExport = exportAll ? this.visiteursFiltres : this.selectedVisiteurs;
 
-    if (!exportAll && dataToExport.length === 0) {
+    if (dataToExport.length === 0) {
       this.erreurExport = true;
-      setTimeout(() => this.erreurExport = false, 3000);
+      setTimeout(() => {
+        this.erreurExport = false;
+      }, 5000);
       return;
     }
 
     const formattedData = dataToExport.map(v => ({
-      Nom: v.nom,
-      Prénom: v.prenom,
-      CIN: v.cin,
-      Genre: v.genre,
-      Téléphone: v.telephone || 'Non renseigné',
-      Destination: v.destination,
-      "Type Visiteur": v.typeVisiteur || 'Particulier',
-      "Date Entrée": v.dateEntree ? new Date(v.dateEntree).toLocaleString() : '',
-      "Date Sortie": v.dateSortie ? new Date(v.dateSortie).toLocaleString() : 'Non sorti'
+      'Nom': v.nom,
+      'Prénom': v.prenom,
+      'CIN': v.cin,
+      'Genre': v.genre,
+      'Téléphone': v.telephone || 'N/A',
+      'Destination': v.destination,
+      'Type Visiteur': v.typeVisiteur || 'Particulier',
+      'Date Entrée': v.dateEntree ? new Date(v.dateEntree).toLocaleString('fr-FR') : '',
+      'Date Sortie': v.dateSortie ? new Date(v.dateSortie).toLocaleString('fr-FR') : 'Non sorti',
+      'Statut': v.dateSortie ? 'Sorti' : 'Présent'
     }));
 
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
-    const workbook = { Sheets: { 'Visiteurs': worksheet }, SheetNames: ['Visiteurs'] };
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    try {
+      const worksheet = XLSX.utils.json_to_sheet(formattedData);
+      
+      const columnWidths = [
+        { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 10 }, { wch: 15 },
+        { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 10 }
+      ];
+      worksheet['!cols'] = columnWidths;
 
-    const fileName = exportAll
-      ? `visiteurs_complet_${new Date().toISOString().slice(0, 10)}.xlsx`
-      : `visiteurs_selection_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const workbook = { 
+        Sheets: { 'Visiteurs': worksheet }, 
+        SheetNames: ['Visiteurs'] 
+      };
+      
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+      
+      const fileName = `visiteurs_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      saveAs(blob, fileName);
 
-    saveAs(blob, fileName);
+    } catch (error) {
+      console.error('Erreur export:', error);
+      this.erreurExport = true;
+      setTimeout(() => {
+        this.erreurExport = false;
+      }, 5000);
+    }
   }
 
-  resetFiltres() {
+  // ✅ RÉINITIALISATION
+  resetFiltres(): void {
     this.searchTerm = '';
     this.startDate = '';
     this.endDate = '';
     this.selectedVisiteurs = [];
     this.visiteursFiltres = [...this.visiteurs];
     this.currentPage = 1;
+    this.erreurExport = false;
+  }
+
+  // ✅ PAGINATION
+  get pages(): number[] {
+    const total = Math.ceil(this.visiteursFiltres.length / this.itemsPerPage);
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  getVisiblePages(): number[] {
+    const totalPages = this.pages.length;
+    const current = this.currentPage;
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      return this.pages;
+    }
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
   get visiteursPage(): Visiteur[] {
@@ -192,24 +311,58 @@ export class ResponsableVisiteurComponent implements OnInit {
     return this.visiteursFiltres.slice(start, start + this.itemsPerPage);
   }
 
-  setPage(page: number) {
-    if (page < 1 || page > this.pages.length) return;
-    this.currentPage = page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  setPage(page: number): void {
+    if (page >= 1 && page <= this.pages.length) {
+      this.currentPage = page;
+    }
   }
 
-  // Méthodes pour obtenir les statistiques
-  getVisiteursSortis(): number {
-    if (!this.visiteurs) return 0;
-    return this.visiteurs.filter(v => !!v.dateSortie).length;
+  // ✅ FILTRES PRÉDÉFINIS
+  filtrerParPeriodePredefinie(periode: 'aujourdhui' | 'hier' | 'semaine' | 'mois'): void {
+    const maintenant = new Date();
+    let debut: Date;
+    let fin: Date = new Date(maintenant);
+
+    switch (periode) {
+      case 'aujourdhui':
+        debut = new Date(maintenant);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'hier':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 1);
+        debut.setHours(0, 0, 0, 0);
+        fin = new Date(debut);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'semaine':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 7);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'mois':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 30);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      default:
+        return;
+    }
+
+    this.startDate = debut.toISOString().split('T')[0];
+    this.endDate = fin.toISOString().split('T')[0];
+    this.filtrerParDate();
   }
 
-  getVisiteursPresents(): number {
-    if (!this.visiteurs) return 0;
-    return this.visiteurs.filter(v => !v.dateSortie).length;
+  // ✅ OPTIMISATION PERFORMANCE
+  trackByVisiteurId(index: number, visiteur: Visiteur): number {
+    return visiteur.id;
   }
 
-  // Format de date personnalisé pour éviter les erreurs avec le pipe date
+  // ✅ FORMAT DE DATE PERSONNALISÉ
   formatDate(dateString: string | undefined, format: string = 'dd/MM/yyyy HH:mm'): string {
     if (!dateString) return 'Non disponible';
     

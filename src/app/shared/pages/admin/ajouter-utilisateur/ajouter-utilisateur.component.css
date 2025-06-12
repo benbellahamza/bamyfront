@@ -1,0 +1,468 @@
+/* ✅ STYLES SPÉCIFIQUES À LA PAGE AJOUTER UTILISATEUR */
+
+/* Reset et base */
+* {
+  box-sizing: border-box;
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+.main-container {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== NAVIGATION ===== */
+.nav-item {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  transform: translateX(2px);
+}
+
+/* ===== FORMULAIRE ===== */
+.form-container {
+  max-width: 4rem;
+  margin: 0 auto;
+}
+
+/* Inputs avec effet glassmorphism */
+.form-input {
+  backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== SECTIONS DU FORMULAIRE ===== */
+.form-section {
+  transition: all 0.3s ease;
+}
+
+.form-section:hover {
+  transform: translateY(-1px);
+}
+
+.section-header {
+  position: relative;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+}
+
+/* ===== BOUTONS ===== */
+.btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn:disabled::before {
+  display: none;
+}
+
+/* Bouton principal avec dégradé animé */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #7c3aed 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.btn-primary:hover {
+  background-size: 200% 200%;
+  animation-duration: 1s;
+}
+
+/* ===== ICÔNES DANS LES INPUTS ===== */
+.input-icon {
+  transition: all 0.3s ease;
+}
+
+.input-icon-container:hover .input-icon {
+  transform: scale(1.1);
+}
+
+/* ===== INDICATEURS DE VALIDATION ===== */
+.validation-icon {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(10px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* ===== MESSAGES DE VALIDATION ===== */
+.validation-message {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progressShine 2s infinite;
+}
+
+@keyframes progressShine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ===== SELECT PERSONNALISÉ ===== */
+select {
+  background-image: none;
+}
+
+select:focus {
+  outline: none;
+}
+
+/* ===== DESCRIPTIONS DES RÔLES ===== */
+.role-description {
+  animation: fadeInUp 0.4s ease-out;
+  backdrop-filter: blur(8px);
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== MESSAGES DE RETOUR ===== */
+.success-message,
+.error-message {
+  animation: messageSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(12px);
+}
+
+@keyframes messageSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.success-message {
+  border-left: 4px solid #22c55e;
+}
+
+.error-message {
+  border-left: 4px solid #ef4444;
+}
+
+/* ===== LOADING STATES ===== */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  /* Masquer la sidebar sur mobile */
+  .fixed.inset-y-0.left-0 {
+    transform: translateX(-100%);
+  }
+  
+  /* Ajuster le contenu principal */
+  .ml-64 {
+    margin-left: 0 !important;
+  }
+  
+  /* Formulaire responsive */
+  .form-container {
+    max-width: 100%;
+    padding: 1rem;
+  }
+  
+  /* Grid responsive */
+  .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Boutons responsive */
+  .flex-row {
+    flex-direction: column !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Padding réduit sur très petits écrans */
+  .p-8 {
+    padding: 1.5rem !important;
+  }
+  
+  .p-6 {
+    padding: 1rem !important;
+  }
+  
+  /* Text responsive */
+  .text-lg {
+    font-size: 1rem !important;
+  }
+  
+  .text-3xl {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* ===== HOVER EFFECTS AVANCÉS ===== */
+.input-container {
+  position: relative;
+}
+
+.input-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  padding: 2px;
+  background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.input-container:focus-within::before {
+  opacity: 1;
+}
+
+/* ===== GLASSMORPHISM EFFECTS ===== */
+.backdrop-blur-custom {
+  backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* ===== SCROLLBAR PERSONNALISÉE ===== */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #cbd5e1, #94a3b8);
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #94a3b8, #64748b);
+}
+
+/* ===== ANIMATIONS DE CHARGEMENT ===== */
+.form-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.form-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ===== FOCUS STATES AMÉLIORÉS ===== */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  transform: translateY(-1px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.1),
+    0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* ===== TRANSITIONS FLUIDES ===== */
+* {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ===== ACCESSIBILITÉ ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible pour l'accessibilité */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* ===== ÉTATS D'ERREUR PERSONNALISÉS ===== */
+.input-error {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ===== BOUTONS AVEC EFFETS DE PULSATION ===== */
+.btn-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .fixed,
+  .absolute,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    position: static !important;
+    box-shadow: none !important;
+  }
+  
+  .ml-64 {
+    margin-left: 0 !important;
+  }
+  
+  .btn {
+    border: 1px solid #000 !important;
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* ===== STYLES POUR DARK MODE (optionnel) ===== */
+@media (prefers-color-scheme: dark) {
+  .bg-white {
+    background-color: #1e293b !important;
+  }
+  
+  .text-slate-800 {
+    color: #f1f5f9 !important;
+  }
+  
+  .border-slate-200 {
+    border-color: #334155 !important;
+  }
+  
+  .bg-slate-50 {
+    background-color: #0f172a !important;
+  }
+}
