@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -23,8 +23,9 @@ interface Visiteur {
   templateUrl: './admin-visiteur.component.html',
   styleUrls: ['./admin-visiteur.component.css']
 })
-export class AdminVisiteurComponent implements OnInit {
-  // ✅ CONFIGURATION POUR LE LAYOUT UNIFIÉ
+export class AdminVisiteurComponent implements OnInit, OnDestroy {
+  
+  // ✅ CONFIGURATION NAVIGATION
   navigationItems = [
     {
       label: 'Tableau de bord',
@@ -42,7 +43,7 @@ export class AdminVisiteurComponent implements OnInit {
       label: 'Gestion des visiteurs',
       route: '/admin/visiteur',
       icon: 'users',
-      active: true  // Page actuelle
+      active: true
     },
     {
       label: 'Gestion des livraisons',
@@ -52,61 +53,74 @@ export class AdminVisiteurComponent implements OnInit {
     }
   ];
 
-  // 📊 DONNÉES PRINCIPALES
+  // ✅ DONNÉES PRINCIPALES
   visiteurs: Visiteur[] = [];
   visiteursFiltres: Visiteur[] = [];
   selectedVisiteurs: Visiteur[] = [];
 
-  // 🔍 FILTRES ET RECHERCHE
+  // ✅ FILTRES ET RECHERCHE
   searchTerm: string = '';
   startDate: string = '';
   endDate: string = '';
   loading: boolean = false;
 
-  // 🔢 PAGINATION
+  // ✅ PAGINATION
   currentPage: number = 1;
-  itemsPerPage: number = 12; // Augmenté pour la nouvelle grille
+  itemsPerPage: number = 16;
 
-  // ⚠️ GESTION DES ERREURS
+  // ✅ GESTION DES ERREURS
   erreurExport: boolean = false;
 
-  // 🛠️ UTILITAIRES
-  Math = Math; // Référence Math pour l'utilisation dans le template
+  // ✅ UTILITAIRES
+  Math = Math;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  // ✅ SUBSCRIPTIONS
+  private subscriptions: any[] = [];
+
+  constructor(
+    private http: HttpClient, 
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.getVisiteurs();
   }
 
-  /**
-   * ✅ Callback pour le changement de mot de passe du layout unifié
-   */
-  onPasswordChanged(): void {
-    console.log('✅ Mot de passe utilisateur changé depuis le layout unifié');
-    // Ici vous pouvez ajouter une logique spécifique si nécessaire
-    // Par exemple, recharger certaines données ou afficher une notification
-  }
-
-  // 📊 CHARGEMENT DES DONNÉES
-  getVisiteurs() {
-    this.loading = true;
-    this.http.get<Visiteur[]>('http://localhost:8085/api/visiteurs').subscribe({
-      next: (data) => {
-        this.visiteurs = data.sort((a, b) => new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime());
-        this.visiteursFiltres = [...this.visiteurs];
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des visiteurs:', err);
-        this.loading = false;
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => {
+      if (sub && typeof sub.unsubscribe === 'function') {
+        sub.unsubscribe();
       }
     });
   }
 
-  // 🔍 RECHERCHE ET FILTRAGE
-  rechercher() {
-    this.currentPage = 1; // Réinitialiser à la première page lors de la recherche
+  // ✅ CALLBACK LAYOUT UNIFIÉ
+  onPasswordChanged(): void {
+    console.log('Mot de passe changé');
+  }
+
+  // ✅ CHARGEMENT DES DONNÉES
+  getVisiteurs(): void {
+    this.loading = true;
+    const subscription = this.http.get<Visiteur[]>('http://localhost:8085/api/visiteurs').subscribe({
+      next: (data) => {
+        this.visiteurs = data.sort((a, b) => 
+          new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime()
+        );
+        this.visiteursFiltres = [...this.visiteurs];
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement visiteurs:', err);
+        this.loading = false;
+      }
+    });
+    this.subscriptions.push(subscription);
+  }
+
+  // ✅ RECHERCHE
+  rechercher(): void {
+    this.currentPage = 1;
     const terme = this.searchTerm.toLowerCase().trim();
     
     if (!terme) {
@@ -122,18 +136,17 @@ export class AdminVisiteurComponent implements OnInit {
       (v.telephone && v.telephone.toLowerCase().includes(terme))
     );
 
-    // Appliquer aussi les filtres de date si ils existent
     this.appliquerFiltresDate();
   }
 
-  filtrerParDate() {
-    this.currentPage = 1; // Réinitialiser à la première page lors du filtrage
+  // ✅ FILTRAGE PAR DATE
+  filtrerParDate(): void {
+    this.currentPage = 1;
     this.appliquerFiltresDate();
   }
 
-  private appliquerFiltresDate() {
+  private appliquerFiltresDate(): void {
     if (!this.startDate || !this.endDate) {
-      // Si pas de dates, appliquer seulement le filtre de recherche
       if (this.searchTerm) {
         this.rechercher();
       } else {
@@ -144,9 +157,8 @@ export class AdminVisiteurComponent implements OnInit {
 
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
-    end.setHours(23, 59, 59, 999); // Inclure toute la journée de fin
+    end.setHours(23, 59, 59, 999);
 
-    // Partir de la liste filtrée par recherche ou de tous les visiteurs
     const listeBase = this.searchTerm ? this.visiteursFiltres : this.visiteurs;
     
     this.visiteursFiltres = listeBase.filter(v => {
@@ -155,10 +167,9 @@ export class AdminVisiteurComponent implements OnInit {
     });
   }
 
-  private appliquerTousFiltres() {
+  private appliquerTousFiltres(): void {
     let resultat = [...this.visiteurs];
 
-    // Appliquer le filtre de recherche
     if (this.searchTerm) {
       const terme = this.searchTerm.toLowerCase().trim();
       resultat = resultat.filter(v =>
@@ -170,7 +181,6 @@ export class AdminVisiteurComponent implements OnInit {
       );
     }
 
-    // Appliquer le filtre de date
     if (this.startDate && this.endDate) {
       const start = new Date(this.startDate);
       const end = new Date(this.endDate);
@@ -185,8 +195,8 @@ export class AdminVisiteurComponent implements OnInit {
     this.visiteursFiltres = resultat;
   }
 
-  // ✅ GESTION DE LA SÉLECTION
-  toggleSelection(visiteur: Visiteur) {
+  // ✅ GESTION SÉLECTION
+  toggleSelection(visiteur: Visiteur): void {
     if (this.isSelected(visiteur)) {
       this.selectedVisiteurs = this.selectedVisiteurs.filter(v => v.id !== visiteur.id);
     } else {
@@ -198,15 +208,15 @@ export class AdminVisiteurComponent implements OnInit {
     return this.selectedVisiteurs.some(v => v.id === visiteur.id);
   }
 
-  selectionnerTous() {
+  selectionnerTous(): void {
     this.selectedVisiteurs = [...this.visiteursFiltres];
   }
 
-  deselectionnerTous() {
+  deselectionnerTous(): void {
     this.selectedVisiteurs = [];
   }
 
-  // 📊 STATISTIQUES POUR LE DASHBOARD
+  // ✅ STATISTIQUES
   getVisiteursSortis(): number {
     return this.visiteurs.filter(v => v.dateSortie).length;
   }
@@ -215,28 +225,13 @@ export class AdminVisiteurComponent implements OnInit {
     return this.visiteurs.filter(v => !v.dateSortie).length;
   }
 
-  getTotalVisiteurs(): number {
-    return this.visiteurs.length;
-  }
-
-  getPourcentageSortis(): number {
-    if (this.visiteurs.length === 0) return 0;
-    return Math.round((this.getVisiteursSortis() / this.visiteurs.length) * 100);
-  }
-
-  getPourcentagePresents(): number {
-    if (this.visiteurs.length === 0) return 0;
-    return Math.round((this.getVisiteursPresents() / this.visiteurs.length) * 100);
-  }
-
-  // 📤 EXPORT EXCEL
-  exporterExcel(exportAll: boolean) {
+  // ✅ EXPORT EXCEL
+  exporterExcel(exportAll: boolean): void {
     this.erreurExport = false;
     const dataToExport = exportAll ? this.visiteursFiltres : this.selectedVisiteurs;
 
     if (dataToExport.length === 0) {
       this.erreurExport = true;
-      // Masquer automatiquement l'erreur après 5 secondes
       setTimeout(() => {
         this.erreurExport = false;
       }, 5000);
@@ -253,26 +248,15 @@ export class AdminVisiteurComponent implements OnInit {
       'Type Visiteur': v.typeVisiteur || 'Particulier',
       'Date Entrée': v.dateEntree ? new Date(v.dateEntree).toLocaleString('fr-FR') : '',
       'Date Sortie': v.dateSortie ? new Date(v.dateSortie).toLocaleString('fr-FR') : 'Non sorti',
-      'Statut': v.dateSortie ? 'Sorti' : 'Présent',
-      'Durée de visite': v.dateSortie ? this.calculerDureeVisite(v.dateEntree, v.dateSortie) : 'En cours'
+      'Statut': v.dateSortie ? 'Sorti' : 'Présent'
     }));
 
     try {
       const worksheet = XLSX.utils.json_to_sheet(formattedData);
       
-      // Personnaliser la largeur des colonnes
       const columnWidths = [
-        { wch: 15 }, // Nom
-        { wch: 15 }, // Prénom
-        { wch: 12 }, // CIN
-        { wch: 10 }, // Genre
-        { wch: 15 }, // Téléphone
-        { wch: 20 }, // Destination
-        { wch: 15 }, // Type Visiteur
-        { wch: 20 }, // Date Entrée
-        { wch: 20 }, // Date Sortie
-        { wch: 10 }, // Statut
-        { wch: 15 }  // Durée de visite
+        { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 10 }, { wch: 15 },
+        { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 10 }
       ];
       worksheet['!cols'] = columnWidths;
 
@@ -282,16 +266,15 @@ export class AdminVisiteurComponent implements OnInit {
       };
       
       const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const blob = new Blob([excelBuffer], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
       
       const fileName = `visiteurs_export_${new Date().toISOString().split('T')[0]}.xlsx`;
       saveAs(blob, fileName);
 
-      // Afficher un message de succès (optionnel)
-      console.log(`Export réussi: ${dataToExport.length} visiteur(s) exporté(s)`);
-      
     } catch (error) {
-      console.error('Erreur lors de l\'export:', error);
+      console.error('Erreur export:', error);
       this.erreurExport = true;
       setTimeout(() => {
         this.erreurExport = false;
@@ -299,23 +282,8 @@ export class AdminVisiteurComponent implements OnInit {
     }
   }
 
-  private calculerDureeVisite(dateEntree: string, dateSortie: string): string {
-    const entree = new Date(dateEntree);
-    const sortie = new Date(dateSortie);
-    const diffMs = sortie.getTime() - entree.getTime();
-    
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (diffHours > 0) {
-      return `${diffHours}h ${diffMinutes}min`;
-    } else {
-      return `${diffMinutes}min`;
-    }
-  }
-
-  // 🔄 RÉINITIALISATION
-  resetFiltres() {
+  // ✅ RÉINITIALISATION
+  resetFiltres(): void {
     this.searchTerm = '';
     this.startDate = '';
     this.endDate = '';
@@ -325,7 +293,7 @@ export class AdminVisiteurComponent implements OnInit {
     this.erreurExport = false;
   }
 
-  // 📄 GESTION DE LA PAGINATION
+  // ✅ PAGINATION
   get pages(): number[] {
     const total = Math.ceil(this.visiteursFiltres.length / this.itemsPerPage);
     return Array.from({ length: total }, (_, i) => i + 1);
@@ -355,147 +323,20 @@ export class AdminVisiteurComponent implements OnInit {
     return this.visiteursFiltres.slice(start, start + this.itemsPerPage);
   }
 
-  setPage(page: number) {
+  setPage(page: number): void {
     if (page >= 1 && page <= this.pages.length) {
       this.currentPage = page;
-      // Scroll vers le haut lors du changement de page
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
-  // 🔄 ACTUALISATION DES DONNÉES
-  actualiserDonnees() {
-    this.loading = true;
-    this.getVisiteurs();
-  }
-
-  // 🛠️ MÉTHODES UTILITAIRES
-  formaterDate(date: string): string {
-    return new Date(date).toLocaleString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  // ✅ MÉTHODES SUPPLÉMENTAIRES POUR L'INTERFACE
-  
-  /**
-   * Obtient le nom complet de l'utilisateur (pour compatibilité)
-   */
-  get nomComplet(): string {
-    // Cette méthode peut être supprimée car l'utilisateur est géré par le layout unifié
-    return 'Utilisateur Admin';
-  }
-
-  /**
-   * Calcule les statistiques rapides pour l'affichage
-   */
-  obtenirStatistiquesRapides() {
-    return {
-      total: this.visiteurs.length,
-      sortis: this.getVisiteursSortis(),
-      presents: this.getVisiteursPresents(),
-      selectionnes: this.selectedVisiteurs.length,
-      pourcentageSortis: this.getPourcentageSortis(),
-      pourcentagePresents: this.getPourcentagePresents()
-    };
-  }
-
-  /**
-   * Filtre les visiteurs par statut
-   */
-  filtrerParStatut(statut: 'tous' | 'presents' | 'sortis') {
-    this.currentPage = 1;
-    
-    switch (statut) {
-      case 'presents':
-        this.visiteursFiltres = this.visiteurs.filter(v => !v.dateSortie);
-        break;
-      case 'sortis':
-        this.visiteursFiltres = this.visiteurs.filter(v => v.dateSortie);
-        break;
-      default:
-        this.visiteursFiltres = [...this.visiteurs];
-        break;
-    }
-    
-    // Appliquer les autres filtres si nécessaire
-    if (this.searchTerm) {
-      this.rechercher();
-    }
-    if (this.startDate && this.endDate) {
-      this.appliquerFiltresDate();
-    }
-  }
-
-  /**
-   * Obtient la classe CSS pour le badge de statut
-   */
-  getBadgeStatutClass(visiteur: Visiteur): string {
-    return visiteur.dateSortie ? 
-      'bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1' : 
-      'bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1';
-  }
-
-  /**
-   * Obtient le texte du statut
-   */
-  getStatutTexte(visiteur: Visiteur): string {
-    return visiteur.dateSortie ? 'Sorti' : 'Présent';
-  }
-
-  /**
-   * Vérifie si un visiteur est présent depuis longtemps
-   */
-  estPresentDepuisLongtemps(visiteur: Visiteur): boolean {
-    if (visiteur.dateSortie) return false;
-    
-    const maintenant = new Date();
-    const entree = new Date(visiteur.dateEntree);
-    const diffHeures = (maintenant.getTime() - entree.getTime()) / (1000 * 60 * 60);
-    
-    return diffHeures > 8; // Plus de 8 heures
-  }
-
-  /**
-   * Calcule la durée de présence pour un visiteur encore présent
-   */
-  calculerDureePresence(dateEntree: string): string {
-    const entree = new Date(dateEntree);
-    const maintenant = new Date();
-    const diffMs = maintenant.getTime() - entree.getTime();
-    
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (diffHours > 0) {
-      return `${diffHours}h ${diffMinutes}min`;
-    } else {
-      return `${diffMinutes}min`;
-    }
-  }
-
-  /**
-   * Exporte les statistiques en PDF (fonctionnalité future)
-   */
-  exporterStatistiquesPDF() {
-    console.log('🔄 Export PDF des statistiques (à implémenter)');
-    // Implémentation future pour l'export PDF
-  }
-
-  /**
-   * Recherche avancée par période prédéfinie
-   */
-  filtrerParPeriodePredéfinie(periode: 'aujourd\'hui' | 'hier' | 'semaine' | 'mois') {
+  // ✅ FILTRES PRÉDÉFINIS
+  filtrerParPeriodePredefinie(periode: 'aujourdhui' | 'hier' | 'semaine' | 'mois'): void {
     const maintenant = new Date();
     let debut: Date;
     let fin: Date = new Date(maintenant);
 
     switch (periode) {
-      case 'aujourd\'hui':
+      case 'aujourdhui':
         debut = new Date(maintenant);
         debut.setHours(0, 0, 0, 0);
         fin.setHours(23, 59, 59, 999);
@@ -528,58 +369,8 @@ export class AdminVisiteurComponent implements OnInit {
     this.filtrerParDate();
   }
 
-  /**
-   * Valide les données d'un visiteur
-   */
-  private validerVisiteur(visiteur: Visiteur): boolean {
-    return !!(visiteur.nom && visiteur.prenom && visiteur.cin && visiteur.destination);
-  }
-
-  /**
-   * Nettoie les données avant l'export
-   */
-  private nettoyerDonneesExport(visiteurs: Visiteur[]): Visiteur[] {
-    return visiteurs.filter(v => this.validerVisiteur(v));
-  }
-
-  /**
-   * Obtient les visiteurs avec des problèmes potentiels
-   */
-  getVisiteursAvecProblemes(): Visiteur[] {
-    return this.visiteurs.filter(v => 
-      !this.validerVisiteur(v) || this.estPresentDepuisLongtemps(v)
-    );
-  }
-
-  /**
-   * Recherche par type de visiteur
-   */
-  filtrerParType(type: string) {
-    this.currentPage = 1;
-    
-    if (!type || type === 'tous') {
-      this.appliquerTousFiltres();
-      return;
-    }
-
-    this.visiteursFiltres = this.visiteurs.filter(v => 
-      (v.typeVisiteur || 'Particulier').toLowerCase() === type.toLowerCase()
-    );
-  }
-
-  /**
-   * Obtient les types de visiteurs uniques
-   */
-  getTypesVisiteurs(): string[] {
-    const types = this.visiteurs.map(v => v.typeVisiteur || 'Particulier');
-    return [...new Set(types)].sort();
-  }
-
-  /**
-   * Méthode de nettoyage lors de la destruction du composant
-   */
-  ngOnDestroy(): void {
-    // Nettoyer les subscriptions si nécessaire
-    console.log('🧹 Nettoyage du composant admin visiteur');
+  // ✅ OPTIMISATION PERFORMANCE
+  trackByVisiteurId(index: number, visiteur: Visiteur): number {
+    return visiteur.id;
   }
 }
