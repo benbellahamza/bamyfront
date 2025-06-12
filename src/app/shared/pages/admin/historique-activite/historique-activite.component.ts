@@ -82,6 +82,15 @@ export class HistoriqueActiviteComponent implements OnInit {
   // 📅 PROPRIÉTÉ POUR L'ANNÉE ACTUELLE
   currentYear = new Date().getFullYear();
 
+  // 👥 BASE DE DONNÉES SIMULÉE DES AGENTS (vous devrez adapter selon votre vraie base)
+  private agents = [
+    { nom: 'Dupont', prenom: 'Jean', email: 'jean.dupont@bamytrucks.com', role: 'Administrateur' },
+    { nom: 'Martin', prenom: 'Marie', email: 'marie.martin@bamytrucks.com', role: 'Agent sécurité' },
+    { nom: 'Bernard', prenom: 'Pierre', email: 'pierre.bernard@bamytrucks.com', role: 'Superviseur' },
+    { nom: 'Durand', prenom: 'Sophie', email: 'sophie.durand@bamytrucks.com', role: 'Agent accueil' },
+    { nom: 'Moreau', prenom: 'Paul', email: 'paul.moreau@bamytrucks.com', role: 'Agent sécurité' }
+  ];
+
   constructor(
     private historiqueService: HistoriqueService,
     private adminService: AdminService
@@ -117,6 +126,81 @@ export class HistoriqueActiviteComponent implements OnInit {
     });
   }
 
+  // 👤 GESTION DES INFORMATIONS AGENT AMÉLIORÉE
+  getAgentFullName(agentString: string): string {
+    if (!agentString) return 'Agent inconnu';
+    
+    // Si c'est déjà un nom complet, on le retourne
+    if (agentString.includes(' ')) {
+      return agentString;
+    }
+    
+    // Sinon, on cherche dans notre base de données simulée
+    const agent = this.agents.find(a => 
+      a.nom.toLowerCase() === agentString.toLowerCase() ||
+      a.prenom.toLowerCase() === agentString.toLowerCase() ||
+      a.email.toLowerCase().includes(agentString.toLowerCase())
+    );
+    
+    return agent ? `${agent.prenom} ${agent.nom}` : agentString;
+  }
+
+  getAgentInitials(agentString: string): string {
+    const fullName = this.getAgentFullName(agentString);
+    
+    if (!fullName || fullName === 'Agent inconnu') return '?';
+    
+    const parts = fullName.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    }
+    return fullName.charAt(0).toUpperCase();
+  }
+
+  getAgentRole(agentString: string): string {
+    if (!agentString) return 'Rôle inconnu';
+    
+    const agent = this.agents.find(a => 
+      a.nom.toLowerCase() === agentString.toLowerCase() ||
+      a.prenom.toLowerCase() === agentString.toLowerCase() ||
+      a.email.toLowerCase().includes(agentString.toLowerCase())
+    );
+    
+    return agent ? agent.role : 'Agent';
+  }
+
+  // ✨ NETTOYAGE DU TEXTE D'ACTION
+  getCleanActionText(actionText: string): string {
+    if (!actionText) return 'Action non définie';
+    
+    // Supprimer les préfixes de type d'action
+    let cleanText = actionText;
+    
+    // Supprimer "Validation Sortie : ", "Ajout Visiteur : ", etc.
+    const prefixes = [
+      'Validation Sortie :',
+      'Validation Sortie:',
+      'Ajout Visiteur :',
+      'Ajout Visiteur:',
+      'Modification Visiteur :',
+      'Modification Visiteur:',
+      'Modification :',
+      'Modification:'
+    ];
+    
+    for (const prefix of prefixes) {
+      if (cleanText.startsWith(prefix)) {
+        cleanText = cleanText.substring(prefix.length).trim();
+        break;
+      }
+    }
+    
+    // Nettoyer les doubles espaces et trim
+    cleanText = cleanText.replace(/\s+/g, ' ').trim();
+    
+    return cleanText || 'Action non définie';
+  }
+
   // 🏷️ GESTION DES CATÉGORIES
   getCategorieAction(action: HistoriqueAction): string {
     if (!action?.action) return 'Autre';
@@ -146,11 +230,15 @@ export class HistoriqueActiviteComponent implements OnInit {
 
   historiqueFiltre(): HistoriqueAction[] {
     let resultats = this.historique.filter(action => {
-      // Filtre par texte
+      // Filtre par texte - recherche dans nom/prénom et action nettoyée
       const texte = this.filtreTexte.toLowerCase().trim();
+      const fullName = this.getAgentFullName(action.agent).toLowerCase();
+      const cleanAction = this.getCleanActionText(action.action).toLowerCase();
+      
       const matchTexte = !texte || 
+        fullName.includes(texte) ||
         action.agent?.toLowerCase().includes(texte) ||
-        action.action?.toLowerCase().includes(texte) ||
+        cleanAction.includes(texte) ||
         this.getCategorieAction(action).toLowerCase().includes(texte);
 
       // Filtre par type d'action
@@ -214,6 +302,10 @@ export class HistoriqueActiviteComponent implements OnInit {
         case 'categorie':
           valA = this.getCategorieAction(a).toLowerCase();
           valB = this.getCategorieAction(b).toLowerCase();
+          break;
+        case 'agent':
+          valA = this.getAgentFullName(a.agent).toLowerCase();
+          valB = this.getAgentFullName(b.agent).toLowerCase();
           break;
         default:
           valA = (a[this.colonneTri as keyof HistoriqueAction] || '').toString().toLowerCase();
@@ -309,22 +401,6 @@ export class HistoriqueActiviteComponent implements OnInit {
     return Math.round((this.historiqueFiltre().length / this.historique.length) * 100);
   }
 
-  evolutionCreations(): number {
-    // Logique pour calculer l'évolution (à adapter selon vos besoins)
-    return 12;
-  }
-
-  getCreationTrend(): string {
-    const evolution = this.evolutionCreations();
-    if (evolution > 0) return `↗️ +${evolution}% vs période précédente`;
-    if (evolution < 0) return `↘️ ${evolution}% vs période précédente`;
-    return '➡️ Stable vs période précédente';
-  }
-
-  getModificationTrend(): string {
-    return '📊 Stable par rapport à la dernière période';
-  }
-
   // 📤 EXPORT EXCEL AMÉLIORÉ
   exporterExcelTout(): void {
     if (this.historique.length === 0) {
@@ -359,9 +435,10 @@ export class HistoriqueActiviteComponent implements OnInit {
     try {
       const dataToExport = data.map((item, index) => ({
         'N°': index + 1,
-        'Agent': item.agent || 'N/A',
+        'Agent': this.getAgentFullName(item.agent),
+        'Rôle': this.getAgentRole(item.agent),
         'Type d\'action': this.getCategorieAction(item),
-        'Description': item.action || 'N/A',
+        'Description': this.getCleanActionText(item.action),
         'Date': item.dateAction ? new Date(item.dateAction).toLocaleString('fr-FR') : 'N/A',
         'ID': item.id
       }));
@@ -371,7 +448,8 @@ export class HistoriqueActiviteComponent implements OnInit {
       // Ajustement automatique de la largeur des colonnes
       const columnWidths = [
         { wch: 5 },   // N°
-        { wch: 20 },  // Agent
+        { wch: 25 },  // Agent
+        { wch: 15 },  // Rôle
         { wch: 20 },  // Type
         { wch: 50 },  // Description
         { wch: 20 },  // Date

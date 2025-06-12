@@ -71,7 +71,7 @@
       
       <!-- ✅ HEADER AVEC STATISTIQUES -->
       <div class="bg-white border-b border-slate-200 p-4 shadow-sm flex-shrink-0">
-        <div class="grid grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
           <!-- Total camions -->
           <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
             <div class="flex items-center justify-between">
@@ -91,7 +91,7 @@
           <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-4 border border-green-200">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-green-600 text-sm font-medium">Camions Présents</p>
+                <p class="text-green-600 text-sm font-medium">Présents</p>
                 <p class="text-2xl font-bold text-green-700">{{ getCamionsByStatut('ENTREE').length }}</p>
               </div>
               <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
@@ -106,7 +106,7 @@
           <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-4 border border-amber-200">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-amber-600 text-sm font-medium">Camions Sortis</p>
+                <p class="text-amber-600 text-sm font-medium">Sortis</p>
                 <p class="text-2xl font-bold text-amber-700">{{ getCamionsByStatut('SORTIE').length }}</p>
               </div>
               <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
@@ -117,17 +117,41 @@
             </div>
           </div>
 
-          <!-- Sélectionnés -->
-          <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+          <!-- Park -->
+          <div class="bg-gradient-to-r from-cyan-50 to-cyan-100 rounded-xl p-4 border border-cyan-200">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-purple-600 text-sm font-medium">Sélectionnés</p>
-                <p class="text-2xl font-bold text-purple-700">{{ selectedCamions.length }}</p>
+                <p class="text-cyan-600 text-sm font-medium">Park</p>
+                <p class="text-2xl font-bold text-cyan-700">{{ getCamionsByDestination('PARK').length }}</p>
               </div>
-              <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                </svg>
+              <div class="w-10 h-10 bg-cyan-500 rounded-lg flex items-center justify-center">
+                <span class="text-white text-lg">🅿️</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Livraisons finales -->
+          <div class="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl p-4 border border-indigo-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-indigo-600 text-sm font-medium">Livraisons</p>
+                <p class="text-2xl font-bold text-indigo-700">{{ getCamionsByDestination('LIVRAISON_FINALE').length }}</p>
+              </div>
+              <div class="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center">
+                <span class="text-white text-lg">🏢</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prestations extérieures -->
+          <div class="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-orange-600 text-sm font-medium">Prestations</p>
+                <p class="text-2xl font-bold text-orange-700">{{ getCamionsByDestination('PRESTATION_EXTERIEURE').length }}</p>
+              </div>
+              <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                <span class="text-white text-lg">🔧</span>
               </div>
             </div>
           </div>
@@ -136,92 +160,172 @@
 
       <!-- ✅ TOOLBAR -->
       <div class="bg-white border-b border-slate-200 p-4 flex-shrink-0">
-        <div class="flex items-center justify-between flex-wrap gap-4">
-          <!-- Titre et recherche -->
-          <div class="flex items-center gap-4 flex-1 min-w-0">
-            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 flex-shrink-0">
-              <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
-              </svg>
-              Outils
-            </h2>
-            
-            <!-- Barre de recherche -->
-            <div class="relative flex-1 max-w-md">
-              <input 
-                type="text" 
-                [(ngModel)]="searchTerm" 
-                (input)="rechercher()" 
-                placeholder="Rechercher..."
-                class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all text-sm"
-              />
-              <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
+        <div class="space-y-4">
+          <!-- Première ligne: Titre et recherche -->
+          <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+              <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 flex-shrink-0">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                </svg>
+                Outils
+              </h2>
+              
+              <!-- Barre de recherche -->
+              <div class="relative flex-1 max-w-md">
+                <input 
+                  type="text" 
+                  [(ngModel)]="searchTerm" 
+                  (input)="rechercher()" 
+                  placeholder="Rechercher par châssis, marque, chauffeur..."
+                  class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all text-sm"
+                />
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Actions globales -->
+            <div class="flex items-center gap-2">
+              <button 
+                (click)="actualiserDonnees()"
+                class="px-3 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-xs font-medium">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Actualiser
+              </button>
             </div>
           </div>
 
-          <!-- Actions -->
-          <div class="flex items-center gap-2 flex-wrap">
+          <!-- Deuxième ligne: Filtres -->
+          <div class="flex items-center justify-between flex-wrap gap-4">
             <!-- Filtres de statut -->
-            <button 
-              (click)="filtrerParStatut('TOUS')"
-              [ngClass]="filtreStatut === 'TOUS' ? 
-                'px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium' : 
-                'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
-              Tous
-            </button>
-            <button 
-              (click)="filtrerParStatut('ENTREE')"
-              [ngClass]="filtreStatut === 'ENTREE' ? 
-                'px-3 py-2 bg-green-600 text-white rounded-lg text-xs font-medium' : 
-                'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
-              Présents
-            </button>
-            <button 
-              (click)="filtrerParStatut('SORTIE')"
-              [ngClass]="filtreStatut === 'SORTIE' ? 
-                'px-3 py-2 bg-amber-600 text-white rounded-lg text-xs font-medium' : 
-                'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
-              Sortis
-            </button>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-slate-600">Statut:</span>
+              <button 
+                (click)="filtrerParStatut('TOUS')"
+                [ngClass]="filtreStatut === 'TOUS' ? 
+                  'px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium' : 
+                  'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
+                Tous
+              </button>
+              <button 
+                (click)="filtrerParStatut('ENTREE')"
+                [ngClass]="filtreStatut === 'ENTREE' ? 
+                  'px-3 py-2 bg-green-600 text-white rounded-lg text-xs font-medium' : 
+                  'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
+                Présents
+              </button>
+              <button 
+                (click)="filtrerParStatut('SORTIE')"
+                [ngClass]="filtreStatut === 'SORTIE' ? 
+                  'px-3 py-2 bg-amber-600 text-white rounded-lg text-xs font-medium' : 
+                  'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
+                Sortis
+              </button>
+
+              <!-- Filtres de destination (visible seulement pour les sortis) -->
+              <div *ngIf="showDestinationFilter" class="flex items-center gap-2 ml-4 pl-4 border-l border-slate-300">
+                <span class="text-sm font-medium text-slate-600">Destination:</span>
+                <button 
+                  (click)="filtrerParDestination('TOUS')"
+                  [ngClass]="filtreDestination === 'TOUS' ? 
+                    'px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium' : 
+                    'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
+                  Toutes
+                </button>
+                <button 
+                  (click)="filtrerParDestination('PARK')"
+                  [ngClass]="filtreDestination === 'PARK' ? 
+                    'px-3 py-2 bg-cyan-600 text-white rounded-lg text-xs font-medium' : 
+                    'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
+                  🅿️ Park
+                </button>
+                <button 
+                  (click)="filtrerParDestination('LIVRAISON_FINALE')"
+                  [ngClass]="filtreDestination === 'LIVRAISON_FINALE' ? 
+                    'px-3 py-2 bg-indigo-600 text-white rounded-lg text-xs font-medium' : 
+                    'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
+                  🏢 Livraison
+                </button>
+                <button 
+                  (click)="filtrerParDestination('PRESTATION_EXTERIEURE')"
+                  [ngClass]="filtreDestination === 'PRESTATION_EXTERIEURE' ? 
+                    'px-3 py-2 bg-orange-600 text-white rounded-lg text-xs font-medium' : 
+                    'px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium'">
+                  🔧 Prestation
+                </button>
+              </div>
+            </div>
 
             <!-- Filtres de date -->
-            <input 
-              type="date" 
-              [(ngModel)]="startDate" 
-              (change)="filtrerParDate()" 
-              class="px-3 py-2 border border-slate-300 rounded-lg text-xs focus:border-amber-500"
-            />
-            <span class="text-slate-400 text-xs">→</span>
-            <input 
-              type="date" 
-              [(ngModel)]="endDate" 
-              (change)="filtrerParDate()" 
-              class="px-3 py-2 border border-slate-300 rounded-lg text-xs focus:border-amber-500"
-            />
-            
-            <!-- Actions -->
-            <button 
-              (click)="selectionnerTous()"
-              class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs">
-              Tout
-            </button>
-            <button 
-              (click)="deselectionnerTous()"
-              class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs">
-              Aucun
-            </button>
-            <button 
-              (click)="exporterExcel(true)"
-              class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-medium">
-              Export ({{ camionsFiltres.length }})
-            </button>
-            <button 
-              (click)="resetFiltres()"
-              class="px-2 py-1 bg-slate-500 hover:bg-slate-600 text-white rounded text-xs">
-              Reset
-            </button>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-slate-600">Période:</span>
+              <input 
+                type="date" 
+                [(ngModel)]="startDate" 
+                (change)="filtrerParDate()" 
+                class="px-3 py-2 border border-slate-300 rounded-lg text-xs focus:border-amber-500"
+              />
+              <span class="text-slate-400 text-xs">→</span>
+              <input 
+                type="date" 
+                [(ngModel)]="endDate" 
+                (change)="filtrerParDate()" 
+                class="px-3 py-2 border border-slate-300 rounded-lg text-xs focus:border-amber-500"
+              />
+            </div>
+          </div>
+
+          <!-- Troisième ligne: Actions de sélection et export -->
+          <div class="flex items-center justify-between flex-wrap gap-4">
+            <!-- Actions de sélection -->
+            <div class="flex items-center gap-2">
+              <button 
+                (click)="selectionnerTous()"
+                class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs">
+                Tout sélectionner
+              </button>
+              <button 
+                (click)="deselectionnerTous()"
+                class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs">
+                Tout désélectionner
+              </button>
+            </div>
+
+            <!-- Actions d'export et pagination -->
+            <div class="flex items-center gap-2">
+              <!-- Pagination par page -->
+              <select 
+                [(ngModel)]="itemsPerPage" 
+                (change)="changeItemsPerPage(itemsPerPage)"
+                class="px-2 py-1 border border-slate-300 rounded text-xs focus:border-amber-500">
+                <option *ngFor="let size of itemsPerPageOptions" [value]="size">{{ size }} par page</option>
+              </select>
+
+              <!-- Exports -->
+              <div class="flex items-center gap-1">
+                <button 
+                  (click)="exporterExcel(false)"
+                  class="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-medium">
+                  Export Tous ({{ camionsFiltres.length }})
+                </button>
+                <button 
+                  *ngIf="selectedCamions.length > 0"
+                  (click)="exporterExcel(true)"
+                  class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-medium">
+                  Export Sélection ({{ selectedCamions.length }})
+                </button>
+              </div>
+
+              <button 
+                (click)="resetFiltres()"
+                class="px-2 py-1 bg-slate-500 hover:bg-slate-600 text-white rounded text-xs">
+                Reset
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -249,7 +353,8 @@
           <!-- Grille camions -->
           <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
             <div *ngFor="let camion of camionsPage; trackBy: trackByCamion" 
-                 class="bg-white rounded-lg shadow border border-slate-200 overflow-hidden hover:shadow-md transition-all">
+                 class="bg-white rounded-lg shadow border border-slate-200 overflow-hidden hover:shadow-md transition-all"
+                 [ngClass]="isSelected(camion) ? 'ring-2 ring-amber-500 ring-opacity-50' : ''">
               
               <!-- Header carte -->
               <div class="relative">
@@ -274,10 +379,19 @@
                       </div>
                     </label>
                     
-                    <div [ngClass]="camion.statut === 'ENTREE' ? 
-                      'bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium' : 
-                      'bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-medium'">
-                      {{ camion.statut === 'ENTREE' ? 'Présent' : 'Sorti' }}
+                    <div class="flex items-center gap-2">
+                      <!-- Badge de destination pour les camions sortis -->
+                      <div *ngIf="camion.statut === 'SORTIE' && camion.typeDestination" 
+                           [ngClass]="getDestinationBadgeClass(camion.typeDestination)">
+                        {{ getDestinationLabel(camion.typeDestination) }}
+                      </div>
+                      
+                      <!-- Badge de statut -->
+                      <div [ngClass]="camion.statut === 'ENTREE' ? 
+                        'bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium' : 
+                        'bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-medium'">
+                        {{ camion.statut === 'ENTREE' ? 'Présent' : 'Sorti' }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -347,9 +461,9 @@
               </svg>
             </div>
             <h3 class="text-lg font-bold text-slate-800 mb-2">Aucun camion trouvé</h3>
-            <p class="text-slate-600 mb-4">{{ searchTerm || startDate || endDate || filtreStatut !== 'TOUS' ? 'Aucun résultat pour vos critères.' : 'Aucun camion enregistré.' }}</p>
+            <p class="text-slate-600 mb-4">{{ searchTerm || startDate || endDate || filtreStatut !== 'TOUS' || filtreDestination !== 'TOUS' ? 'Aucun résultat pour vos critères.' : 'Aucun camion enregistré.' }}</p>
             <button 
-              *ngIf="searchTerm || startDate || endDate || filtreStatut !== 'TOUS'"
+              *ngIf="searchTerm || startDate || endDate || filtreStatut !== 'TOUS' || filtreDestination !== 'TOUS'"
               (click)="resetFiltres()"
               class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-sm">
               Réinitialiser
@@ -361,10 +475,27 @@
       <!-- ✅ PAGINATION -->
       <div *ngIf="pages.length > 1" class="bg-white border-t border-slate-200 p-4 flex-shrink-0">
         <div class="flex items-center justify-between">
-          <div class="text-sm text-slate-600">
-            Page {{ currentPage }} sur {{ pages.length }}
+          <div class="flex items-center gap-4">
+            <div class="text-sm text-slate-600">
+              Page {{ currentPage }} sur {{ pages.length }}
+            </div>
+            <div class="text-sm text-slate-500">
+              Affichage: {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, camionsFiltres.length) }} / {{ camionsFiltres.length }}
+            </div>
           </div>
+          
           <div class="flex items-center gap-2">
+            <!-- Première page -->
+            <button 
+              (click)="setPage(1)"
+              [disabled]="currentPage === 1"
+              [ngClass]="currentPage === 1 ? 
+                'px-3 py-1 text-slate-400 bg-slate-100 rounded cursor-not-allowed text-sm' : 
+                'px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded transition-all text-sm'">
+              ⟪
+            </button>
+            
+            <!-- Page précédente -->
             <button 
               (click)="setPage(currentPage - 1)"
               [disabled]="currentPage === 1"
@@ -374,6 +505,7 @@
               ←
             </button>
 
+            <!-- Pages visibles -->
             <button 
               *ngFor="let page of getVisiblePages()"
               (click)="setPage(page)"
@@ -383,6 +515,7 @@
               {{ page }}
             </button>
 
+            <!-- Page suivante -->
             <button 
               (click)="setPage(currentPage + 1)"
               [disabled]="currentPage === pages.length"
@@ -390,6 +523,16 @@
                 'px-3 py-1 text-slate-400 bg-slate-100 rounded cursor-not-allowed text-sm' : 
                 'px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded transition-all text-sm'">
               →
+            </button>
+            
+            <!-- Dernière page -->
+            <button 
+              (click)="setPage(pages.length)"
+              [disabled]="currentPage === pages.length"
+              [ngClass]="currentPage === pages.length ? 
+                'px-3 py-1 text-slate-400 bg-slate-100 rounded cursor-not-allowed text-sm' : 
+                'px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded transition-all text-sm'">
+              ⟫
             </button>
           </div>
         </div>
