@@ -52,46 +52,46 @@
       <label class="block text-sm font-semibold text-slate-700">Marque du véhicule</label>
       <div class="grid grid-cols-3 gap-2">
         
-        <!-- Renault -->
+        <!-- RENAULT -->
         <div class="selection-card border-2 rounded-lg p-3 text-center bg-gradient-to-br from-blue-50 to-blue-100 cursor-pointer transition-all"
-             [class.selected]="marqueSelectionnee === 'Renault'"
-             [class.border-blue-400]="marqueSelectionnee === 'Renault'"
-             [class.border-slate-200]="marqueSelectionnee !== 'Renault'"
-             (click)="selectionnerMarque('Renault')">
+             [class.selected]="marqueSelectionnee === 'RENAULT'"
+             [class.border-blue-400]="marqueSelectionnee === 'RENAULT'"
+             [class.border-slate-200]="marqueSelectionnee !== 'RENAULT'"
+             (click)="selectionnerMarque('RENAULT')">
           <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold">
             R
           </div>
-          <h3 class="text-sm font-bold text-slate-700 mb-1">Renault</h3>
+          <h3 class="text-sm font-bold text-slate-700 mb-1">RENAULT</h3>
           <div class="inline-block px-2 py-0.5 bg-blue-200 text-blue-800 rounded-full text-xs font-semibold">
             4 modèles
           </div>
         </div>
 
-        <!-- Forlend -->
+        <!-- FORLAND -->
         <div class="selection-card border-2 rounded-lg p-3 text-center bg-gradient-to-br from-green-50 to-green-100 cursor-pointer transition-all"
-             [class.selected]="marqueSelectionnee === 'Forlend'"
-             [class.border-green-400]="marqueSelectionnee === 'Forlend'"
-             [class.border-slate-200]="marqueSelectionnee !== 'Forlend'"
-             (click)="selectionnerMarque('Forlend')">
+             [class.selected]="marqueSelectionnee === 'FORLAND'"
+             [class.border-green-400]="marqueSelectionnee === 'FORLAND'"
+             [class.border-slate-200]="marqueSelectionnee !== 'FORLAND'"
+             (click)="selectionnerMarque('FORLAND')">
           <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white text-sm font-bold">
             F
           </div>
-          <h3 class="text-sm font-bold text-slate-700 mb-1">Forlend</h3>
+          <h3 class="text-sm font-bold text-slate-700 mb-1">FORLAND</h3>
           <div class="inline-block px-2 py-0.5 bg-green-200 text-green-800 rounded-full text-xs font-semibold">
             4 modèles
           </div>
         </div>
 
-        <!-- Kaycenne -->
+        <!-- KAICENE -->
         <div class="selection-card border-2 rounded-lg p-3 text-center bg-gradient-to-br from-purple-50 to-purple-100 cursor-pointer transition-all"
-             [class.selected]="marqueSelectionnee === 'Kaycenne'"
-             [class.border-purple-400]="marqueSelectionnee === 'Kaycenne'"
-             [class.border-slate-200]="marqueSelectionnee !== 'Kaycenne'"
-             (click)="selectionnerMarque('Kaycenne')">
+             [class.selected]="marqueSelectionnee === 'KAICENE'"
+             [class.border-purple-400]="marqueSelectionnee === 'KAICENE'"
+             [class.border-slate-200]="marqueSelectionnee !== 'KAICENE'"
+             (click)="selectionnerMarque('KAICENE')">
           <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
             K
           </div>
-          <h3 class="text-sm font-bold text-slate-700 mb-1">Kaycenne</h3>
+          <h3 class="text-sm font-bold text-slate-700 mb-1">KAICENE</h3>
           <div class="inline-block px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-xs font-semibold">
             3 modèles
           </div>
@@ -107,26 +107,26 @@
         <div *ngFor="let modele of modelesDisponibles"
              class="selection-card border-2 rounded-lg p-2 text-center cursor-pointer transition-all"
              [class.selected]="modeleSelectionne === modele"
-             [class.border-blue-400]="modeleSelectionne === modele && marqueSelectionnee === 'Renault'"
-             [class.border-green-400]="modeleSelectionne === modele && marqueSelectionnee === 'Forlend'"
-             [class.border-purple-400]="modeleSelectionne === modele && marqueSelectionnee === 'Kaycenne'"
+             [class.border-blue-400]="modeleSelectionne === modele && marqueSelectionnee === 'RENAULT'"
+             [class.border-green-400]="modeleSelectionne === modele && marqueSelectionnee === 'FORLAND'"
+             [class.border-purple-400]="modeleSelectionne === modele && marqueSelectionnee === 'KAICENE'"
              [class.border-slate-200]="modeleSelectionne !== modele"
              [class.bg-gradient-to-br]="true"
-             [class.from-blue-50]="marqueSelectionnee === 'Renault'"
-             [class.to-blue-100]="marqueSelectionnee === 'Renault'"
-             [class.from-green-50]="marqueSelectionnee === 'Forlend'"
-             [class.to-green-100]="marqueSelectionnee === 'Forlend'"
-             [class.from-purple-50]="marqueSelectionnee === 'Kaycenne'"
-             [class.to-purple-100]="marqueSelectionnee === 'Kaycenne'"
+             [class.from-blue-50]="marqueSelectionnee === 'RENAULT'"
+             [class.to-blue-100]="marqueSelectionnee === 'RENAULT'"
+             [class.from-green-50]="marqueSelectionnee === 'FORLAND'"
+             [class.to-green-100]="marqueSelectionnee === 'FORLAND'"
+             [class.from-purple-50]="marqueSelectionnee === 'KAICENE'"
+             [class.to-purple-100]="marqueSelectionnee === 'KAICENE'"
              (click)="selectionnerModele(modele)">
           <div class="w-8 h-8 mx-auto mb-1 rounded-full flex items-center justify-center text-white text-xs font-bold"
                [class.bg-gradient-to-br]="true"
-               [class.from-blue-500]="marqueSelectionnee === 'Renault'"
-               [class.to-blue-600]="marqueSelectionnee === 'Renault'"
-               [class.from-green-500]="marqueSelectionnee === 'Forlend'"
-               [class.to-green-600]="marqueSelectionnee === 'Forlend'"
-               [class.from-purple-500]="marqueSelectionnee === 'Kaycenne'"
-               [class.to-purple-600]="marqueSelectionnee === 'Kaycenne'">
+               [class.from-blue-500]="marqueSelectionnee === 'RENAULT'"
+               [class.to-blue-600]="marqueSelectionnee === 'RENAULT'"
+               [class.from-green-500]="marqueSelectionnee === 'FORLAND'"
+               [class.to-green-600]="marqueSelectionnee === 'FORLAND'"
+               [class.from-purple-500]="marqueSelectionnee === 'KAICENE'"
+               [class.to-purple-600]="marqueSelectionnee === 'KAICENE'">
             🚛
           </div>
           <h4 class="text-xs font-bold text-slate-700">{{ modele }}</h4>
@@ -251,9 +251,9 @@
                   <select [(ngModel)]="camionEditForm.marque" 
                           (ngModelChange)="changerMarqueEdition()"
                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200">
-                    <option value="Renault">Renault</option>
-                    <option value="Forlend">Forlend</option>
-                    <option value="Kaycenne">Kaycenne</option>
+                    <option value="RENAULT">RENAULT</option>
+                    <option value="FORLAND">FORLAND</option>
+                    <option value="KAICENE">KAICENE</option>
                   </select>
                 </div>
 

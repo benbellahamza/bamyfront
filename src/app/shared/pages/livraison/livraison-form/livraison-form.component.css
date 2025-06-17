@@ -226,15 +226,15 @@
 }
 
 /* Styles spécifiques pour les marques */
-.marque-renault {
+.marque-RENAULT {
   background: linear-gradient(135deg, #dbeafe, #bfdbfe);
 }
 
-.marque-forlend {
+.marque-FORLAND {
   background: linear-gradient(135deg, #dcfce7, #bbf7d0);
 }
 
-.marque-kaycenne {
+.marque-KAICENE {
   background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
 }
 

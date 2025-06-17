@@ -295,3 +295,15 @@ button, input {
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
 }
+
+/* ✅ STYLES SPÉCIFIQUES POUR LE HEADER COMPACT */
+header {
+  height: 4rem; /* 64px - h-16 */
+  min-height: 4rem;
+}
+
+/* ✅ STYLES POUR LE FOOTER COMPACT */
+footer {
+  height: 2.5rem; /* 40px - h-10 */
+  min-height: 2.5rem;
+}

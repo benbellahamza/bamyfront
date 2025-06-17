@@ -28,13 +28,13 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
   // ✅ CONFIGURATION NAVIGATION
   navigationItems = [
     {
-      label: 'Dashboard Responsable',
+      label: 'Tableau de Bord Responsable',
       route: '/responsable/dashboard',
       icon: 'dashboard',
       active: false
     },
     {
-      label: 'Liste des visiteurs',
+      label: 'Liste des Visiteurs',
       route: '/responsable/visiteur',
       icon: 'users',
       active: true
@@ -54,10 +54,11 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
 
   // ✅ PAGINATION
   currentPage: number = 1;
-  itemsPerPage: number = 16;
+  itemsPerPage: number = 20;
 
   // ✅ GESTION DES ERREURS
   erreurExport: boolean = false;
+  messageErreur: string = '';
 
   // ✅ UTILITAIRES
   Math = Math;
@@ -84,12 +85,14 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
 
   // ✅ CALLBACK LAYOUT UNIFIÉ
   onPasswordChanged(): void {
-    console.log('Mot de passe changé');
+    console.log('Mot de passe modifié avec succès');
   }
 
   // ✅ CHARGEMENT DES DONNÉES
   getVisiteurs(): void {
     this.loading = true;
+    this.erreurExport = false;
+    
     const subscription = this.http.get<Visiteur[]>('http://localhost:8085/api/visiteurs').subscribe({
       next: (data) => {
         this.visiteurs = data.sort((a, b) => 
@@ -99,8 +102,9 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Erreur chargement visiteurs:', err);
+        console.error('Erreur lors du chargement des visiteurs:', err);
         this.loading = false;
+        this.messageErreur = 'Erreur lors du chargement des données. Veuillez réessayer.';
       }
     });
     this.subscriptions.push(subscription);
@@ -116,13 +120,20 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.visiteursFiltres = this.visiteurs.filter(v =>
-      v.nom.toLowerCase().includes(terme) ||
-      v.prenom.toLowerCase().includes(terme) ||
-      v.cin.toLowerCase().includes(terme) ||
-      v.destination.toLowerCase().includes(terme) ||
-      (v.telephone && v.telephone.toLowerCase().includes(terme))
-    );
+    this.visiteursFiltres = this.visiteurs.filter(v => {
+      const nomComplet = `${v.nom} ${v.prenom}`.toLowerCase();
+      const prenomNom = `${v.prenom} ${v.nom}`.toLowerCase();
+      
+      return nomComplet.includes(terme) ||
+             prenomNom.includes(terme) ||
+             v.nom.toLowerCase().includes(terme) ||
+             v.prenom.toLowerCase().includes(terme) ||
+             v.cin.toLowerCase().includes(terme) ||
+             v.destination.toLowerCase().includes(terme) ||
+             (v.telephone && v.telephone.toLowerCase().includes(terme)) ||
+             (v.typeVisiteur && v.typeVisiteur.toLowerCase().includes(terme)) ||
+             v.genre.toLowerCase().includes(terme);
+    });
 
     this.appliquerFiltresDate();
   }
@@ -160,13 +171,20 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
 
     if (this.searchTerm) {
       const terme = this.searchTerm.toLowerCase().trim();
-      resultat = resultat.filter(v =>
-        v.nom.toLowerCase().includes(terme) ||
-        v.prenom.toLowerCase().includes(terme) ||
-        v.cin.toLowerCase().includes(terme) ||
-        v.destination.toLowerCase().includes(terme) ||
-        (v.telephone && v.telephone.toLowerCase().includes(terme))
-      );
+      resultat = resultat.filter(v => {
+        const nomComplet = `${v.nom} ${v.prenom}`.toLowerCase();
+        const prenomNom = `${v.prenom} ${v.nom}`.toLowerCase();
+        
+        return nomComplet.includes(terme) ||
+               prenomNom.includes(terme) ||
+               v.nom.toLowerCase().includes(terme) ||
+               v.prenom.toLowerCase().includes(terme) ||
+               v.cin.toLowerCase().includes(terme) ||
+               v.destination.toLowerCase().includes(terme) ||
+               (v.telephone && v.telephone.toLowerCase().includes(terme)) ||
+               (v.typeVisiteur && v.typeVisiteur.toLowerCase().includes(terme)) ||
+               v.genre.toLowerCase().includes(terme);
+      });
     }
 
     if (this.startDate && this.endDate) {
@@ -226,25 +244,41 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formattedData = dataToExport.map(v => ({
-      'Nom': v.nom,
-      'Prénom': v.prenom,
-      'CIN': v.cin,
-      'Genre': v.genre,
-      'Téléphone': v.telephone || 'N/A',
-      'Destination': v.destination,
-      'Type Visiteur': v.typeVisiteur || 'Particulier',
-      'Date Entrée': v.dateEntree ? new Date(v.dateEntree).toLocaleString('fr-FR') : '',
-      'Date Sortie': v.dateSortie ? new Date(v.dateSortie).toLocaleString('fr-FR') : 'Non sorti',
-      'Statut': v.dateSortie ? 'Sorti' : 'Présent'
-    }));
-
     try {
+      const formattedData = dataToExport.map((v, index) => ({
+        'N°': index + 1,
+        'Nom Complet': `${v.nom} ${v.prenom}`,
+        'Nom': v.nom,
+        'Prénom': v.prenom,
+        'CIN': v.cin,
+        'Genre': v.genre,
+        'Téléphone': v.telephone || 'Non renseigné',
+        'Destination': v.destination,
+        'Type de Visiteur': v.typeVisiteur || 'Particulier',
+        'Date d\'Entrée': v.dateEntree ? new Date(v.dateEntree).toLocaleDateString('fr-FR') : '',
+        'Heure d\'Entrée': v.dateEntree ? new Date(v.dateEntree).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '',
+        'Date de Sortie': v.dateSortie ? new Date(v.dateSortie).toLocaleDateString('fr-FR') : 'Non sorti',
+        'Heure de Sortie': v.dateSortie ? new Date(v.dateSortie).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Non sorti',
+        'Statut': v.dateSortie ? 'Sorti' : 'Présent'
+      }));
+
       const worksheet = XLSX.utils.json_to_sheet(formattedData);
       
       const columnWidths = [
-        { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 10 }, { wch: 15 },
-        { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 10 }
+        { wch: 5 },   // N°
+        { wch: 25 },  // Nom Complet
+        { wch: 15 },  // Nom
+        { wch: 15 },  // Prénom
+        { wch: 12 },  // CIN
+        { wch: 10 },  // Genre
+        { wch: 15 },  // Téléphone
+        { wch: 25 },  // Destination
+        { wch: 15 },  // Type
+        { wch: 12 },  // Date Entrée
+        { wch: 10 },  // Heure Entrée
+        { wch: 12 },  // Date Sortie
+        { wch: 10 },  // Heure Sortie
+        { wch: 10 }   // Statut
       ];
       worksheet['!cols'] = columnWidths;
 
@@ -258,11 +292,15 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
       });
       
-      const fileName = `visiteurs_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      const maintenant = new Date();
+      const dateStr = maintenant.toISOString().split('T')[0];
+      const typeStr = exportAll ? 'tous' : 'selection';
+      const fileName = `visiteurs_${typeStr}_${dateStr}.xlsx`;
+      
       saveAs(blob, fileName);
 
     } catch (error) {
-      console.error('Erreur export:', error);
+      console.error('Erreur lors de l\'export:', error);
       this.erreurExport = true;
       setTimeout(() => {
         this.erreurExport = false;
@@ -290,7 +328,7 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
   getVisiblePages(): number[] {
     const totalPages = this.pages.length;
     const current = this.currentPage;
-    const maxVisible = 5;
+    const maxVisible = 7;
 
     if (totalPages <= maxVisible) {
       return this.pages;
@@ -314,11 +352,13 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
   setPage(page: number): void {
     if (page >= 1 && page <= this.pages.length) {
       this.currentPage = page;
+      // Scroll vers le haut lors du changement de page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
   // ✅ FILTRES PRÉDÉFINIS
-  filtrerParPeriodePredefinie(periode: 'aujourdhui' | 'hier' | 'semaine' | 'mois'): void {
+  filtrerParPeriodePredefinie(periode: 'aujourdhui' | 'semaine'): void {
     const maintenant = new Date();
     let debut: Date;
     let fin: Date = new Date(maintenant);
@@ -329,22 +369,9 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
         debut.setHours(0, 0, 0, 0);
         fin.setHours(23, 59, 59, 999);
         break;
-      case 'hier':
-        debut = new Date(maintenant);
-        debut.setDate(maintenant.getDate() - 1);
-        debut.setHours(0, 0, 0, 0);
-        fin = new Date(debut);
-        fin.setHours(23, 59, 59, 999);
-        break;
       case 'semaine':
         debut = new Date(maintenant);
         debut.setDate(maintenant.getDate() - 7);
-        debut.setHours(0, 0, 0, 0);
-        fin.setHours(23, 59, 59, 999);
-        break;
-      case 'mois':
-        debut = new Date(maintenant);
-        debut.setDate(maintenant.getDate() - 30);
         debut.setHours(0, 0, 0, 0);
         fin.setHours(23, 59, 59, 999);
         break;
@@ -360,32 +387,5 @@ export class ResponsableVisiteurComponent implements OnInit, OnDestroy {
   // ✅ OPTIMISATION PERFORMANCE
   trackByVisiteurId(index: number, visiteur: Visiteur): number {
     return visiteur.id;
-  }
-
-  // ✅ FORMAT DE DATE PERSONNALISÉ
-  formatDate(dateString: string | undefined, format: string = 'dd/MM/yyyy HH:mm'): string {
-    if (!dateString) return 'Non disponible';
-    
-    try {
-      const date = new Date(dateString);
-      
-      if (isNaN(date.getTime())) {
-        return 'Date invalide';
-      }
-      
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      
-      if (format === 'dd/MM/yyyy HH:mm') {
-        return `${day}/${month}/${year} ${hours}:${minutes}`;
-      } else {
-        return `${day}/${month}/${year}`;
-      }
-    } catch (e) {
-      return 'Erreur de date';
-    }
   }
 }

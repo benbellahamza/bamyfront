@@ -46,9 +46,9 @@ export class LivraisonFormComponent implements OnInit {
 
   // Données des modèles par marque
   private modelesParMarque: { [key: string]: string[] } = {
-    'Renault': ['Renault Trucks D', 'Renault Trucks K', 'Renault Trucks C', 'Renault Trucks T'],
-    'Forlend': ['Forland T5e', 'Forland L5e', 'Forland L5n', 'Forland L5'],
-    'Kaycenne': ['Kaicene F70', 'Kaicene F30', 'Kaicene F300']
+    'RENAULT': ['RENAULT Trucks D', 'RENAULT Trucks K', 'RENAULT Trucks C', 'RENAULT Trucks T'],
+    'FORLAND': ['FORLAND T5e', 'FORLAND L5e', 'FORLAND L5n', 'FORLAND L5'],
+    'KAICENE': ['Kaicene F70', 'Kaicene F30', 'Kaicene F300']
   };
 
   constructor(
