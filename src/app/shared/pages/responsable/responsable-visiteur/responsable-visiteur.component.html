@@ -5,10 +5,10 @@
   (passwordChanged)="onPasswordChanged()">
 
   <!-- ✅ CONTENU PRINCIPAL AVEC HEADER ET FOOTER FIXES -->
-  <main class="fixed top-20 left-0 right-0 bottom-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+  <main class="fixed top-20 left-0 right-0 bottom-16 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-y-auto">
     <div class="flex flex-col h-full">
       
-      <!-- ✅ HEADER FIXE AVEC STATISTIQUES -->
+      <!-- ✅ HEADER AVEC STATISTIQUES -->
       <div class="flex-shrink-0 bg-white/80 backdrop-blur-sm border-b border-slate-200/60 p-6 shadow-lg">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           
@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <!-- ✅ TOOLBAR FIXE -->
+      <!-- ✅ TOOLBAR -->
       <div class="flex-shrink-0 bg-white/90 backdrop-blur-sm border-b border-slate-200/60 p-4 shadow-lg">
         <div class="flex items-center justify-between flex-wrap gap-4">
           
@@ -176,7 +176,7 @@
         </div>
       </div>
 
-      <!-- ✅ CONTENU DÉFILANT ENTRE HEADER ET PAGINATION -->
+      <!-- ✅ CONTENU AVEC SCROLL -->
       <div class="flex-1 overflow-y-auto p-6">
         
         <!-- Loading amélioré -->

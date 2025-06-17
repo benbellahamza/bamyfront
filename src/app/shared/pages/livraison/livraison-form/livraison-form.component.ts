@@ -48,7 +48,7 @@ export class LivraisonFormComponent implements OnInit {
   private modelesParMarque: { [key: string]: string[] } = {
     'RENAULT': ['RENAULT Trucks D', 'RENAULT Trucks K', 'RENAULT Trucks C', 'RENAULT Trucks T'],
     'FORLAND': ['FORLAND T5e', 'FORLAND L5e', 'FORLAND L5n', 'FORLAND L5'],
-    'KAICENE': ['Kaicene F70', 'Kaicene F30', 'Kaicene F300']
+    'KAICENE': ['Star truck']
   };
 
   constructor(

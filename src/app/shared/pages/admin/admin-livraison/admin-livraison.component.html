@@ -380,10 +380,10 @@
                     </label>
                     
                     <div class="flex items-center gap-2">
-                      <!-- Badge de destination pour les camions sortis -->
-                      <div *ngIf="camion.statut === 'SORTIE' && camion.typeDestination" 
-                           [ngClass]="getDestinationBadgeClass(camion.typeDestination)">
-                        {{ getDestinationLabel(camion.typeDestination) }}
+                      <!-- 🔧 CORRECTION FINALE - Badge de destination pour les camions sortis -->
+                      <div *ngIf="hasValidDestination(camion)" 
+                           [ngClass]="getDestinationBadgeClass(camion.typeDestination!)">
+                        {{ getDestinationLabel(camion.typeDestination!) }}
                       </div>
                       
                       <!-- Badge de statut -->
@@ -411,9 +411,10 @@
                   </span>
                 </div>
                 
-                <div *ngIf="camion.destination" class="text-xs">
+                <!-- 🔧 CORRECTION FINALE - Affichage de la destination pour les camions sortis avec destination valide -->
+                <div *ngIf="hasValidDestination(camion)" class="text-xs">
                   <span class="text-slate-500">Destination:</span>
-                  <span class="font-medium text-slate-800 ml-1">{{ camion.destination }}</span>
+                  <span class="font-medium text-slate-800 ml-1">{{ getDestinationLabel(camion.typeDestination!) }}</span>
                 </div>
                 
                 <div *ngIf="camion.typeCamion" class="text-xs">
@@ -433,7 +434,8 @@
                   </div>
                 </div>
 
-                <div *ngIf="camion.nomEntreprise || camion.nomChauffeurLivraison" class="mt-3 pt-3 border-t border-slate-100">
+                <!-- 🔧 CORRECTION FINALE - Affichage des informations de livraison -->
+                <div *ngIf="hasValidDestination(camion) && (camion.nomEntreprise || camion.nomChauffeurLivraison)" class="mt-3 pt-3 border-t border-slate-100">
                   <div class="bg-slate-50 rounded p-2 space-y-1 text-xs">
                     <div *ngIf="camion.nomEntreprise">
                       <span class="text-slate-600">Entreprise:</span>
@@ -444,6 +446,10 @@
                       <span class="font-medium ml-1">
                         {{ camion.nomChauffeurLivraison }}{{ camion.prenomChauffeurLivraison ? ' ' + camion.prenomChauffeurLivraison : '' }}
                       </span>
+                    </div>
+                    <div *ngIf="camion.cinChauffeurLivraison">
+                      <span class="text-slate-600">CIN:</span>
+                      <span class="font-medium ml-1">{{ camion.cinChauffeurLivraison }}</span>
                     </div>
                   </div>
                 </div>

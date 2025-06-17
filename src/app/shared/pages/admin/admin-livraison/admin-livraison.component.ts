@@ -35,6 +35,16 @@ interface Camion {
   cinChauffeurLivraison?: string;
   nomEntreprise?: string;
   
+  // Livraison object from backend
+  livraison?: {
+    destination: string;
+    nomChauffeurSortie: string;
+    prenomChauffeurSortie: string;
+    cinChauffeurSortie: string;
+    entreprise: string;
+    dateSortie: string;
+  };
+  
   // Statut calculé
   statut?: 'ENTREE' | 'SORTIE';
 }
@@ -122,11 +132,13 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     console.log('Mot de passe changé');
   }
 
-  // ✅ CHARGEMENT DES DONNÉES
+  // 🔧 CHARGEMENT DES DONNÉES - VERSION AVEC DEBUG COMPLET
   chargerCamions(): void {
     this.loading = true;
-    const subscription = this.http.get<Camion[]>('http://localhost:8085/api/livraison/all').subscribe({
+    const subscription = this.http.get<any[]>('http://localhost:8085/api/livraison/all').subscribe({
       next: (data) => {
+        console.log('🔍 DONNÉES BRUTES REÇUES DU BACKEND:', data);
+        
         if (!data || !Array.isArray(data)) {
           this.camions = [];
           this.camionsFiltres = [];
@@ -136,47 +148,119 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
         
         this.camions = data
           .filter(camion => camion && camion.marque && camion.modele && camion.numeroChassis)
-          .map(camion => {
+          .map((camion, index) => {
+            console.log(`🔍 TRAITEMENT CAMION ${index + 1}:`, camion);
+            
             const nomChauffeur = camion.chauffeurEntree?.nom || camion.nomChauffeur || '';
             const prenomChauffeur = camion.chauffeurEntree?.prenom || camion.prenomChauffeur || '';
 
-            return {
+            // 🔧 LOGIQUE DE DÉTERMINATION DE LA DESTINATION
+            let destination = '';
+            let typeDestination: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE' = 'PARK';
+            let nomChauffeurLivraison = '';
+            let prenomChauffeurLivraison = '';
+            let cinChauffeurLivraison = '';
+            let nomEntreprise = '';
+            
+            // ✅ Si le camion est sorti
+            if (camion.dateSortie) {
+              console.log(`   📍 Camion ${camion.numeroChassis} est SORTI`);
+              console.log(`   📦 Livraison object:`, camion.livraison);
+              
+              if (camion.livraison) {
+                // ✅ Lire les données de livraison
+                destination = camion.livraison.destination || '';
+                nomChauffeurLivraison = camion.livraison.nomChauffeurSortie || '';
+                prenomChauffeurLivraison = camion.livraison.prenomChauffeurSortie || '';
+                cinChauffeurLivraison = camion.livraison.cinChauffeurSortie || '';
+                nomEntreprise = camion.livraison.entreprise || '';
+                
+                console.log(`   🎯 Destination backend: "${destination}"`);
+                console.log(`   👨‍💼 Chauffeur livraison: ${nomChauffeurLivraison} ${prenomChauffeurLivraison}`);
+                console.log(`   🏢 Entreprise: ${nomEntreprise}`);
+                console.log(`   🆔 CIN: ${cinChauffeurLivraison}`);
+                
+                // 🔧 DÉTERMINATION INTELLIGENTE DE LA DESTINATION
+                if (destination === 'PARK' || destination === 'park') {
+                  typeDestination = 'PARK';
+                } else if (destination === 'LIVRAISON_FINALE' || destination === 'livraison finale') {
+                  typeDestination = 'LIVRAISON_FINALE';
+                } else if (destination === 'PRESTATION_EXTERIEURE' || destination === 'prestation extérieure') {
+                  typeDestination = 'PRESTATION_EXTERIEURE';
+                } else {
+                  // 🔧 LOGIQUE INTELLIGENTE BASÉE SUR LES DONNÉES
+                  if (nomEntreprise && cinChauffeurLivraison) {
+                    // Si on a une entreprise ET un CIN → Livraison finale
+                    typeDestination = 'LIVRAISON_FINALE';
+                    console.log(`   ✅ DÉDUCTION: Livraison finale (entreprise + CIN)`);
+                  } else if (nomChauffeurLivraison && !nomEntreprise) {
+                    // Si on a un chauffeur mais pas d'entreprise → Prestation extérieure
+                    typeDestination = 'PRESTATION_EXTERIEURE';
+                    console.log(`   ✅ DÉDUCTION: Prestation extérieure (chauffeur sans entreprise)`);
+                  } else {
+                    // Par défaut → Park
+                    typeDestination = 'PARK';
+                    console.log(`   ✅ DÉDUCTION: Park (par défaut)`);
+                  }
+                }
+              } else {
+                // Pas de données de livraison → Park par défaut
+                typeDestination = 'PARK';
+                console.log(`   ⚠️ Pas de données de livraison → Park`);
+              }
+            } else {
+              console.log(`   📍 Camion ${camion.numeroChassis} est PRÉSENT`);
+            }
+            
+            console.log(`   🎯 RÉSULTAT FINAL: typeDestination = ${typeDestination}`);
+
+            const camionProcessed = {
               ...camion,
               nomChauffeur,
               prenomChauffeur,
               statut: (camion.dateSortie ? 'SORTIE' : 'ENTREE') as 'ENTREE' | 'SORTIE',
               dateEntreeFormatee: this.formatDate(camion.dateEntree),
               dateSortieFormatee: camion.dateSortie ? this.formatDate(camion.dateSortie) : '',
-              typeDestination: camion.typeDestination || this.determinerTypeDestination(camion.destination)
+              destination: destination,
+              typeDestination: typeDestination,
+              nomChauffeurLivraison: nomChauffeurLivraison,
+              prenomChauffeurLivraison: prenomChauffeurLivraison,
+              cinChauffeurLivraison: cinChauffeurLivraison,
+              nomEntreprise: nomEntreprise
             };
+            
+            console.log(`   📋 CAMION FINAL:`, camionProcessed);
+            return camionProcessed;
           })
           .sort((a, b) => new Date(b.dateEntree || '').getTime() - new Date(a.dateEntree || '').getTime());
         
         this.camionsFiltres = [...this.camions];
         this.loading = false;
+        
+        // 🔧 DEBUG FINAL - Vérification des compteurs
+        console.log('📊 STATISTIQUES FINALES:');
+        console.log('   🔢 Total camions:', this.camions.length);
+        console.log('   🟢 Présents:', this.getCamionsByStatut('ENTREE').length);
+        console.log('   🟡 Sortis:', this.getCamionsByStatut('SORTIE').length);
+        console.log('   🅿️ Park:', this.getCamionsByDestination('PARK').length);
+        console.log('   🏢 Livraisons:', this.getCamionsByDestination('LIVRAISON_FINALE').length);
+        console.log('   🔧 Prestations:', this.getCamionsByDestination('PRESTATION_EXTERIEURE').length);
+        
+        // 🔧 DEBUG DÉTAILLÉ DES DESTINATIONS
+        const camionsSortis = this.camions.filter(c => c.statut === 'SORTIE');
+        console.log('📋 DÉTAIL DES CAMIONS SORTIS:');
+        camionsSortis.forEach(camion => {
+          console.log(`   🚛 ${camion.numeroChassis} → ${camion.typeDestination} (${this.getDestinationLabel(camion.typeDestination!)})`);
+        });
       },
       error: (err) => {
-        console.error('Erreur chargement camions', err);
+        console.error('❌ Erreur chargement camions', err);
         this.camions = [];
         this.camionsFiltres = [];
         this.loading = false;
       }
     });
     this.subscriptions.push(subscription);
-  }
-
-  // ✅ DÉTERMINATION AUTOMATIQUE DU TYPE DE DESTINATION
-  private determinerTypeDestination(destination?: string): 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE' {
-    if (!destination) return 'PARK';
-    
-    const dest = destination.toLowerCase();
-    if (dest.includes('park') || dest.includes('parking')) {
-      return 'PARK';
-    } else if (dest.includes('livraison') || dest.includes('client') || dest.includes('final')) {
-      return 'LIVRAISON_FINALE';
-    } else {
-      return 'PRESTATION_EXTERIEURE';
-    }
   }
 
   // ✅ RECHERCHE ET FILTRAGE
@@ -261,8 +345,13 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     return this.camions.filter(c => c.statut === statut);
   }
 
+  // 🔧 MÉTHODE COMPTEURS CORRIGÉE
   getCamionsByDestination(destination: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE'): Camion[] {
-    return this.camions.filter(c => c.statut === 'SORTIE' && c.typeDestination === destination);
+    const result = this.camions.filter(c => {
+      return c.statut === 'SORTIE' && c.typeDestination === destination;
+    });
+    console.log(`📊 getCamionsByDestination(${destination}):`, result.length, result.map(c => c.numeroChassis));
+    return result;
   }
 
   getDestinationLabel(type: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE'): string {
@@ -281,6 +370,14 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       case 'PRESTATION_EXTERIEURE': return 'bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium';
       default: return 'bg-slate-100 text-slate-800 px-2 py-1 rounded-full text-xs font-medium';
     }
+  }
+
+  // 🔧 MÉTHODE VALIDATION DESTINATION CORRIGÉE
+  hasValidDestination(camion: Camion): boolean {
+    const result = camion.statut === 'SORTIE' && 
+           camion.typeDestination !== undefined && 
+           ['PARK', 'LIVRAISON_FINALE', 'PRESTATION_EXTERIEURE'].includes(camion.typeDestination);
+    return result;
   }
 
   private formatDate(dateStr: string | undefined): string {
