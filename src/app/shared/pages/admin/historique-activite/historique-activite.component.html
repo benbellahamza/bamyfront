@@ -65,168 +65,179 @@
     </nav>
   </div>
 
-  <!-- ✅ CONTENU PRINCIPAL AVEC MARGIN POUR LA SIDEBAR -->
-  <main class="flex-1 mt-20 px-6 pb-28 pt-4 ml-64 bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen">
+  <!-- ✅ CONTENU PRINCIPAL OPTIMISÉ AVEC MARGES POUR ÉVITER LE FOOTER -->
+  <main class="flex-1 mt-20 px-4 pb-20 pt-4 ml-64 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen">
     
-    <!-- ✅ PANNEAU DE CONTRÔLE COMPACT -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-md p-6 mb-6 animate-fadeIn">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
+    <!-- ✅ PANNEAU DE FILTRES COMPACT ET MODERNE AVEC MARGE DROITE -->
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 mb-6 overflow-hidden mr-4">
+      <!-- Header filtres collapsible -->
+      <div class="bg-gradient-to-r from-slate-50 to-blue-50 px-6 py-4 border-b border-slate-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="font-semibold text-slate-800">Filtres de recherche</h2>
+              <p class="text-sm text-slate-500">Affinez vos résultats rapidement</p>
+            </div>
           </div>
-          <div>
-            <h2 class="text-lg font-bold text-slate-800">Filtres & Recherche</h2>
-            <p class="text-slate-500 text-sm">Affinez vos résultats</p>
+          
+          <div class="flex items-center gap-2">
+            <button class="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105" 
+                    (click)="reinitialiserFiltres()">
+              <svg class="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Réinitialiser
+            </button>
           </div>
         </div>
-        <button class="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105" 
-                (click)="reinitialiserFiltres()">
-          <svg class="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-          </svg>
-          Réinitialiser
-        </button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Recherche globale -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-slate-700">
-            Recherche globale
-          </label>
-          <div class="relative">
-            <input [(ngModel)]="filtreTexte" (input)="appliquerFiltres()" type="text"
-              placeholder="Nom, prénom, action..." 
-              class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-300 text-slate-800 placeholder-slate-400" />
-            <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
+      <!-- Filtres compacts en une seule ligne -->
+      <div class="p-6">
+        <div class="flex flex-wrap gap-4 items-end">
+          <!-- Recherche globale -->
+          <div class="flex-1 min-w-64">
+            <label class="block text-sm font-medium text-slate-700 mb-2">
+              Recherche globale
+            </label>
+            <div class="relative">
+              <input [(ngModel)]="filtreTexte" (input)="appliquerFiltres()" type="text"
+                placeholder="Nom, prénom, action..." 
+                class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-300 text-slate-800 placeholder-slate-400" />
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Type d'action -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-slate-700">
-            Type d'action
-          </label>
-          <div class="relative">
-            <select [(ngModel)]="filtreTypeAction" (change)="appliquerFiltres()" 
-                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all duration-300 text-slate-800">
-              <option value="">Tous les types</option>
-              <option value="Ajout Visiteur">Ajout Visiteur</option>
-              <option value="Modification Visiteur">Modification Visiteur</option>
-              <option value="Validation Sortie">Validation Sortie</option>
-            </select>
-            <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-              </svg>
+          <!-- Type d'action -->
+          <div class="min-w-48">
+            <label class="block text-sm font-medium text-slate-700 mb-2">
+              Type d'action
+            </label>
+            <div class="relative">
+              <select [(ngModel)]="filtreTypeAction" (change)="appliquerFiltres()" 
+                      class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all duration-300 text-slate-800">
+                <option value="">Tous les types</option>
+                <option value="Ajout Visiteur">Ajout Visiteur</option>
+                <option value="Modification Visiteur">Modification Visiteur</option>
+                <option value="Validation Sortie">Validation Sortie</option>
+              </select>
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Période -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-slate-700">
-            Période
-          </label>
-          <div class="relative">
-            <select [(ngModel)]="filtrePeriode" (change)="appliquerFiltres()" 
-                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-300 text-slate-800">
-              <option value="">Toutes les périodes</option>
-              <option value="today">Aujourd'hui</option>
-              <option value="yesterday">Hier</option>
-              <option value="week">Cette semaine</option>
-              <option value="month">Ce mois</option>
-              <option value="custom">Période personnalisée</option>
-            </select>
-            <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
-              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-              </svg>
+          <!-- Période -->
+          <div class="min-w-44">
+            <label class="block text-sm font-medium text-slate-700 mb-2">
+              Période
+            </label>
+            <div class="relative">
+              <select [(ngModel)]="filtrePeriode" (change)="appliquerFiltres()" 
+                      class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-300 text-slate-800">
+                <option value="">Toutes les périodes</option>
+                <option value="today">Aujourd'hui</option>
+                <option value="yesterday">Hier</option>
+                <option value="week">Cette semaine</option>
+                <option value="month">Ce mois</option>
+                <option value="custom">Période personnalisée</option>
+              </select>
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Dates personnalisées -->
-        <div *ngIf="filtrePeriode === 'custom'" class="space-y-2">
-          <label class="block text-sm font-medium text-slate-700">
-            Date début
-          </label>
-          <input type="date" [(ngModel)]="dateDebut" (change)="appliquerFiltres()" 
-                 class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all duration-300 text-slate-800">
-        </div>
-        
-        <div *ngIf="filtrePeriode === 'custom'" class="space-y-2">
-          <label class="block text-sm font-medium text-slate-700">
-            Date fin
-          </label>
-          <input type="date" [(ngModel)]="dateFin" (change)="appliquerFiltres()" 
-                 class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all duration-300 text-slate-800">
+          <!-- Dates personnalisées - affiches horizontalement si période custom -->
+          <div *ngIf="filtrePeriode === 'custom'" class="flex gap-3">
+            <div class="min-w-36">
+              <label class="block text-sm font-medium text-slate-700 mb-2">
+                Date début
+              </label>
+              <input type="date" [(ngModel)]="dateDebut" (change)="appliquerFiltres()" 
+                     class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all duration-300 text-slate-800">
+            </div>
+            
+            <div class="min-w-36">
+              <label class="block text-sm font-medium text-slate-700 mb-2">
+                Date fin
+              </label>
+              <input type="date" [(ngModel)]="dateFin" (change)="appliquerFiltres()" 
+                     class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all duration-300 text-slate-800">
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ✅ SECTION EXPORT ET RÉSULTATS -->
-    <div class="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4 bg-white p-4 rounded-xl shadow-md border border-slate-200">
+    <!-- ✅ SECTION EXPORT COMPACTE AVEC MARGE DROITE -->
+    <div class="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4 bg-white px-6 py-4 rounded-xl shadow-lg border border-slate-200 mr-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-10 h-10 bg-gradient-to-r from-emerald-100 to-blue-100 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
           </svg>
         </div>
         <div>
           <p class="text-lg font-bold text-slate-800">{{ historiqueFiltre().length }}</p>
-          <p class="text-sm text-slate-500">résultats trouvés sur {{ historique.length }} entrées</p>
+          <p class="text-sm text-slate-500">résultats sur {{ historique.length }} entrées</p>
         </div>
       </div>
       
       <div class="flex flex-wrap gap-2">
-        <button class="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105" 
+        <button class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105" 
                 (click)="exporterExcelTout()">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
-          Exporter tout
+          Tout
         </button>
         
-        <button class="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105" 
+        <button class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105" 
                 (click)="exporterExcelFiltre()">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
           </svg>
-          Exporter filtrés
+          Filtrés
         </button>
         
-        <button class="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" 
+        <button class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" 
                 [disabled]="lignesSelectionnees.size === 0" 
                 (click)="exporterExcelSelection()">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          Exporter sélection ({{ lignesSelectionnees.size }})
+          Sélection ({{ lignesSelectionnees.size }})
         </button>
       </div>
     </div>
 
-    <!-- ✅ TABLEAU MODERNE AVEC DESIGN AMÉLIORÉ -->
-    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+    <!-- ✅ TABLEAU MODERNE OPTIMISÉ AVEC MARGE DROITE -->
+    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mr-4">
       <!-- En-tête du tableau -->
-      <div class="bg-gradient-to-r from-slate-50 to-slate-100 p-4 flex justify-between items-center border-b border-slate-200">
+      <div class="bg-gradient-to-r from-slate-50 to-blue-50 px-6 py-4 flex justify-between items-center border-b border-slate-200">
         <h2 class="text-lg font-bold text-slate-800 flex items-center gap-3">
-          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
           Historique des Actions
         </h2>
-        <button class="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105" 
+        <button class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105" 
                 (click)="raffraichirDonnees()">
           <svg class="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -236,7 +247,7 @@
       </div>
 
       <!-- Indicateur de chargement -->
-      <div *ngIf="isLoading" class="flex items-center justify-center py-12">
+      <div *ngIf="isLoading" class="flex items-center justify-center py-16">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         <span class="ml-3 text-slate-600 font-medium">Chargement des données...</span>
       </div>
@@ -364,15 +375,15 @@
       </div>
     </div>
 
-    <!-- ✅ PAGINATION MODERNE -->
-    <div *ngIf="!isLoading && historiqueFiltre().length > 0" class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 bg-white p-4 rounded-xl shadow-md border border-slate-200">
+    <!-- ✅ PAGINATION MODERNE ET COMPACTE AVEC MARGE DROITE -->
+    <div *ngIf="!isLoading && historiqueFiltre().length > 0" class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 bg-white px-6 py-4 rounded-xl shadow-lg border border-slate-200 mr-4">
       <div class="text-sm text-slate-600">
         <div class="flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
           </svg>
           <span>
-            Affichage de <strong>{{ ((pageActuelle - 1) * nombreElementsAffichage) + 1 }}</strong> à 
+            <strong>{{ ((pageActuelle - 1) * nombreElementsAffichage) + 1 }}</strong> à 
             <strong>{{ Math.min(pageActuelle * nombreElementsAffichage, historiqueFiltre().length) }}</strong>
             sur <strong>{{ historiqueFiltre().length }}</strong> entrées
           </span>
@@ -380,7 +391,7 @@
       </div>
       
       <div class="flex items-center gap-2">
-        <button class="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" 
+        <button class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" 
                 [disabled]="pageActuelle === 1" 
                 (click)="changerPage(pageActuelle - 1)">
           <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -391,7 +402,7 @@
         
         <div class="flex gap-1">
           <ng-container *ngFor="let page of getPagesArray()">
-            <button class="px-3 py-2 text-sm font-medium rounded-lg transition-all duration-300" 
+            <button class="px-3 py-2 text-sm font-medium rounded-xl transition-all duration-300" 
                     [ngClass]="page === pageActuelle ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:scale-105'"
                     (click)="changerPage(page)">
               {{ page }}
@@ -399,7 +410,7 @@
           </ng-container>
         </div>
         
-        <button class="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" 
+        <button class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" 
                 [disabled]="pageActuelle === totalPages()" 
                 (click)="changerPage(pageActuelle + 1)">
           Suivant
