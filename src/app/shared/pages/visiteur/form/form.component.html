@@ -1,285 +1,247 @@
-<!-- FORMULAIRE VISITEUR - ULTRA-COMPACT ZOOM 100% SANS CSS -->
-<div class="form-wrapper">
-
-  <!-- EN-TÊTE ULTRA-COMPACT -->
-  <div class="header-section">
-    <div class="header-main">
-      <div class="header-left">
-        <div class="time-display">
-          <div class="live-dot"></div>
-          <span class="time-value">{{ currentTime }}</span>
-        </div>
-        <div class="counter-display">
-          <svg class="visitor-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-          </svg>
-          <span class="counter-value">{{ compteur }}</span>
-        </div>
-      </div>
-      <div class="header-right">
-        <span class="progress-value">{{ formProgress }}%</span>
-        <div class="progress-container">
-          <div class="progress-track" [style.width.%]="formProgress"></div>
-        </div>
-      </div>
-    </div>
-    
-    <div *ngIf="selectedVisiteurId" class="edit-mode">
-      <svg class="edit-mode-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+<div class="bg-white rounded-xl shadow-lg p-4 lg:p-6 border border-slate-200 animate-fadeIn max-h-[calc(100vh-180px)] overflow-y-auto">
+  
+  <!-- Messages -->
+  <div *ngIf="showMessage" class="bg-blue-50 text-blue-700 p-4 rounded-lg text-sm border border-blue-200 flex items-center gap-2 mb-6"
+       [class.bg-green-50]="messageType === 'success'"
+       [class.text-green-700]="messageType === 'success'"
+       [class.border-green-200]="messageType === 'success'"
+       [class.bg-red-50]="messageType === 'error'"
+       [class.text-red-700]="messageType === 'error'"
+       [class.border-red-200]="messageType === 'error'"
+       [class.bg-yellow-50]="messageType === 'warning'"
+       [class.text-yellow-700]="messageType === 'warning'"
+       [class.border-yellow-200]="messageType === 'warning'">
+    <span *ngIf="messageType === 'success'">✅</span>
+    <span *ngIf="messageType === 'error'">⚠️</span>
+    <span *ngIf="messageType === 'warning'">⚡</span>
+    <span *ngIf="messageType !== 'success' && messageType !== 'error' && messageType !== 'warning'">ℹ️</span>
+    <span>{{ confirmationMessage }}</span>
+    <button (click)="hideNotification()" class="ml-auto text-current opacity-70 hover:opacity-100">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
-      <span class="edit-mode-text">Mode modification</span>
-    </div>
+    </button>
   </div>
 
-  <!-- NOTIFICATIONS -->
-  <div *ngIf="showMessage" class="message-area">
-    <div class="message-box" [ngClass]="messageType + '-message'">
-      <svg class="message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path *ngIf="messageType === 'success'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        <path *ngIf="messageType === 'error'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        <path *ngIf="messageType === 'warning'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.268 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-      </svg>
-      <span class="message-content">{{ confirmationMessage }}</span>
-      <button (click)="hideNotification()" class="message-close">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
+  <!-- Mode édition indicator -->
+  <div *ngIf="selectedVisiteurId" class="bg-orange-50 text-orange-700 p-3 rounded-lg text-sm border border-orange-200 flex items-center gap-2 mb-6">
+    <span>✏️</span>
+    <span>Mode modification / وضع التعديل</span>
+  </div>
+
+  <form [formGroup]="visiteurForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    
+    <!-- Section Identité -->
+    <div class="bg-slate-50 rounded-lg p-4 space-y-4">
+      <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+        <span class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
+          👤
+        </span>
+        <span>Identité</span>
+        <span class="text-xs text-slate-500 font-normal">الهوية</span>
+        <span class="text-red-500">*</span>
+      </h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Nom -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1 flex items-center gap-2">
+            <span>Nom</span>
+            <span class="text-xs text-slate-500 font-normal">الاسم</span>
+            <span class="text-red-500">*</span>
+          </label>
+          <input type="text" formControlName="nom"
+                 class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm"
+                 [class.border-red-400]="fieldStates['nom'] === 'invalid'"
+                 [class.border-green-400]="fieldStates['nom'] === 'valid'"
+                 placeholder="Nom / الاسم">
+          <div *ngIf="fieldStates['nom'] === 'invalid'" class="text-red-500 text-xs mt-1">{{ getFieldError('nom') }}</div>
+        </div>
+
+        <!-- Prénom -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1 flex items-center gap-2">
+            <span>Prénom</span>
+            <span class="text-xs text-slate-500 font-normal">النسب</span>
+            <span class="text-red-500">*</span>
+          </label>
+          <input type="text" formControlName="prenom"
+                 class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm"
+                 [class.border-red-400]="fieldStates['prenom'] === 'invalid'"
+                 [class.border-green-400]="fieldStates['prenom'] === 'valid'"
+                 placeholder="Prénom / النسب">
+          <div *ngIf="fieldStates['prenom'] === 'invalid'" class="text-red-500 text-xs mt-1">{{ getFieldError('prenom') }}</div>
+        </div>
+
+        <!-- CIN -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1 flex items-center gap-2">
+            <span>CIN</span>
+            <span class="text-xs text-slate-500 font-normal">رقم البطاقة الوطنية</span>
+            <span class="text-red-500">*</span>
+          </label>
+          <input type="text" formControlName="cin"
+                 class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm uppercase"
+                 [class.border-red-400]="fieldStates['cin'] === 'invalid'"
+                 [class.border-green-400]="fieldStates['cin'] === 'valid'"
+                 placeholder="CIN (A123456) / رقم البطاقة">
+          <div *ngIf="fieldStates['cin'] === 'invalid'" class="text-red-500 text-xs mt-1">{{ getFieldError('cin') }}</div>
+        </div>
+
+        <!-- Téléphone -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1 flex items-center gap-2">
+            <span>Téléphone</span>
+            <span class="text-xs text-slate-500 font-normal">رقم الهاتف</span>
+            <span class="text-red-500">*</span>
+          </label>
+          <input type="tel" formControlName="telephone"
+                 class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm"
+                 [class.border-red-400]="fieldStates['telephone'] === 'invalid'"
+                 [class.border-green-400]="fieldStates['telephone'] === 'valid'"
+                 placeholder="Téléphone (06...) / رقم الهاتف">
+          <div *ngIf="fieldStates['telephone'] === 'invalid'" class="text-red-500 text-xs mt-1">{{ getFieldError('telephone') }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Genre -->
+    <div class="bg-slate-50 rounded-lg p-4 space-y-4">
+      <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+        <span class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs">
+          ⚧
+        </span>
+        <span>Genre</span>
+        <span class="text-xs text-slate-500 font-normal">الجنس</span>
+        <span class="text-red-500">*</span>
+      </h3>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Homme -->
+        <div class="selection-card border-2 rounded-lg p-3 text-center cursor-pointer transition-all"
+             [class.selected]="visiteurForm.get('genre')?.value === 'Homme'"
+             [class.border-blue-400]="visiteurForm.get('genre')?.value === 'Homme'"
+             [class.border-slate-200]="visiteurForm.get('genre')?.value !== 'Homme'"
+             [class.bg-gradient-to-br]="true"
+             [class.from-blue-50]="visiteurForm.get('genre')?.value === 'Homme'"
+             [class.to-blue-100]="visiteurForm.get('genre')?.value === 'Homme'"
+             [class.from-slate-50]="visiteurForm.get('genre')?.value !== 'Homme'"
+             [class.to-slate-100]="visiteurForm.get('genre')?.value !== 'Homme'"
+             (click)="visiteurForm.get('genre')?.setValue('Homme')">
+          <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-white shadow-md flex items-center justify-center">
+            <span class="text-2xl">👨</span>
+          </div>
+          <h4 class="text-sm font-bold text-slate-700">Homme</h4>
+          <p class="text-xs text-slate-500">رجل</p>
+        </div>
+
+        <!-- Femme -->
+        <div class="selection-card border-2 rounded-lg p-3 text-center cursor-pointer transition-all"
+             [class.selected]="visiteurForm.get('genre')?.value === 'Femme'"
+             [class.border-pink-400]="visiteurForm.get('genre')?.value === 'Femme'"
+             [class.border-slate-200]="visiteurForm.get('genre')?.value !== 'Femme'"
+             [class.bg-gradient-to-br]="true"
+             [class.from-pink-50]="visiteurForm.get('genre')?.value === 'Femme'"
+             [class.to-pink-100]="visiteurForm.get('genre')?.value === 'Femme'"
+             [class.from-slate-50]="visiteurForm.get('genre')?.value !== 'Femme'"
+             [class.to-slate-100]="visiteurForm.get('genre')?.value !== 'Femme'"
+             (click)="visiteurForm.get('genre')?.setValue('Femme')">
+          <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-white shadow-md flex items-center justify-center">
+            <span class="text-2xl">👩</span>
+          </div>
+          <h4 class="text-sm font-bold text-slate-700">Femme</h4>
+          <p class="text-xs text-slate-500">امرأة</p>
+        </div>
+      </div>
+      
+      <div *ngIf="fieldStates['genre'] === 'invalid'" class="text-red-500 text-xs text-center">{{ getFieldError('genre') }}</div>
+    </div>
+
+    <!-- Section Visite -->
+    <div class="bg-slate-50 rounded-lg p-4 space-y-4">
+      <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+        <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">
+          🏢
+        </span>
+        <span>Visite</span>
+        <span class="text-xs text-slate-500 font-normal">الزيارة</span>
+        <span class="text-red-500">*</span>
+      </h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Destination -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1 flex items-center gap-2">
+            <span>Destination</span>
+            <span class="text-xs text-slate-500 font-normal">الوجهة</span>
+            <span class="text-red-500">*</span>
+          </label>
+          <select formControlName="destination"
+                  class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:ring-1 focus:ring-green-200 transition-all text-sm"
+                  [class.border-red-400]="fieldStates['destination'] === 'invalid'"
+                  [class.border-green-400]="fieldStates['destination'] === 'valid'">
+            <option value="" disabled>Destination / الوجهة</option>
+            <option value="atelier">🔧 Atelier / الورشة</option>
+            <option value="administration">🏢 Administration / الإدارة</option>
+            <option value="réception">📋 Réception / الاستقبال</option>
+            <option value="comptoir">💼 Comptoir / المكتب</option>
+          </select>
+          <div *ngIf="fieldStates['destination'] === 'invalid'" class="text-red-500 text-xs mt-1">{{ getFieldError('destination') }}</div>
+        </div>
+
+        <!-- Type Visiteur -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1 flex items-center gap-2">
+            <span>Type</span>
+            <span class="text-xs text-slate-500 font-normal">النوع</span>
+            <span class="text-slate-400">(optionnel / اختياري)</span>
+          </label>
+          <select formControlName="typeVisiteur"
+                  class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:border-green-500 focus:ring-1 focus:ring-green-200 transition-all text-sm">
+            <option value="">Type (optionnel) / النوع</option>
+            <option value="Prestataire/Fournisseur">🤝 Prestataire / مقدم خدمة</option>
+            <option value="Client">👤 Client / عميل</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Zone matricule conditionnel -->
+      <div *ngIf="visiteurForm.get('destination')?.value === 'atelier'" class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
+            🏷️
+          </div>
+          <h4 class="text-sm font-semibold text-blue-700">Matricule / رقم التسجيل</h4>
+        </div>
+        <input type="text" formControlName="matricule"
+               class="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all text-sm"
+               placeholder="MAT001 / رقم التسجيل">
+      </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="flex gap-3 pt-4">
+      <button *ngIf="selectedVisiteurId" 
+              type="button"
+              (click)="resetForm()"
+              class="flex-1 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white py-3 rounded-lg font-semibold text-sm shadow-lg transition-all transform hover:scale-[1.02]">
+        ❌ Annuler / إلغاء
+      </button>
+      
+      <button type="submit" 
+              class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-lg font-semibold text-sm shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="loading || visiteurForm.invalid">
+        <span *ngIf="!loading" class="flex items-center justify-center gap-2">
+          ✅ {{ selectedVisiteurId ? 'Modifier' : 'Enregistrer' }} / {{ selectedVisiteurId ? 'تعديل' : 'تسجيل' }}
+        </span>
+        <span *ngIf="loading" class="flex items-center justify-center gap-2">
+          <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+            <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path>
+          </svg>
+          Envoi... / جاري الإرسال...
+        </span>
       </button>
     </div>
-  </div>
-
-  <!-- CONTENU FORMULAIRE -->
-  <div class="content-area">
-    <form [formGroup]="visiteurForm" (ngSubmit)="onSubmit()" class="main-form">
-      
-      <!-- SECTION 1: IDENTITÉ -->
-      <div class="form-section identity-block">
-        <div class="section-header">
-          <div class="section-icon identity-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
-            </svg>
-          </div>
-          <span class="section-label">Identité</span>
-          <span class="required-star">*</span>
-        </div>
-        
-        <div class="input-grid">
-          <div class="input-wrapper">
-            <input 
-              type="text" 
-              formControlName="nom" 
-              placeholder="Nom *"
-              class="text-input"
-              [ngClass]="{
-                'error-state': fieldStates['nom'] === 'invalid',
-                'success-state': fieldStates['nom'] === 'valid'
-              }"
-            />
-            <div *ngIf="fieldStates['nom'] === 'invalid'" class="input-error">{{ getFieldError('nom') }}</div>
-          </div>
-
-          <div class="input-wrapper">
-            <input 
-              type="text" 
-              formControlName="prenom" 
-              placeholder="Prénom *"
-              class="text-input"
-              [ngClass]="{
-                'error-state': fieldStates['prenom'] === 'invalid',
-                'success-state': fieldStates['prenom'] === 'valid'
-              }"
-            />
-            <div *ngIf="fieldStates['prenom'] === 'invalid'" class="input-error">{{ getFieldError('prenom') }}</div>
-          </div>
-
-          <div class="input-wrapper">
-            <input 
-              type="text" 
-              formControlName="cin" 
-              placeholder="CIN * (A123456)"
-              class="text-input uppercase-input"
-              [ngClass]="{
-                'error-state': fieldStates['cin'] === 'invalid',
-                'success-state': fieldStates['cin'] === 'valid'
-              }"
-            />
-            <div *ngIf="fieldStates['cin'] === 'invalid'" class="input-error">{{ getFieldError('cin') }}</div>
-          </div>
-
-          <div class="input-wrapper">
-            <input 
-              type="tel" 
-              formControlName="telephone" 
-              placeholder="Téléphone * (06...)"
-              class="text-input"
-              [ngClass]="{
-                'error-state': fieldStates['telephone'] === 'invalid',
-                'success-state': fieldStates['telephone'] === 'valid'
-              }"
-            />
-            <div *ngIf="fieldStates['telephone'] === 'invalid'" class="input-error">{{ getFieldError('telephone') }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECTION 2: GENRE -->
-      <div class="form-section gender-block">
-        <div class="section-header">
-          <div class="section-icon gender-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-            </svg>
-          </div>
-          <span class="section-label">Genre</span>
-          <span class="required-star">*</span>
-        </div>
-        
-        <div class="gender-options">
-          <button 
-            type="button" 
-            (click)="visiteurForm.get('genre')?.setValue('Homme')"
-            class="gender-button"
-            [ngClass]="{
-              'gender-active': visiteurForm.get('genre')?.value === 'Homme',
-              'gender-male': visiteurForm.get('genre')?.value === 'Homme'
-            }"
-          >
-            <div class="gender-avatar" [ngClass]="{'male-avatar': visiteurForm.get('genre')?.value === 'Homme'}">
-              <svg fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M21 9V7L15 7.5V9M15 11.5V9.5L21 9V7L15 7.5L13.5 7L10.5 6.5C9.7 6.3 8.8 6.8 8.5 7.6L7 10.5V13H8.5V10.5L9.5 8.5L8.5 13V22H10V18H12V22H13.5V13L14.5 8.5L15 11.5Z"/>
-              </svg>
-            </div>
-            <span class="gender-label">Homme</span>
-          </button>
-
-          <button 
-            type="button" 
-            (click)="visiteurForm.get('genre')?.setValue('Femme')"
-            class="gender-button"
-            [ngClass]="{
-              'gender-active': visiteurForm.get('genre')?.value === 'Femme',
-              'gender-female': visiteurForm.get('genre')?.value === 'Femme'
-            }"
-          >
-            <div class="gender-avatar" [ngClass]="{'female-avatar': visiteurForm.get('genre')?.value === 'Femme'}">
-              <svg fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M12.5 7H11.5C10.1 7 8.7 7.5 7.9 8.5L6.5 10.5V13H8V10.8L9 9.3L8 13V22H9.5V18H11V22H12.5V13L13.5 9.3L14.5 10.8V13H16V10.5L14.6 8.5C13.8 7.5 12.4 7 11 7H12.5Z"/>
-              </svg>
-            </div>
-            <span class="gender-label">Femme</span>
-          </button>
-        </div>
-        
-        <div *ngIf="fieldStates['genre'] === 'invalid'" class="input-error center-error">
-          {{ getFieldError('genre') }}
-        </div>
-      </div>
-
-      <!-- SECTION 3: VISITE -->
-      <div class="form-section visit-block">
-        <div class="section-header">
-          <div class="section-icon visit-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-            </svg>
-          </div>
-          <span class="section-label">Visite</span>
-          <span class="required-star">*</span>
-        </div>
-        
-        <div class="input-grid">
-          <div class="input-wrapper">
-            <div class="select-box">
-              <select 
-                formControlName="destination" 
-                class="select-input"
-                [ngClass]="{
-                  'error-state': fieldStates['destination'] === 'invalid',
-                  'success-state': fieldStates['destination'] === 'valid'
-                }"
-              >
-                <option value="" disabled>Destination *</option>
-                <option value="atelier">🔧 Atelier</option>
-                <option value="administration">🏢 Administration</option>
-                <option value="réception">📋 Réception</option>
-                <option value="comptoir">💼 Comptoir</option>
-              </select>
-              <div class="select-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </div>
-            </div>
-            <div *ngIf="fieldStates['destination'] === 'invalid'" class="input-error">{{ getFieldError('destination') }}</div>
-          </div>
-
-          <div class="input-wrapper">
-            <div class="select-box">
-              <select formControlName="typeVisiteur" class="select-input">
-                <option value="">Type (optionnel)</option>
-                <option value="Prestataire/Fournisseur">🤝 Prestataire</option>
-                <option value="Client">👤 Client</option>
-              </select>
-              <div class="select-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Zone matricule conditionnel -->
-        <div *ngIf="visiteurForm.get('destination')?.value === 'atelier'" class="matricule-area">
-          <div class="matricule-title">
-            <div class="matricule-badge">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-            </div>
-            <span class="matricule-text">Matricule</span>
-          </div>
-          <input 
-            type="text" 
-            formControlName="matricule" 
-            placeholder="MAT001"
-            class="text-input matricule-field"
-          />
-        </div>
-      </div>
-
-      <!-- ZONE BOUTONS -->
-      <div class="button-area">
-        <button 
-          *ngIf="selectedVisiteurId"
-          type="button"
-          (click)="resetForm()"
-          class="action-button cancel-button"
-        >
-          Annuler
-        </button>
-        
-        <button 
-          type="submit"
-          [disabled]="loading || visiteurForm.invalid"
-          class="action-button submit-button"
-          [ngClass]="{'loading-button': loading}"
-        >
-          <div *ngIf="loading" class="button-loading">
-            <div class="loading-spinner"></div>
-            <span>Envoi...</span>
-          </div>
-          
-          <div *ngIf="!loading" class="button-normal">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span>{{ selectedVisiteurId ? 'Modifier' : 'Enregistrer' }}</span>
-          </div>
-        </button>
-      </div>
-    </form>
-  </div>
+  </form>
 </div>

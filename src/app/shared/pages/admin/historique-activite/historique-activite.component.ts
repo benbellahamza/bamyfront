@@ -442,6 +442,11 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       resultats = this.filtrerParPeriode(resultats);
     }
 
+    // Filtre par dates personnalisées (DE À)
+    if (this.filterState.dateDebut || this.filterState.dateFin) {
+      resultats = this.filtrerParDatePersonnalisee(resultats);
+    }
+
     // Tri optimisé
     resultats = this.trierResultats(resultats);
 
@@ -476,12 +481,21 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
           const debutMois = new Date(maintenant.getFullYear(), maintenant.getMonth(), 1);
           return dateAction >= debutMois;
           
-        case 'custom':
-          return this.isInCustomRange(dateAction);
-          
         default:
           return true;
       }
+    });
+  }
+
+  private filtrerParDatePersonnalisee(data: HistoriqueAction[]): HistoriqueAction[] {
+    return data.filter(action => {
+      if (!action.dateAction) return false;
+      
+      const dateAction = new Date(action.dateAction);
+      const debut = this.filterState.dateDebut ? new Date(this.filterState.dateDebut + 'T00:00:00') : null;
+      const fin = this.filterState.dateFin ? new Date(this.filterState.dateFin + 'T23:59:59') : null;
+      
+      return (!debut || dateAction >= debut) && (!fin || dateAction <= fin);
     });
   }
 
@@ -496,12 +510,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     startOfWeek.setDate(diff);
     startOfWeek.setHours(0, 0, 0, 0);
     return startOfWeek;
-  }
-
-  private isInCustomRange(dateAction: Date): boolean {
-    const debut = this.filterState.dateDebut ? new Date(this.filterState.dateDebut + 'T00:00:00') : null;
-    const fin = this.filterState.dateFin ? new Date(this.filterState.dateFin + 'T23:59:59') : null;
-    return (!debut || dateAction >= debut) && (!fin || dateAction <= fin);
   }
 
   // 🔄 TRI OPTIMISÉ
@@ -574,7 +582,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
-  // ✅ GESTION DE LA SÉLECTION OPTIMISÉE
+  // ✅ GESTION DE LA SÉLECTION OPTIMISÉE - CORRIGÉE
   toggleSelection(id: number): void {
     if (this.lignesSelectionnees.has(id)) {
       this.lignesSelectionnees.delete(id);
@@ -588,14 +596,26 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     const donneesPage = this.getDonneesPageActuelle();
     
     if (this.toutSelectionner) {
-      // Désélectionner tous les éléments de la page
-      donneesPage.forEach(item => this.lignesSelectionnees.delete(item.id));
-    } else {
       // Sélectionner tous les éléments de la page
       donneesPage.forEach(item => this.lignesSelectionnees.add(item.id));
+    } else {
+      // Désélectionner tous les éléments de la page
+      donneesPage.forEach(item => this.lignesSelectionnees.delete(item.id));
     }
     
-    this.toutSelectionner = !this.toutSelectionner;
+    this.mettreAJourSelectionTout();
+  }
+
+  // ✅ NOUVELLES MÉTHODES DE SÉLECTION
+  selectionnerTous(): void {
+    const donneesPage = this.getDonneesPageActuelle();
+    donneesPage.forEach(item => this.lignesSelectionnees.add(item.id));
+    this.mettreAJourSelectionTout();
+  }
+
+  deselectionnerTous(): void {
+    this.lignesSelectionnees.clear();
+    this.toutSelectionner = false;
   }
 
   private getDonneesPageActuelle(): HistoriqueAction[] {
@@ -757,21 +777,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   // 🔄 REFRESH DES DONNÉES
   raffraichirDonnees(): void {
     this.chargerHistorique();
-  }
-
-  // 📊 STATISTIQUES POUR DASHBOARD
-  obtenirStatistiquesRapides() {
-    const donnees = this.historiqueFiltered;
-    return {
-      total: donnees.length,
-      ajouts: this.nombreCreations(),
-      modifications: this.nombreModifications(),
-      agents: this.nombreAgentsActifs(),
-      pourcentage: this.pourcentageTotal(),
-      periodeActiveFilters: this.filterState.periode ? 1 : 0,
-      textActiveFilters: this.filterState.text ? 1 : 0,
-      typeActiveFilters: this.filterState.typeAction ? 1 : 0
-    };
   }
 
   // 🎨 MÉTHODES POUR LES CLASSES CSS DYNAMIQUES
@@ -937,12 +942,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   // 🔔 SYSTÈME DE NOTIFICATIONS
   private showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info'): void {
     // Simulation d'un système de notification
-    // Dans un vrai projet, vous utiliseriez un service de notification
     console.log(`[${type.toUpperCase()}] ${message}`);
     
     // Optionnel : Affichage d'une notification temporaire dans l'interface
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      // Gestion des notifications browser (optionnel)
+    if (typeof window !== 'undefined') {
       const iconMap = {
         success: '✅',
         error: '❌',
@@ -957,7 +960,9 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       document.body.appendChild(notification);
       
       setTimeout(() => {
-        notification.remove();
+        if (notification.parentNode) {
+          notification.remove();
+        }
       }, 3000);
     }
   }
@@ -1076,4 +1081,20 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     const sommeDurees = durees.reduce((sum, duration) => sum + duration, 0);
     return Math.round(sommeDurees / durees.length);
   }
+
+  // 📊 STATISTIQUES POUR DASHBOARD
+  obtenirStatistiquesRapides() {
+    const donnees = this.historiqueFiltered;
+    return {
+      total: donnees.length,
+      ajouts: this.nombreCreations(),
+      modifications: this.nombreModifications(),
+      agents: this.nombreAgentsActifs(),
+      pourcentage: this.pourcentageTotal(),
+      periodeActiveFilters: this.filterState.periode ? 1 : 0,
+      textActiveFilters: this.filterState.text ? 1 : 0,
+      typeActiveFilters: this.filterState.typeAction ? 1 : 0
+    };
+  }
+
 }

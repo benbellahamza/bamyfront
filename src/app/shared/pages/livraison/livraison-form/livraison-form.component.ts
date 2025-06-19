@@ -51,6 +51,26 @@ export class LivraisonFormComponent implements OnInit {
     'KAICENE': ['Star truck']
   };
 
+  // Mapping des chemins d'images pour les marques (utilisé aussi pour les modèles)
+  private marquesImagePaths: { [key: string]: string } = {
+    'RENAULT': 'assets/images/logos/renault-trucks-logo.png',
+    'FORLAND': 'assets/images/logos/forland-logo.png',
+    'KAICENE': 'assets/images/logos/kaicene-logo.png'
+  };
+
+  // Noms courts pour l'affichage des modèles
+  private modelesDisplayNames: { [key: string]: string } = {
+    'RENAULT Trucks D': 'Trucks D',
+    'RENAULT Trucks K': 'Trucks K', 
+    'RENAULT Trucks C': 'Trucks C',
+    'RENAULT Trucks T': 'Trucks T',
+    'FORLAND T5e': 'T5e',
+    'FORLAND L5e': 'L5e',
+    'FORLAND L5n': 'L5n',
+    'FORLAND L5': 'L5',
+    'Star truck': 'Star truck'
+  };
+
   constructor(
     private fb: FormBuilder,
     private livraisonService: LivraisonService,
@@ -100,6 +120,24 @@ export class LivraisonFormComponent implements OnInit {
   selectionnerModele(modele: string): void {
     this.modeleSelectionne = modele;
     this.entreeForm.get('modele')?.setValue(modele);
+  }
+
+  // Méthodes pour gérer les logos des marques (utilisées pour les modèles aussi)
+  getMarqueLogoPath(marque: string): string {
+    return this.marquesImagePaths[marque] || 'assets/images/logos/default-logo.png';
+  }
+
+  getModeleDisplayName(modele: string): string {
+    return this.modelesDisplayNames[modele] || modele;
+  }
+
+  onMarqueImageError(event: any): void {
+    // Cacher l'image et afficher le fallback
+    event.target.style.display = 'none';
+    const fallbackElement = event.target.nextElementSibling;
+    if (fallbackElement) {
+      fallbackElement.style.display = 'flex';
+    }
   }
 
   getModelesParMarque(marque: string): string[] {

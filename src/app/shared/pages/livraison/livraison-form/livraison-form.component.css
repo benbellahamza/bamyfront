@@ -38,6 +38,35 @@
   animation: slideIn 0.3s ease-out;
 }
 
+/* Support pour l'arabe */
+.arabic-text {
+  font-family: 'Arial', 'Tahoma', sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Amélioration pour les labels bilingues */
+label {
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+label .arabic-label {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-right: 0.5rem;
+}
+
+/* Placeholders bilingues */
+input::placeholder,
+select::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
 /* Scrollbar personnalisée */
 .custom-scrollbar {
   scrollbar-width: thin;
@@ -71,10 +100,93 @@
   transform: translateY(-1px);
 }
 
-/* Style pour les ellipses de sélection */
+/* Style pour les logos des marques et modèles */
+.logo-container {
+  transition: all 0.3s ease;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.logo-container img {
+  transition: all 0.2s ease;
+  filter: brightness(1);
+}
+
+.selection-card.selected .logo-container img {
+  filter: brightness(1.1) contrast(1.1);
+}
+
+.selection-card:hover .logo-container img {
+  filter: brightness(1.05);
+}
+
+/* Fallback pour les logos manquants */
+.logo-fallback,
+.fallback-icon {
+  background: linear-gradient(135deg, #64748b, #475569);
+  color: white;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+/* Style spécifique pour les modèles */
+.modele-logo-container {
+  transition: all 0.3s ease;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+}
+
+.modele-logo-container:hover {
+  transform: scale(1.08);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.modele-logo-container img {
+  transition: all 0.2s ease;
+  filter: brightness(1) saturate(1);
+}
+
+.selection-card.selected .modele-logo-container img {
+  filter: brightness(1.15) contrast(1.1) saturate(1.1);
+}
+
+.selection-card:hover .modele-logo-container img {
+  filter: brightness(1.1) saturate(1.05);
+}
+
+/* Animation pour l'apparition des modèles */
+.modeles-container {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Amélioration des cards de sélection avec logos */
 .selection-card {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.selection-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.selection-card:hover::before {
+  transform: translateX(100%);
 }
 
 .selection-card:hover {
@@ -85,6 +197,21 @@
 .selection-card.selected {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.2);
+}
+
+/* Pulse animation pour les éléments sélectionnés */
+.selection-card.selected .logo-container,
+.selection-card.selected .modele-logo-container {
+  animation: selectedPulse 2s ease-in-out infinite;
+}
+
+@keyframes selectedPulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  }
 }
 
 /* Style pour le compteur de stock */
@@ -151,6 +278,26 @@
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
+/* Support RTL pour les textes arabes */
+.rtl-support {
+  direction: rtl;
+  text-align: right;
+}
+
+.bilingual-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.arabic-translation {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-style: italic;
+}
+
 /* Responsive improvements */
 @media (max-width: 768px) {
   .modal-content {
@@ -168,6 +315,13 @@
   
   .grid.grid-cols-1.md\:grid-cols-3 {
     grid-template-columns: 1fr;
+  }
+
+  /* Amélioration mobile pour les labels bilingues */
+  .bilingual-label {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
   }
 }
 
@@ -283,11 +437,6 @@ select:focus {
   border-color: #3b82f6;
 }
 
-/* Style pour les labels */
-label {
-  transition: color 0.2s ease;
-}
-
 /* Animation d'apparition pour les modèles */
 .modeles-container {
   animation: fadeIn 0.4s ease-out;
@@ -375,4 +524,55 @@ label {
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* Styles spéciaux pour les messages d'erreur bilingues */
+.error-message-bilingual {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.error-message-bilingual .arabic {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Amélioration pour les placeholders bilingues */
+.bilingual-placeholder::placeholder {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* Style pour les boutons avec texte bilingue */
+.btn-bilingual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-bilingual .arabic-text {
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Animation pour les labels lors du focus */
+.form-group:focus-within label {
+  color: #3b82f6;
+  transform: scale(1.02);
+}
+
+/* Style pour les badges de compteur bilingues */
+.badge-bilingual {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge-bilingual .arabic {
+  font-size: 0.75rem;
+  opacity: 0.8;
 }
