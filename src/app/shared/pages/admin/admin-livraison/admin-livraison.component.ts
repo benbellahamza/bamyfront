@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
@@ -55,7 +55,7 @@ interface Camion {
   templateUrl: './admin-livraison.component.html',
   styleUrls: ['./admin-livraison.component.css']
 })
-export class AdminLivraisonComponent implements OnInit, OnDestroy {
+export class AdminLivraisonComponent implements OnInit, OnDestroy, AfterViewInit {
   
   // ✅ CONFIGURATION NAVIGATION
   navigationItems = [
@@ -99,10 +99,10 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   showDestinationFilter: boolean = false;
   loading: boolean = false;
 
-  // ✅ PAGINATION CORRIGÉE POUR 8 CARTES PAR DÉFAUT
+  // ✅ PAGINATION OPTIMISÉE POUR 5 CARTES PAR LIGNE ET 10 CARTES PAR PAGE
   currentPage: number = 1;
-  itemsPerPage: number = 8; // ✅ 8 cartes par défaut au lieu de 16
-  itemsPerPageOptions: number[] = [8, 12, 16, 24]; // ✅ Options optimisées
+  itemsPerPage: number = 10; // ✅ 10 cartes par page (2 lignes de 5 cartes)
+  itemsPerPageOptions: number[] = [10, 20, 30, 50]; // ✅ Options optimisées pour 5 cartes par ligne
 
   // ✅ GESTION DES ERREURS
   erreurExport: boolean = false;
@@ -110,28 +110,53 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   // ✅ UTILITAIRES
   Math = Math;
 
-  // ✅ SUBSCRIPTIONS
+  // ✅ SUBSCRIPTIONS ET TIMEOUTS
   private subscriptions: any[] = [];
+  private resizeTimeout: any;
 
   constructor(
     private http: HttpClient,
     private router: Router
   ) {
-    console.log('🔍 AdminLivraisonComponent initialisé');
+    console.log('🔍 AdminLivraisonComponent initialisé - 5 cartes par ligne, 10 par page');
   }
 
   ngOnInit(): void {
-    console.log('🚀 Composant initialisé');
+    console.log('🚀 Composant initialisé - 5 cartes par ligne, pagination 10 par page');
     this.chargerCamions();
   }
 
+  ngAfterViewInit(): void {
+    // Optimiser l'affichage après rendu
+    setTimeout(() => {
+      this.optimiserAffichage();
+      this.restaurerEtat();
+    }, 100);
+    
+    // Écouter les changements de taille d'écran
+    window.addEventListener('resize', () => this.onWindowResize());
+  }
+
   ngOnDestroy(): void {
+    // Sauvegarder l'état avant destruction
+    this.sauvegarderEtat();
+    
+    // Nettoyer les subscriptions
     this.subscriptions.forEach(sub => {
       if (sub && typeof sub.unsubscribe === 'function') {
         sub.unsubscribe();
       }
     });
-    console.log('🧹 Composant détruit et subscriptions nettoyées');
+    
+    // Nettoyer les event listeners
+    window.removeEventListener('resize', () => this.onWindowResize());
+    
+    // Nettoyer les timeouts
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+    
+    console.log('🧹 Composant détruit avec nettoyage complet (5 cartes par ligne)');
   }
 
   // ✅ CALLBACK LAYOUT UNIFIÉ
@@ -139,7 +164,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     console.log('🔐 Mot de passe changé depuis l\'interface admin livraison');
   }
 
-  // ✅ CHARGEMENT DES DONNÉES AVEC PAGINATION
+  // ✅ CHARGEMENT DES DONNÉES AVEC PAGINATION OPTIMISÉE
   chargerCamions(): void {
     this.loading = true;
     console.log('🔄 Chargement des camions depuis: http://localhost:8085/api/livraison/all');
@@ -228,9 +253,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('❌ Erreur chargement camions', err);
-        this.camions = [];
-        this.camionsFiltres = [];
-        this.loading = false;
+        this.gererErreurChargement(err);
       }
     });
     this.subscriptions.push(subscription);
@@ -293,7 +316,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     this.calculerPagination();
   }
 
-  // ✅ MÉTHODE DE CALCUL DE LA PAGINATION
+  // ✅ MÉTHODE DE CALCUL DE LA PAGINATION OPTIMISÉE
   private calculerPagination(): void {
     const totalPages = Math.ceil(this.camionsFiltres.length / this.itemsPerPage);
     
@@ -305,11 +328,12 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       this.currentPage = 1;
     }
     
-    console.log('📄 Pagination calculée:', {
+    console.log('📄 Pagination calculée (5 cartes par ligne, 10 par page):', {
       totalCamions: this.camionsFiltres.length,
       itemsPerPage: this.itemsPerPage,
       totalPages: totalPages,
-      currentPage: this.currentPage
+      currentPage: this.currentPage,
+      camionsVisibles: this.camionsPage.length
     });
   }
 
@@ -330,14 +354,21 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   }
 
   selectionnerTous(): void {
-    this.selectedCamions = [...this.camionsFiltres];
-    console.log('✅ Tous les camions sélectionnés:', this.selectedCamions.length);
+    // ✅ SÉLECTIONNER SEULEMENT LES CAMIONS VISIBLES SUR LA PAGE COURANTE
+    this.selectedCamions = [...this.camionsPage];
+    console.log('✅ Camions de la page courante sélectionnés:', this.selectedCamions.length);
   }
 
   deselectionnerTous(): void {
     const count = this.selectedCamions.length;
     this.selectedCamions = [];
     console.log('❌ Tous les camions désélectionnés:', count);
+  }
+
+  // ✅ SÉLECTION GLOBALE (tous les camions filtrés)
+  selectionnerTousGlobal(): void {
+    this.selectedCamions = [...this.camionsFiltres];
+    console.log('✅ Tous les camions filtrés sélectionnés:', this.selectedCamions.length);
   }
 
   // ✅ MÉTHODES UTILITAIRES
@@ -386,7 +417,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     );
   }
 
-  // ✅ FORMATAGE DES DATES AMÉLIORÉ
+  // ✅ FORMATAGE DES DATES AMÉLIORÉ POUR CARTES COMPACTES
   private formatDate(dateStr: string | undefined): string {
     if (!dateStr) return '';
     
@@ -397,7 +428,32 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
         return 'Date invalide';
       }
       
-      // Format français avec heure
+      // Format français compact pour cartes
+      return date.toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit', // ✅ ANNÉE SUR 2 CHIFFRES POUR GAGNER DE L'ESPACE
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      console.error('❌ Erreur formatage date:', e);
+      return 'Erreur';
+    }
+  }
+
+  // ✅ FORMATAGE DATE COMPLET POUR EXPORT
+  private formatDateComplete(dateStr: string | undefined): string {
+    if (!dateStr) return '';
+    
+    try {
+      const date = new Date(dateStr);
+      
+      if (isNaN(date.getTime())) {
+        return 'Date invalide';
+      }
+      
+      // Format complet pour export
       return date.toLocaleString('fr-FR', {
         day: '2-digit',
         month: '2-digit',
@@ -406,7 +462,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
         minute: '2-digit'
       });
     } catch (e) {
-      console.error('❌ Erreur formatage date:', e);
+      console.error('❌ Erreur formatage date complète:', e);
       return 'Erreur de date';
     }
   }
@@ -444,25 +500,26 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       'Modèle': c.modele,
       'Type Camion': c.typeCamion || '-',
       'Chauffeur Entrée': this.formatNomComplet(c.nomChauffeur, c.prenomChauffeur),
-      'Date Entrée': c.dateEntreeFormatee || '-',
-      'Date Sortie': c.dateSortieFormatee || 'Non sorti',
+      'Date Entrée': this.formatDateComplete(c.dateEntree) || '-',
+      'Date Sortie': this.formatDateComplete(c.dateSortie) || 'Non sorti',
       'Statut': c.statut === 'ENTREE' ? 'Présent' : 'Sorti',
       'Type Destination': c.typeDestination ? this.getDestinationLabel(c.typeDestination) : '-',
       'Destination': c.destination || '-',
       'Chauffeur Livraison': this.formatNomComplet(c.nomChauffeurLivraison, c.prenomChauffeurLivraison),
       'CIN Chauffeur': c.cinChauffeurLivraison || '-',
       'Entreprise': c.nomEntreprise || '-',
+      'Durée Présence': this.formatDureePresence(c),
       'Export Date': new Date().toLocaleString('fr-FR')
     }));
 
     try {
       const worksheet = XLSX.utils.json_to_sheet(formattedData);
       
-      // Configuration des largeurs de colonnes
+      // Configuration des largeurs de colonnes optimisées
       const columnWidths = [
         { wch: 5 }, { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
         { wch: 25 }, { wch: 20 }, { wch: 20 }, { wch: 12 }, { wch: 20 },
-        { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 20 }
+        { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 20 }
       ];
       worksheet['!cols'] = columnWidths;
 
@@ -525,7 +582,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     this.chargerCamions();
   }
 
-  // ✅ PAGINATION OPTIMISÉE
+  // ✅ PAGINATION OPTIMISÉE POUR CARTES COMPACTES
   changeItemsPerPage(newSize: number): void {
     console.log('📄 Changement items par page:', this.itemsPerPage, '→', newSize);
     this.itemsPerPage = newSize;
@@ -541,7 +598,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   getVisiblePages(): number[] {
     const totalPages = this.pages.length;
     const current = this.currentPage;
-    const maxVisible = 5;
+    const maxVisible = 7; // ✅ PLUS DE PAGES VISIBLES POUR CARTES COMPACTES
 
     if (totalPages <= maxVisible) {
       return this.pages;
@@ -560,13 +617,23 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   get camionsPage(): Camion[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
-    return this.camionsFiltres.slice(start, end);
+    const pageData = this.camionsFiltres.slice(start, end);
+    
+    console.log('📄 Camions page courante:', {
+      page: this.currentPage,
+      start: start + 1,
+      end: Math.min(end, this.camionsFiltres.length),
+      count: pageData.length,
+      total: this.camionsFiltres.length
+    });
+    
+    return pageData;
   }
 
   setPage(page: number): void {
     if (page >= 1 && page <= this.pages.length) {
       this.currentPage = page;
-      console.log('📄 Navigation vers page:', page);
+      console.log('📄 Navigation vers page:', page, 'sur', this.pages.length);
     }
   }
 
@@ -611,7 +678,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     this.filtrerParDate();
   }
 
-  // ✅ OPTIMISATION PERFORMANCE
+  // ✅ OPTIMISATION PERFORMANCE POUR CARTES COMPACTES
   trackByCamion(index: number, camion: Camion): any {
     return camion.id || camion.numeroChassis;
   }
@@ -710,11 +777,10 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
 
   getTendanceEntrees(): string {
     // Logique pour calculer la tendance des entrées
-    // Ici vous pouvez implémenter une logique plus complexe
     return '+12%';
   }
 
-  // ✅ MÉTHODES D'INFORMATION
+  // ✅ MÉTHODES D'INFORMATION POUR CARTES COMPACTES
   getStatutCouleur(statut: 'ENTREE' | 'SORTIE'): string {
     return statut === 'ENTREE' ? 'text-green-600' : 'text-red-600';
   }
@@ -748,7 +814,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     return this.selectedCamions.length > 0;
   }
 
-  // ✅ MÉTHODES DE NAVIGATION
+  // ✅ MÉTHODES DE NAVIGATION OPTIMISÉES
   goToFirstPage(): void {
     this.setPage(1);
   }
@@ -769,7 +835,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ✅ NAVIGATION CLAVIER (optionnel)
+  // ✅ NAVIGATION CLAVIER POUR CARTES COMPACTES
   onKeyboardNavigation(event: KeyboardEvent): void {
     if (event.key === 'ArrowLeft' && !this.isFirstPage) {
       this.goToPreviousPage();
@@ -777,10 +843,16 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     } else if (event.key === 'ArrowRight' && !this.isLastPage) {
       this.goToNextPage();
       event.preventDefault();
+    } else if (event.key === 'Home') {
+      this.goToFirstPage();
+      event.preventDefault();
+    } else if (event.key === 'End') {
+      this.goToLastPage();
+      event.preventDefault();
     }
   }
 
-  // ✅ MÉTHODES D'AFFICHAGE
+  // ✅ MÉTHODES D'AFFICHAGE COMPACTES
   formatDureePresence(camion: Camion): string {
     if (!camion.dateEntree) return '-';
     
@@ -793,6 +865,23 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     
     if (diffDays > 0) {
       return `${diffDays}j ${diffHours % 24}h`;
+    }
+    return `${diffHours}h`;
+  }
+
+  formatDureeCompacte(camion: Camion): string {
+    if (!camion.dateEntree) return '-';
+    
+    const entree = new Date(camion.dateEntree);
+    const sortie = camion.dateSortie ? new Date(camion.dateSortie) : new Date();
+    
+    const diffMs = sortie.getTime() - entree.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    
+    // Format ultra-compact pour les cartes
+    if (diffDays > 0) {
+      return `${diffDays}j`;
     }
     return `${diffHours}h`;
   }
@@ -867,18 +956,24 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     this.afficherNotification(message, 'info');
   }
 
-  // ✅ MÉTHODES DE PERFORMANCE
+  // ✅ MÉTHODES DE PERFORMANCE POUR CARTES COMPACTES
   private optimiserPerformance(): void {
     // Limitation du nombre d'éléments affichés pour améliorer les performances
     if (this.camionsFiltres.length > 1000) {
       console.warn('⚠️ Grand nombre de camions, optimisation des performances recommandée');
+      // Possibilité d'implémenter la virtualisation pour de très grandes listes
     }
   }
 
-  // ✅ MÉTHODES DE CACHE (optionnel)
+  // ✅ MÉTHODES DE CACHE OPTIMISÉES
   private cacherResultat(key: string, data: any): void {
     try {
-      sessionStorage.setItem(`camion_cache_${key}`, JSON.stringify(data));
+      const cacheKey = `camion_compact_cache_${key}`;
+      sessionStorage.setItem(cacheKey, JSON.stringify({
+        data,
+        timestamp: Date.now(),
+        itemsPerPage: this.itemsPerPage
+      }));
     } catch (e) {
       console.warn('⚠️ Impossible de cacher les données');
     }
@@ -886,31 +981,49 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
 
   private obtenirCache(key: string): any {
     try {
-      const data = sessionStorage.getItem(`camion_cache_${key}`);
-      return data ? JSON.parse(data) : null;
+      const cacheKey = `camion_compact_cache_${key}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (!cached) return null;
+      
+      const parsed = JSON.parse(cached);
+      const age = Date.now() - parsed.timestamp;
+      
+      // Cache valide pendant 5 minutes
+      if (age > 5 * 60 * 1000) {
+        sessionStorage.removeItem(cacheKey);
+        return null;
+      }
+      
+      return parsed.data;
     } catch (e) {
       return null;
     }
   }
 
-  // ✅ MÉTHODES DE NETTOYAGE
+  // ✅ MÉTHODES DE NETTOYAGE AMÉLIORÉES
   private nettoyerCache(): void {
     try {
       Object.keys(sessionStorage).forEach(key => {
-        if (key.startsWith('camion_cache_')) {
+        if (key.startsWith('camion_') && key.includes('_cache_')) {
           sessionStorage.removeItem(key);
         }
       });
+      console.log('🧹 Cache nettoyé');
     } catch (e) {
       console.warn('⚠️ Impossible de nettoyer le cache');
     }
   }
 
-  // ✅ MÉTHODES DE DÉVELOPPEMENT/DEBUG
+  // ✅ MÉTHODES DE DÉVELOPPEMENT/DEBUG OPTIMISÉES
   private logPerformance(operation: string, startTime: number): void {
     const endTime = performance.now();
     const duration = endTime - startTime;
-    console.log(`⏱️ ${operation} : ${duration.toFixed(2)}ms`);
+    
+    if (duration > 100) { // Log seulement les opérations lentes
+      console.warn(`⏱️ ${operation} lent : ${duration.toFixed(2)}ms`);
+    } else {
+      console.log(`⏱️ ${operation} : ${duration.toFixed(2)}ms`);
+    }
   }
 
   private obtenirInfoSysteme(): any {
@@ -918,11 +1031,16 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       userAgent: navigator.userAgent,
       langue: navigator.language,
       memoire: (performance as any).memory,
-      connexion: (navigator as any).connection
+      connexion: (navigator as any).connection,
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight
+      },
+      pixelRatio: window.devicePixelRatio
     };
   }
 
-  // ✅ MÉTHODES UTILITAIRES FINALES
+  // ✅ MÉTHODES UTILITAIRES OPTIMISÉES
   private genererId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
@@ -946,28 +1064,240 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     };
   }
 
-  // ✅ MÉTHODE DE DIAGNOSTIC SYSTÈME
+  // ✅ MÉTHODES DE RESPONSIVE DESIGN POUR 5 CARTES PAR LIGNE
+  getCartesParLigne(): number {
+    const width = window.innerWidth;
+    
+    if (width >= 1536) return 5; // XL et plus : 5 cartes
+    if (width >= 1280) return 4; // Large : 4 cartes
+    if (width >= 1024) return 3; // Medium : 3 cartes
+    if (width >= 768) return 2;  // Small : 2 cartes
+    return 1; // Mobile : 1 carte
+  }
+
+  ajusterItemsPerPageSelonEcran(): void {
+    const cartesParLigne = this.getCartesParLigne();
+    const lignesOptimales = 2; // 2 lignes par défaut pour avoir 10 cartes
+    const nouveauItemsPerPage = cartesParLigne * lignesOptimales;
+    
+    // S'assurer qu'on a au minimum 10 cartes par page
+    const itemsPerPageAjuste = Math.max(10, nouveauItemsPerPage);
+    
+    if (itemsPerPageAjuste !== this.itemsPerPage) {
+      console.log(`📱 Ajustement pour écran: ${cartesParLigne} cartes/ligne → ${itemsPerPageAjuste} items/page`);
+      this.itemsPerPage = itemsPerPageAjuste;
+      this.currentPage = 1;
+      this.calculerPagination();
+    }
+  }
+
+  // ✅ MÉTHODES DE DIAGNOSTIC SYSTÈME AMÉLIORÉES
   diagnostiquerSysteme(): void {
-    console.log('🔧 DIAGNOSTIC SYSTÈME');
-    console.log('===================');
+    console.log('🔧 DIAGNOSTIC SYSTÈME - 5 CARTES PAR LIGNE');
+    console.log('==========================================');
+    console.log('Mode: 5 cartes par ligne, 10 par page');
     console.log('Camions chargés:', this.camions.length);
     console.log('Camions filtrés:', this.camionsFiltres.length);
     console.log('Page courante:', this.currentPage);
     console.log('Items par page:', this.itemsPerPage);
     console.log('Total pages:', this.pages.length);
+    console.log('Camions visibles:', this.camionsPage.length);
     console.log('Camions sélectionnés:', this.selectedCamions.length);
+    console.log('Cartes par ligne:', this.getCartesParLigne());
     console.log('Recherche active:', this.searchTerm || 'Aucune');
     console.log('Filtre date:', this.startDate && this.endDate ? `${this.startDate} → ${this.endDate}` : 'Aucun');
+    console.log('Performance viewport:', {
+      largeur: window.innerWidth,
+      hauteur: window.innerHeight,
+      ratio: window.devicePixelRatio
+    });
     console.log('Navigateur:', this.obtenirInfoSysteme());
-    console.log('===================');
+    console.log('===========================================');
   }
 
-  // ✅ MÉTHODE DE CLEANUP FINAL
-  private effectuerNettoyageComplet(): void {
-    this.nettoyerCache();
-    this.selectedCamions = [];
-    this.camionsFiltres = [];
+  // ✅ MÉTHODES DE GESTION D'ÉVÉNEMENTS
+  onWindowResize(): void {
+    // Debounce pour éviter trop d'appels
+    clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      this.ajusterItemsPerPageSelonEcran();
+    }, 250);
+  }
+
+  // ✅ MÉTHODES DE STATISTIQUES AVANCÉES POUR CARTES
+  getStatistiquesCartes(): any {
+    return {
+      totalCamions: this.camions.length,
+      camionsFiltres: this.camionsFiltres.length,
+      camionsVisibles: this.camionsPage.length,
+      camionsSelectionnes: this.selectedCamions.length,
+      tauxFiltrage: this.camions.length > 0 ? Math.round((this.camionsFiltres.length / this.camions.length) * 100) : 0,
+      tauxSelection: this.camionsFiltres.length > 0 ? Math.round((this.selectedCamions.length / this.camionsFiltres.length) * 100) : 0,
+      cartesParPage: this.itemsPerPage,
+      cartesParLigne: this.getCartesParLigne(),
+      pagesTotal: this.pages.length,
+      pageActuelle: this.currentPage
+    };
+  }
+
+  // ✅ MÉTHODES D'ACCESSIBILITÉ POUR CARTES COMPACTES
+  annoncerChangementPage(): void {
+    const stats = this.getStatistiquesCartes();
+    const message = `Page ${stats.pageActuelle} sur ${stats.pagesTotal}, ${stats.camionsVisibles} camions affichés`;
+    
+    // Annoncer aux lecteurs d'écran
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.volume = 0.1;
+      speechSynthesis.speak(utterance);
+    }
+    
+    console.log('📢 Annonce accessibilité:', message);
+  }
+
+  // ✅ MÉTHODES DE SAUVEGARDE D'ÉTAT
+  sauvegarderEtat(): void {
+    const etat = {
+      currentPage: this.currentPage,
+      itemsPerPage: this.itemsPerPage,
+      searchTerm: this.searchTerm,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      filtreStatut: this.filtreStatut,
+      filtreDestination: this.filtreDestination,
+      selectedCamions: this.selectedCamions.map(c => c.id),
+      timestamp: Date.now()
+    };
+    
+    this.cacherResultat('etat_interface', etat);
+    console.log('💾 État interface sauvegardé');
+  }
+
+  restaurerEtat(): void {
+    const etat = this.obtenirCache('etat_interface');
+    if (!etat) return;
+    
+    try {
+      this.currentPage = etat.currentPage || 1;
+      this.itemsPerPage = etat.itemsPerPage || 10; // ✅ Défaut 10 cartes
+      this.searchTerm = etat.searchTerm || '';
+      this.startDate = etat.startDate || '';
+      this.endDate = etat.endDate || '';
+      this.filtreStatut = etat.filtreStatut || 'TOUS';
+      this.filtreDestination = etat.filtreDestination || 'TOUS';
+      
+      // Restaurer la sélection
+      if (etat.selectedCamions && Array.isArray(etat.selectedCamions)) {
+        this.selectedCamions = this.camions.filter(c => 
+          etat.selectedCamions.includes(c.id)
+        );
+      }
+      
+      console.log('🔄 État interface restauré');
+      this.appliquerTousFiltres();
+    } catch (e) {
+      console.warn('⚠️ Erreur lors de la restauration de l\'état:', e);
+    }
+  }
+
+  // ✅ MÉTHODES DE GESTION D'ERREURS
+  private gererErreurChargement(error: any): void {
+    console.error('❌ Erreur lors du chargement:', error);
+    
+    // Afficher un message d'erreur à l'utilisateur
+    this.afficherErreur('Erreur lors du chargement des données. Veuillez actualiser la page.');
+    
+    // Réinitialiser l'état
+    this.loading = false;
     this.camions = [];
-    console.log('🧹 Nettoyage complet effectué');
+    this.camionsFiltres = [];
+    
+    // Optionnel: retry automatique après délai
+    setTimeout(() => {
+      if (this.camions.length === 0) {
+        console.log('🔄 Tentative de rechargement automatique...');
+        this.chargerCamions();
+      }
+    }, 5000);
+  }
+
+  // ✅ MÉTHODES DE VALIDATION D'INTERFACE
+  private validerEtatInterface(): boolean {
+    // Vérifier la cohérence de l'état
+    if (this.currentPage < 1) {
+      this.currentPage = 1;
+      return false;
+    }
+    
+    if (this.currentPage > this.pages.length && this.pages.length > 0) {
+      this.currentPage = this.pages.length;
+      return false;
+    }
+    
+    if (this.itemsPerPage < 10) {
+      this.itemsPerPage = 10; // ✅ Minimum 10 cartes par page
+      return false;
+    }
+    
+    if (this.itemsPerPage > 100) {
+      this.itemsPerPage = 50; // ✅ Maximum 50 cartes par page
+      return false;
+    }
+    
+    return true;
+  }
+
+  // ✅ MÉTHODES D'OPTIMISATION FINALE
+  private optimiserAffichage(): void {
+    // Optimiser selon la taille de l'écran
+    this.ajusterItemsPerPageSelonEcran();
+    
+    // Valider l'état
+    if (!this.validerEtatInterface()) {
+      this.calculerPagination();
+    }
+    
+    // Optimiser les performances si nécessaire
+    this.optimiserPerformance();
+  }
+
+  // ✅ MÉTHODES UTILITAIRES FINALES
+  getVersionInterface(): string {
+    return '5 Cartes par Ligne v1.0';
+  }
+
+  getConfigurationActuelle(): any {
+    return {
+      version: this.getVersionInterface(),
+      mode: '5_cartes_par_ligne',
+      pagination: {
+        itemsPerPage: this.itemsPerPage,
+        currentPage: this.currentPage,
+        totalPages: this.pages.length
+      },
+      filtres: {
+        searchTerm: this.searchTerm,
+        dateRange: this.startDate && this.endDate ? `${this.startDate} - ${this.endDate}` : null,
+        statut: this.filtreStatut,
+        destination: this.filtreDestination
+      },
+      selection: {
+        count: this.selectedCamions.length,
+        percentage: this.camionsFiltres.length > 0 ? Math.round((this.selectedCamions.length / this.camionsFiltres.length) * 100) : 0
+      },
+      performance: {
+        totalCamions: this.camions.length,
+        camionsFiltres: this.camionsFiltres.length,
+        cartesParLigne: this.getCartesParLigne(),
+        viewport: `${window.innerWidth}x${window.innerHeight}`
+      }
+    };
+  }
+
+  // ✅ MÉTHODE D'INFORMATION SYSTÈME FINALE
+  afficherInfoSysteme(): void {
+    const config = this.getConfigurationActuelle();
+    console.table(config);
+    console.log('📊 Configuration actuelle:', config);
   }
 }

@@ -109,45 +109,54 @@ body {
   box-shadow: var(--shadow-2xl);
 }
 
-/* ===== GRILLE CAMIONS RESPONSIVE ===== */
+/* ===== GRILLE CAMIONS RESPONSIVE POUR 5 CARTES PAR LIGNE ===== */
 .trucks-grid {
   display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-@media (min-width: 1024px) {
+/* ✅ GRILLE RESPONSIVE OPTIMISÉE POUR 5 CARTES PAR LIGNE */
+@media (min-width: 768px) {
   .trucks-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
   .trucks-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (min-width: 1536px) {
+@media (min-width: 1280px) {
   .trucks-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (min-width: 1920px) {
+@media (min-width: 1536px) {
   .trucks-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr); /* ✅ 5 CARTES PAR LIGNE */
   }
 }
 
-/* ===== CARTES CAMIONS MODERNISÉES ===== */
+@media (min-width: 1920px) {
+  .trucks-grid {
+    grid-template-columns: repeat(5, 1fr); /* ✅ RESTE À 5 MÊME SUR TRÈS GRAND ÉCRAN */
+  }
+}
+
+/* ===== CARTES CAMIONS COMPACTES ===== */
 .truck-card {
   position: relative;
   overflow: hidden;
-  transition: var(--transition-slow);
+  transition: var(--transition-normal);
   backdrop-filter: blur(20px);
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(226, 232, 240, 0.3);
+  max-height: 400px; /* ✅ LIMITE DE HAUTEUR */
+  min-height: 320px; /* ✅ HAUTEUR MINIMALE */
 }
 
 .truck-card::before {
@@ -156,7 +165,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px; /* ✅ PLUS FIN */
   background: var(--gradient-primary);
   transform: scaleX(0);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -169,8 +178,8 @@ body {
 }
 
 .truck-card:hover {
-  transform: translateY(-12px) rotateX(2deg);
-  box-shadow: var(--shadow-2xl);
+  transform: translateY(-4px) scale(1.02); /* ✅ MOINS DE MOUVEMENT */
+  box-shadow: var(--shadow-lg); /* ✅ OMBRE PLUS LÉGÈRE */
   border-color: rgba(245, 158, 11, 0.3);
 }
 
@@ -178,7 +187,7 @@ body {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px); /* ✅ MOINS DE MOUVEMENT */
   }
   to {
     opacity: 1;
@@ -187,14 +196,14 @@ body {
 }
 
 .truck-card {
-  animation: fadeInUp 0.6s ease-out;
+  animation: fadeInUp 0.4s ease-out;
 }
 
-/* ===== HEADER DE CARTE MODERNISÉ ===== */
+/* ===== HEADER DE CARTE COMPACT ===== */
 .truck-card-header {
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(241, 245, 249, 0.9) 100%);
   backdrop-filter: blur(10px);
-  padding: 1.5rem;
+  padding: 0.75rem; /* ✅ PADDING RÉDUIT */
   border-bottom: 1px solid rgba(226, 232, 240, 0.3);
   position: relative;
 }
@@ -204,13 +213,13 @@ body {
   position: absolute;
   bottom: 0;
   left: 50%;
-  width: 60%;
+  width: 40%; /* ✅ LIGNE PLUS COURTE */
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.3), transparent);
   transform: translateX(-50%);
 }
 
-/* ===== AVATARS CAMIONS AMÉLIORÉS ===== */
+/* ===== AVATARS CAMIONS COMPACTS ===== */
 .truck-avatar {
   position: relative;
   background: var(--gradient-primary);
@@ -220,14 +229,14 @@ body {
   justify-content: center;
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md); /* ✅ OMBRE PLUS LÉGÈRE */
   transition: var(--transition-normal);
 }
 
 .truck-avatar::before {
   content: '';
   position: absolute;
-  inset: -2px;
+  inset: -1px; /* ✅ PLUS FIN */
   background: var(--gradient-primary);
   border-radius: inherit;
   opacity: 0;
@@ -236,26 +245,26 @@ body {
 }
 
 .truck-card:hover .truck-avatar::before {
-  opacity: 0.3;
+  opacity: 0.2; /* ✅ PLUS SUBTIL */
 }
 
 .truck-card:hover .truck-avatar {
-  transform: rotate(12deg) scale(1.1);
-  box-shadow: var(--shadow-xl);
+  transform: rotate(6deg) scale(1.05); /* ✅ MOINS DE ROTATION */
+  box-shadow: var(--shadow-lg);
 }
 
-/* ===== BADGES DE STATUT MODERNISÉS ===== */
+/* ===== BADGES DE STATUT COMPACTS ===== */
 .status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 0.25rem; /* ✅ GAP RÉDUIT */
+  padding: 0.25rem 0.75rem; /* ✅ PADDING RÉDUIT */
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  border: 2px solid;
+  border: 1px solid; /* ✅ BORDURE PLUS FINE */
   backdrop-filter: blur(10px);
   transition: var(--transition-normal);
   position: relative;
@@ -298,23 +307,23 @@ body {
   background-color: #ef4444;
 }
 
-/* ===== SECTIONS D'INFORMATIONS ===== */
+/* ===== SECTIONS D'INFORMATIONS COMPACTES ===== */
 .info-section {
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.8) 100%);
   border: 1px solid rgba(226, 232, 240, 0.5);
-  border-radius: var(--radius-xl);
-  padding: 1rem;
+  border-radius: var(--radius-lg);
+  padding: 0.75rem; /* ✅ PADDING RÉDUIT */
   transition: var(--transition-normal);
   backdrop-filter: blur(10px);
 }
 
 .info-section:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px); /* ✅ MOUVEMENT RÉDUIT */
+  box-shadow: var(--shadow-md);
   border-color: rgba(245, 158, 11, 0.3);
 }
 
-/* ===== SECTION CHAUFFEUR ===== */
+/* ===== SECTION CHAUFFEUR COMPACTE ===== */
 .chauffeur-section {
   background: linear-gradient(135deg, rgba(219, 234, 254, 0.8) 0%, rgba(191, 219, 254, 0.8) 100%);
   border: 1px solid rgba(59, 130, 246, 0.2);
@@ -324,7 +333,7 @@ body {
   border-color: rgba(59, 130, 246, 0.4);
 }
 
-/* ===== SECTION LIVRAISON ===== */
+/* ===== SECTION LIVRAISON COMPACTE ===== */
 .livraison-section {
   background: linear-gradient(135deg, rgba(238, 242, 255, 0.8) 0%, rgba(224, 231, 255, 0.8) 100%);
   border: 1px solid rgba(139, 92, 246, 0.2);
@@ -337,7 +346,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 2px; /* ✅ PLUS FIN */
   height: 100%;
   background: var(--gradient-purple);
   opacity: 0;
@@ -350,18 +359,18 @@ body {
 
 .livraison-section:hover {
   border-color: rgba(139, 92, 246, 0.4);
-  transform: translateX(4px);
+  transform: translateX(2px); /* ✅ MOUVEMENT RÉDUIT */
 }
 
-/* ===== ICÔNES DE DESTINATION ===== */
+/* ===== ICÔNES DE DESTINATION COMPACTES ===== */
 .destination-icon {
-  font-size: 1.25rem;
+  font-size: 1rem; /* ✅ TAILLE RÉDUITE */
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
   transition: var(--transition-normal);
 }
 
 .livraison-section:hover .destination-icon {
-  transform: scale(1.2) rotate(5deg);
+  transform: scale(1.1) rotate(3deg); /* ✅ MOINS DE MOUVEMENT */
 }
 
 /* ===== INPUTS ET BOUTONS MODERNISÉS ===== */
@@ -373,15 +382,15 @@ body {
 }
 
 .form-input:focus {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg), 0 0 0 4px rgba(245, 158, 11, 0.1);
+  transform: translateY(-1px); /* ✅ MOUVEMENT RÉDUIT */
+  box-shadow: var(--shadow-md), 0 0 0 4px rgba(245, 158, 11, 0.1);
   border-color: var(--primary-amber);
   background: rgba(255, 255, 255, 1);
 }
 
 .form-input:hover:not(:focus) {
   border-color: rgba(226, 232, 240, 0.8);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ===== BOUTONS MODERNISÉS ===== */
@@ -413,12 +422,12 @@ body {
 }
 
 .btn:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-1px) scale(1.01); /* ✅ MOUVEMENT RÉDUIT */
+  box-shadow: var(--shadow-lg);
 }
 
 .btn:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.99);
 }
 
 .btn:disabled {
@@ -434,7 +443,7 @@ body {
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: var(--shadow-xl), 0 0 30px rgba(245, 158, 11, 0.3);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(245, 158, 11, 0.2); /* ✅ OMBRE RÉDUITE */
 }
 
 .btn-secondary {
@@ -461,10 +470,10 @@ body {
 }
 
 .loading-spinner {
-  width: 4rem;
-  height: 4rem;
-  border: 4px solid rgba(241, 245, 249, 0.3);
-  border-top: 4px solid var(--primary-amber);
+  width: 3rem; /* ✅ TAILLE RÉDUITE */
+  height: 3rem;
+  border: 3px solid rgba(241, 245, 249, 0.3);
+  border-top: 3px solid var(--primary-amber);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   position: relative;
@@ -473,7 +482,7 @@ body {
 .loading-spinner::after {
   content: '';
   position: absolute;
-  inset: 8px;
+  inset: 6px;
   border: 2px solid rgba(234, 88, 12, 0.3);
   border-top: 2px solid var(--primary-orange);
   border-radius: 50%;
@@ -515,22 +524,22 @@ body {
 }
 
 .pagination button:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-1px) scale(1.02); /* ✅ MOUVEMENT RÉDUIT */
+  box-shadow: var(--shadow-sm);
 }
 
 .pagination button.active {
   background: var(--gradient-primary);
   color: white;
-  box-shadow: var(--shadow-lg);
-  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+  transform: scale(1.05); /* ✅ MOUVEMENT RÉDUIT */
 }
 
-/* ===== CHECKBOXES PERSONNALISÉES ===== */
+/* ===== CHECKBOXES PERSONNALISÉES COMPACTES ===== */
 input[type="checkbox"] {
   appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1rem; /* ✅ TAILLE RÉDUITE */
+  height: 1rem;
   border: 2px solid rgba(226, 232, 240, 0.5);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.9);
@@ -542,14 +551,14 @@ input[type="checkbox"] {
 
 input[type="checkbox"]:hover {
   border-color: var(--primary-amber);
-  box-shadow: var(--shadow-md);
-  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
+  transform: scale(1.02); /* ✅ MOUVEMENT RÉDUIT */
 }
 
 input[type="checkbox"]:checked {
   background: var(--gradient-primary);
   border-color: var(--primary-amber);
-  box-shadow: var(--shadow-lg), 0 0 20px rgba(245, 158, 11, 0.3);
+  box-shadow: var(--shadow-md), 0 0 10px rgba(245, 158, 11, 0.2); /* ✅ OMBRE RÉDUITE */
 }
 
 input[type="checkbox"]:checked::after {
@@ -559,36 +568,36 @@ input[type="checkbox"]:checked::after {
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 0.75rem;
+  font-size: 0.6rem; /* ✅ TAILLE RÉDUITE */
   font-weight: bold;
 }
 
 /* ===== SCROLLBAR PERSONNALISÉE ===== */
 .overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
+  width: 6px; /* ✅ PLUS FINE */
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
   background: rgba(241, 245, 249, 0.5);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--primary-amber), var(--primary-orange));
-  border-radius: 4px;
+  border-radius: 3px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #d97706, #c2410c);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 5px rgba(245, 158, 11, 0.2); /* ✅ OMBRE RÉDUITE */
 }
 
-/* ===== ANIMATIONS AVANCÉES ===== */
+/* ===== ANIMATIONS OPTIMISÉES ===== */
 @keyframes slideInFromLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-20px); /* ✅ MOUVEMENT RÉDUIT */
   }
   to {
     opacity: 1;
@@ -599,7 +608,7 @@ input[type="checkbox"]:checked::after {
 @keyframes slideInFromRight {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(20px); /* ✅ MOUVEMENT RÉDUIT */
   }
   to {
     opacity: 1;
@@ -610,7 +619,7 @@ input[type="checkbox"]:checked::after {
 @keyframes fadeInScale {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95); /* ✅ MOUVEMENT RÉDUIT */
   }
   to {
     opacity: 1;
@@ -623,13 +632,13 @@ input[type="checkbox"]:checked::after {
     transform: translate3d(0,0,0);
   }
   40%, 43% {
-    transform: translate3d(0,-8px,0);
+    transform: translate3d(0,-4px,0); /* ✅ MOUVEMENT RÉDUIT */
   }
   70% {
-    transform: translate3d(0,-4px,0);
+    transform: translate3d(0,-2px,0);
   }
   90% {
-    transform: translate3d(0,-2px,0);
+    transform: translate3d(0,-1px,0);
   }
 }
 
@@ -640,21 +649,21 @@ input[type="checkbox"]:checked::after {
   }
   50% {
     opacity: 0.8;
-    transform: scale(1.1);
+    transform: scale(1.05); /* ✅ MOUVEMENT RÉDUIT */
   }
 }
 
 /* Classes d'animation */
 .animate-slide-in-left {
-  animation: slideInFromLeft 0.6s ease-out;
+  animation: slideInFromLeft 0.4s ease-out; /* ✅ PLUS RAPIDE */
 }
 
 .animate-slide-in-right {
-  animation: slideInFromRight 0.6s ease-out;
+  animation: slideInFromRight 0.4s ease-out;
 }
 
 .animate-fade-in-scale {
-  animation: fadeInScale 0.5s ease-out;
+  animation: fadeInScale 0.3s ease-out; /* ✅ PLUS RAPIDE */
 }
 
 .animate-bounce {
@@ -665,7 +674,7 @@ input[type="checkbox"]:checked::after {
   animation: pulse 2s infinite;
 }
 
-/* ===== RESPONSIVE DESIGN AVANCÉ ===== */
+/* ===== RESPONSIVE DESIGN OPTIMISÉ ===== */
 @media (max-width: 768px) {
   /* Masquer la sidebar sur mobile */
   .fixed.inset-y-0.left-0 {
@@ -681,29 +690,30 @@ input[type="checkbox"]:checked::after {
   /* Grid responsive pour stats */
   .grid-cols-4 {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1rem !important;
+    gap: 0.75rem !important; /* ✅ GAP RÉDUIT */
   }
   
   /* Grid responsive pour camions */
   .trucks-grid {
     grid-template-columns: 1fr !important;
-    gap: 1rem !important;
+    gap: 0.75rem !important;
   }
   
   /* Ajuster les cartes sur mobile */
   .truck-card {
     margin: 0;
+    min-height: 280px; /* ✅ HAUTEUR RÉDUITE SUR MOBILE */
   }
   
   /* Toolbar responsive */
   .toolbar .flex {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem; /* ✅ GAP RÉDUIT */
   }
   
   /* Boutons plus petits sur mobile */
   .btn {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem; /* ✅ PADDING RÉDUIT */
     font-size: 0.875rem;
   }
 }
@@ -717,25 +727,67 @@ input[type="checkbox"]:checked::after {
   
   /* Espacements réduits */
   .p-6 {
-    padding: 1rem !important;
+    padding: 0.75rem !important; /* ✅ PADDING RÉDUIT */
   }
   
   /* Texte plus petit */
   .text-2xl {
-    font-size: 1.5rem !important;
+    font-size: 1.25rem !important; /* ✅ TAILLE RÉDUITE */
   }
   
   .text-xl {
-    font-size: 1.25rem !important;
+    font-size: 1.125rem !important;
+  }
+  
+  /* Cartes encore plus compactes */
+  .truck-card {
+    min-height: 260px; /* ✅ HAUTEUR ENCORE PLUS RÉDUITE */
   }
 }
 
-/* ===== ACCESSIBILITÉ ===== */
+/* ===== CLASSES UTILITAIRES COMPACTES ===== */
+.compact-card {
+  max-height: 350px; /* ✅ HAUTEUR MAXIMALE COMPACTE */
+  min-height: 300px;
+}
+
+.compact-spacing {
+  padding: 0.5rem !important;
+  margin: 0.25rem !important;
+}
+
+.compact-text {
+  font-size: 0.75rem !important;
+  line-height: 1.2 !important;
+}
+
+.compact-gap {
+  gap: 0.5rem !important;
+}
+
+/* ===== OPTIMISATIONS SPÉCIFIQUES POUR LES CARTES ===== */
+.truck-card .truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.truck-card .max-w-20 {
+  max-width: 5rem;
+}
+
+.truck-card .text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/* ===== ACCESSIBILITÉ COMPACTE ===== */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 3px solid rgba(245, 158, 11, 0.5);
-  outline-offset: 2px;
+  outline: 2px solid rgba(245, 158, 11, 0.5); /* ✅ OUTLINE PLUS FIN */
+  outline-offset: 1px; /* ✅ OFFSET RÉDUIT */
   border-radius: var(--radius-md);
 }
 
@@ -762,7 +814,7 @@ select:focus-visible {
   }
 }
 
-/* ===== THÈME SOMBRE (optionnel) ===== */
+/* ===== THÈME SOMBRE OPTIMISÉ ===== */
 @media (prefers-color-scheme: dark) {
   .truck-card {
     background: rgba(30, 41, 59, 0.95);
@@ -787,7 +839,7 @@ select:focus-visible {
   }
 }
 
-/* ===== UTILITAIRES ===== */
+/* ===== UTILITAIRES FINAUX ===== */
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -795,7 +847,7 @@ select:focus-visible {
 }
 
 .glass-effect {
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(15px); /* ✅ FLOU RÉDUIT */
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -805,11 +857,11 @@ select:focus-visible {
 }
 
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px); /* ✅ MOUVEMENT RÉDUIT */
+  box-shadow: var(--shadow-md);
 }
 
-/* ===== STYLES D'IMPRESSION ===== */
+/* ===== STYLES D'IMPRESSION OPTIMISÉS ===== */
 @media print {
   .toolbar,
   .pagination,
@@ -824,14 +876,16 @@ select:focus-visible {
   }
   
   .trucks-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.5rem !important;
+    grid-template-columns: repeat(3, 1fr) !important; /* ✅ PLUS DE COLONNES EN IMPRESSION */
+    gap: 0.25rem !important;
   }
   
   .truck-card {
     break-inside: avoid;
     box-shadow: none !important;
     border: 1px solid #e5e7eb !important;
+    min-height: auto !important; /* ✅ HAUTEUR AUTO EN IMPRESSION */
+    max-height: none !important;
   }
   
   .truck-card:hover {
@@ -841,5 +895,83 @@ select:focus-visible {
   * {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* ===== CORRECTIONS SPÉCIFIQUES POUR LES PROBLÈMES IDENTIFIÉS ===== */
+
+/* ✅ CORRECTION DU POSITIONNEMENT DU TEXTE DANS LE FOOTER */
+.truck-card .border-t {
+  border-top: 1px solid rgba(226, 232, 240, 0.5);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.truck-card .space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.truck-card .space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+/* ✅ AMÉLIORATION DE LA LISIBILITÉ */
+.truck-card .text-xs {
+  font-size: 0.75rem;
+  line-height: 1.25;
+  font-weight: 500;
+}
+
+.truck-card .font-semibold {
+  font-weight: 600;
+}
+
+.truck-card .font-bold {
+  font-weight: 700;
+}
+
+/* ✅ CORRECTION DE L'ESPACEMENT INTERNE */
+.truck-card .px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.truck-card .py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.truck-card .px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.truck-card .py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* ✅ LIMITATION DE LA HAUTEUR DES CARTES */
+.truck-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 380px;
+  overflow: hidden;
+}
+
+.truck-card > div:last-child {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ✅ RESPONSIVE POUR LES TRÈS GRANDS ÉCRANS - 5 CARTES MAX */
+@media (min-width: 2560px) {
+  .trucks-grid {
+    grid-template-columns: repeat(5, 1fr) !important; /* ✅ 5 CARTES MAX */
+  }
+  
+  .truck-card {
+    max-height: 360px;
   }
 }
