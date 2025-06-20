@@ -53,13 +53,11 @@ body {
   overflow: hidden;
 }
 
-/* ===== CARTES DE STATISTIQUES COMPACTES ===== */
+/* ===== CARTES DE STATISTIQUES MODERNISÉES ===== */
 .stats-card {
   position: relative;
-  transition: var(--transition-normal);
+  transition: var(--transition-slow);
   overflow: hidden;
-  min-height: 100px; /* ✅ HAUTEUR RÉDUITE */
-  max-height: 120px; /* ✅ HAUTEUR MAXIMALE COMPACTE */
 }
 
 .stats-card::before {
@@ -68,7 +66,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px; /* ✅ BARRE PLUS FINE */
+  height: 3px;
   background: var(--gradient-primary);
   transform: scaleX(0);
   transition: transform 0.3s ease;
@@ -80,18 +78,18 @@ body {
 }
 
 .stats-card:hover {
-  transform: translateY(-2px) scale(1.01); /* ✅ MOUVEMENT RÉDUIT */
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-2xl);
 }
 
-/* ===== GRILLE CAMIONS RESPONSIVE POUR 6 CARTES PAR LIGNE ===== */
+/* ===== GRILLE CAMIONS RESPONSIVE POUR 5 CARTES PAR LIGNE ===== */
 .trucks-grid {
   display: grid;
-  gap: 0.75rem; /* ✅ GAP RÉDUIT */
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* ✅ CARTES PLUS PETITES */
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-/* ✅ GRILLE RESPONSIVE OPTIMISÉE POUR 6 CARTES PAR LIGNE */
+/* ✅ GRILLE RESPONSIVE OPTIMISÉE POUR 5 CARTES PAR LIGNE */
 @media (min-width: 768px) {
   .trucks-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -112,17 +110,17 @@ body {
 
 @media (min-width: 1536px) {
   .trucks-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr); /* ✅ 5 CARTES PAR LIGNE */
   }
 }
 
 @media (min-width: 1920px) {
   .trucks-grid {
-    grid-template-columns: repeat(6, 1fr); /* ✅ 6 CARTES PAR LIGNE */
+    grid-template-columns: repeat(5, 1fr); /* ✅ RESTE À 5 MÊME SUR TRÈS GRAND ÉCRAN */
   }
 }
 
-/* ===== CARTES CAMIONS TRÈS COMPACTES ===== */
+/* ===== CARTES CAMIONS COMPACTES ===== */
 .truck-card {
   position: relative;
   overflow: hidden;
@@ -130,8 +128,8 @@ body {
   backdrop-filter: blur(20px);
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(226, 232, 240, 0.3);
-  max-height: 280px; /* ✅ HAUTEUR TRÈS RÉDUITE */
-  min-height: 250px; /* ✅ HAUTEUR MINIMALE COMPACTE */
+  max-height: 400px; /* ✅ LIMITE DE HAUTEUR */
+  min-height: 320px; /* ✅ HAUTEUR MINIMALE */
 }
 
 .truck-card::before {
@@ -140,7 +138,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 1px; /* ✅ TRÈS FIN */
+  height: 2px; /* ✅ PLUS FIN */
   background: var(--gradient-primary);
   transform: scaleX(0);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -153,8 +151,8 @@ body {
 }
 
 .truck-card:hover {
-  transform: translateY(-2px) scale(1.01); /* ✅ MOUVEMENT MINIMAL */
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px) scale(1.02); /* ✅ MOINS DE MOUVEMENT */
+  box-shadow: var(--shadow-lg); /* ✅ OMBRE PLUS LÉGÈRE */
   border-color: rgba(245, 158, 11, 0.3);
 }
 
@@ -162,7 +160,7 @@ body {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px); /* ✅ MOUVEMENT MINIMAL */
+    transform: translateY(20px); /* ✅ MOINS DE MOUVEMENT */
   }
   to {
     opacity: 1;
@@ -171,19 +169,30 @@ body {
 }
 
 .truck-card {
-  animation: fadeInUp 0.3s ease-out;
+  animation: fadeInUp 0.4s ease-out;
 }
 
-/* ===== HEADER DE CARTE TRÈS COMPACT ===== */
+/* ===== HEADER DE CARTE COMPACT ===== */
 .truck-card-header {
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(241, 245, 249, 0.9) 100%);
   backdrop-filter: blur(10px);
-  padding: 0.5rem; /* ✅ PADDING TRÈS RÉDUIT */
+  padding: 0.75rem; /* ✅ PADDING RÉDUIT */
   border-bottom: 1px solid rgba(226, 232, 240, 0.3);
   position: relative;
 }
 
-/* ===== AVATARS CAMIONS TRÈS COMPACTS ===== */
+.truck-card-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 40%; /* ✅ LIGNE PLUS COURTE */
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.3), transparent);
+  transform: translateX(-50%);
+}
+
+/* ===== AVATARS CAMIONS COMPACTS ===== */
 .truck-avatar {
   position: relative;
   background: var(--gradient-primary);
@@ -193,34 +202,61 @@ body {
   justify-content: center;
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md); /* ✅ OMBRE PLUS LÉGÈRE */
   transition: var(--transition-normal);
-  width: 2rem; /* ✅ TAILLE RÉDUITE */
-  height: 2rem;
-  border-radius: 0.5rem;
+}
+
+.truck-avatar::before {
+  content: '';
+  position: absolute;
+  inset: -1px; /* ✅ PLUS FIN */
+  background: var(--gradient-primary);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.truck-card:hover .truck-avatar::before {
+  opacity: 0.2; /* ✅ PLUS SUBTIL */
 }
 
 .truck-card:hover .truck-avatar {
-  transform: rotate(3deg) scale(1.03); /* ✅ ROTATION MINIMALE */
-  box-shadow: var(--shadow-md);
+  transform: rotate(6deg) scale(1.05); /* ✅ MOINS DE ROTATION */
+  box-shadow: var(--shadow-lg);
 }
 
-/* ===== BADGES DE STATUT TRÈS COMPACTS ===== */
+/* ===== BADGES DE STATUT COMPACTS ===== */
 .status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.125rem; /* ✅ GAP MINIMAL */
-  padding: 0.125rem 0.5rem; /* ✅ PADDING MINIMAL */
+  gap: 0.25rem; /* ✅ GAP RÉDUIT */
+  padding: 0.25rem 0.75rem; /* ✅ PADDING RÉDUIT */
   border-radius: 9999px;
-  font-size: 0.625rem; /* ✅ TEXTE PLUS PETIT */
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  border: 1px solid;
+  border: 1px solid; /* ✅ BORDURE PLUS FINE */
   backdrop-filter: blur(10px);
   transition: var(--transition-normal);
   position: relative;
   overflow: hidden;
+}
+
+.status-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.status-badge:hover::before {
+  left: 100%;
 }
 
 .status-present {
@@ -244,270 +280,19 @@ body {
   background-color: #ef4444;
 }
 
-/* ===== ELLIPSES DE NAVIGATION MODERNES ===== */
-.ellipse-container {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1.5rem 0;
-  flex-wrap: wrap;
-}
-
-.ellipse {
-  position: relative;
-  width: 120px;
-  height: 60px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition-normal);
-  border: 2px solid rgba(226, 232, 240, 0.5);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.ellipse::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.6s ease;
-}
-
-.ellipse:hover::before {
-  left: 100%;
-}
-
-.ellipse:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary-amber);
-}
-
-.ellipse.active {
-  background: var(--gradient-primary);
-  color: white;
-  border-color: var(--primary-amber);
-  box-shadow: var(--shadow-md), 0 0 20px rgba(245, 158, 11, 0.3);
-}
-
-.ellipse.active:hover {
-  background: linear-gradient(135deg, #d97706 0%, #c2410c 100%);
-}
-
-.ellipse-text {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-align: center;
-  z-index: 2;
-  position: relative;
-}
-
-/* ===== ELLIPSES MARQUES AVEC LOGOS ===== */
-.brand-ellipse {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.brand-ellipse img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  transition: var(--transition-normal);
-}
-
-.brand-ellipse:hover img {
-  transform: scale(1.1);
-}
-
-.brand-ellipse .brand-name {
-  font-size: 0.625rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.brand-ellipse .brand-count {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: var(--primary-amber);
-}
-
-/* ===== ELLIPSES DESTINATIONS ===== */
-.destination-ellipse {
-  width: 110px;
-  height: 80px;
-  border-radius: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-}
-
-.destination-ellipse .destination-icon {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-.destination-ellipse .destination-name {
-  font-size: 0.625rem;
-  font-weight: 700;
-  text-align: center;
-  line-height: 1.2;
-}
-
-.destination-ellipse .destination-count {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: var(--primary-amber);
-}
-
-/* ===== COULEURS SPÉCIFIQUES ELLIPSES ===== */
-.ellipse-entree {
-  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: #166534;
-}
-
-.ellipse-entree.active {
-  background: var(--gradient-success);
-  color: white;
-}
-
-.ellipse-sortie {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: #92400e;
-}
-
-.ellipse-sortie.active {
-  background: var(--gradient-primary);
-  color: white;
-}
-
-/* Marques */
-.ellipse-renault {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #1e40af;
-}
-
-.ellipse-renault.active {
-  background: var(--gradient-info);
-  color: white;
-}
-
-.ellipse-forland {
-  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-  border-color: rgba(139, 92, 246, 0.3);
-  color: #7c2d12;
-}
-
-.ellipse-forland.active {
-  background: var(--gradient-purple);
-  color: white;
-}
-
-.ellipse-kaicene {
-  background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #991b1b;
-}
-
-.ellipse-kaicene.active {
-  background: var(--gradient-error);
-  color: white;
-}
-
-.ellipse-tous {
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  border-color: rgba(100, 116, 139, 0.3);
-  color: #475569;
-}
-
-.ellipse-tous.active {
-  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-  color: white;
-}
-
-/* Destinations */
-.ellipse-park {
-  background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
-  border-color: rgba(6, 182, 212, 0.3);
-  color: #0e7490;
-}
-
-.ellipse-park.active {
-  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-  color: white;
-}
-
-.ellipse-livraison {
-  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-  border-color: rgba(99, 102, 241, 0.3);
-  color: #3730a3;
-}
-
-.ellipse-livraison.active {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  color: white;
-}
-
-.ellipse-prestation {
-  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
-  border-color: rgba(234, 88, 12, 0.3);
-  color: #c2410c;
-}
-
-.ellipse-prestation.active {
-  background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
-  color: white;
-}
-
-/* ===== ANIMATIONS ELLIPSES ===== */
-@keyframes ellipseGlow {
-  0%, 100% {
-    box-shadow: var(--shadow-md);
-  }
-  50% {
-    box-shadow: var(--shadow-lg), 0 0 20px rgba(245, 158, 11, 0.3);
-  }
-}
-
-.ellipse.active {
-  animation: ellipseGlow 2s ease-in-out infinite;
-}
-
-/* ===== SECTIONS D'INFORMATIONS TRÈS COMPACTES ===== */
+/* ===== SECTIONS D'INFORMATIONS COMPACTES ===== */
 .info-section {
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.8) 100%);
   border: 1px solid rgba(226, 232, 240, 0.5);
-  border-radius: var(--radius-md);
-  padding: 0.5rem; /* ✅ PADDING TRÈS RÉDUIT */
+  border-radius: var(--radius-lg);
+  padding: 0.75rem; /* ✅ PADDING RÉDUIT */
   transition: var(--transition-normal);
   backdrop-filter: blur(10px);
 }
 
 .info-section:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px); /* ✅ MOUVEMENT RÉDUIT */
+  box-shadow: var(--shadow-md);
   border-color: rgba(245, 158, 11, 0.3);
 }
 
@@ -534,7 +319,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 1px;
+  width: 2px; /* ✅ PLUS FIN */
   height: 100%;
   background: var(--gradient-purple);
   opacity: 0;
@@ -547,7 +332,18 @@ body {
 
 .livraison-section:hover {
   border-color: rgba(139, 92, 246, 0.4);
-  transform: translateX(1px);
+  transform: translateX(2px); /* ✅ MOUVEMENT RÉDUIT */
+}
+
+/* ===== ICÔNES DE DESTINATION COMPACTES ===== */
+.destination-icon {
+  font-size: 1rem; /* ✅ TAILLE RÉDUITE */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  transition: var(--transition-normal);
+}
+
+.livraison-section:hover .destination-icon {
+  transform: scale(1.1) rotate(3deg); /* ✅ MOINS DE MOUVEMENT */
 }
 
 /* ===== INPUTS ET BOUTONS MODERNISÉS ===== */
@@ -559,7 +355,7 @@ body {
 }
 
 .form-input:focus {
-  transform: translateY(-1px);
+  transform: translateY(-1px); /* ✅ MOUVEMENT RÉDUIT */
   box-shadow: var(--shadow-md), 0 0 0 4px rgba(245, 158, 11, 0.1);
   border-color: var(--primary-amber);
   background: rgba(255, 255, 255, 1);
@@ -599,7 +395,7 @@ body {
 }
 
 .btn:hover:not(:disabled) {
-  transform: translateY(-1px) scale(1.01);
+  transform: translateY(-1px) scale(1.01); /* ✅ MOUVEMENT RÉDUIT */
   box-shadow: var(--shadow-lg);
 }
 
@@ -620,7 +416,7 @@ body {
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: var(--shadow-lg), 0 0 20px rgba(245, 158, 11, 0.2);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(245, 158, 11, 0.2); /* ✅ OMBRE RÉDUITE */
 }
 
 .btn-secondary {
@@ -633,6 +429,42 @@ body {
   background: rgba(255, 255, 255, 1);
   border-color: rgba(245, 158, 11, 0.3);
   color: var(--primary-amber);
+}
+
+/* ===== LOADING ET ÉTATS VIDES ===== */
+.loading-container,
+.empty-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.loading-spinner {
+  width: 3rem; /* ✅ TAILLE RÉDUITE */
+  height: 3rem;
+  border: 3px solid rgba(241, 245, 249, 0.3);
+  border-top: 3px solid var(--primary-amber);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  position: relative;
+}
+
+.loading-spinner::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 2px solid rgba(234, 88, 12, 0.3);
+  border-top: 2px solid var(--primary-orange);
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite reverse;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* ===== PAGINATION MODERNISÉE ===== */
@@ -649,8 +481,23 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.pagination button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.pagination button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
 .pagination button:hover:not(:disabled) {
-  transform: translateY(-1px) scale(1.02);
+  transform: translateY(-1px) scale(1.02); /* ✅ MOUVEMENT RÉDUIT */
   box-shadow: var(--shadow-sm);
 }
 
@@ -658,14 +505,14 @@ body {
   background: var(--gradient-primary);
   color: white;
   box-shadow: var(--shadow-md);
-  transform: scale(1.05);
+  transform: scale(1.05); /* ✅ MOUVEMENT RÉDUIT */
 }
 
 /* ===== CHECKBOXES PERSONNALISÉES COMPACTES ===== */
 input[type="checkbox"] {
   appearance: none;
-  width: 0.875rem; /* ✅ ENCORE PLUS PETIT */
-  height: 0.875rem;
+  width: 1rem; /* ✅ TAILLE RÉDUITE */
+  height: 1rem;
   border: 2px solid rgba(226, 232, 240, 0.5);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.9);
@@ -678,13 +525,13 @@ input[type="checkbox"] {
 input[type="checkbox"]:hover {
   border-color: var(--primary-amber);
   box-shadow: var(--shadow-sm);
-  transform: scale(1.02);
+  transform: scale(1.02); /* ✅ MOUVEMENT RÉDUIT */
 }
 
 input[type="checkbox"]:checked {
   background: var(--gradient-primary);
   border-color: var(--primary-amber);
-  box-shadow: var(--shadow-md), 0 0 10px rgba(245, 158, 11, 0.2);
+  box-shadow: var(--shadow-md), 0 0 10px rgba(245, 158, 11, 0.2); /* ✅ OMBRE RÉDUITE */
 }
 
 input[type="checkbox"]:checked::after {
@@ -694,130 +541,13 @@ input[type="checkbox"]:checked::after {
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 0.5rem; /* ✅ TRÈS PETIT */
+  font-size: 0.6rem; /* ✅ TAILLE RÉDUITE */
   font-weight: bold;
-}
-
-/* ===== RESPONSIVE DESIGN OPTIMISÉ ===== */
-@media (max-width: 768px) {
-  .trucks-grid {
-    grid-template-columns: 1fr !important;
-    gap: 0.5rem !important;
-  }
-  
-  .truck-card {
-    margin: 0;
-    min-height: 220px; /* ✅ ENCORE PLUS COMPACT SUR MOBILE */
-    max-height: 240px;
-  }
-  
-  .ellipse-container {
-    gap: 0.5rem;
-  }
-  
-  .ellipse, .brand-ellipse, .destination-ellipse {
-    transform: scale(0.9);
-  }
-  
-  .stats-card {
-    min-height: 80px;
-    max-height: 100px;
-  }
-}
-
-@media (max-width: 640px) {
-  .truck-card {
-    min-height: 200px;
-    max-height: 220px;
-  }
-  
-  .ellipse-container {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-/* ===== CLASSES UTILITAIRES COMPACTES ===== */
-.compact-card {
-  max-height: 260px; /* ✅ HAUTEUR MAXIMALE TRÈS COMPACTE */
-  min-height: 240px;
-}
-
-.compact-spacing {
-  padding: 0.375rem !important;
-  margin: 0.125rem !important;
-}
-
-.compact-text {
-  font-size: 0.625rem !important; /* ✅ TEXTE ENCORE PLUS PETIT */
-  line-height: 1.1 !important;
-}
-
-.compact-gap {
-  gap: 0.375rem !important;
-}
-
-/* ===== OPTIMISATIONS SPÉCIFIQUES POUR LES CARTES ===== */
-.truck-card .truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
-.truck-card .max-w-16 {
-  max-width: 4rem;
-}
-
-.truck-card .text-2xs {
-  font-size: 0.625rem;
-  line-height: 1rem;
-}
-
-/* ===== LIMITATION DE LA HAUTEUR DES CARTES ===== */
-.truck-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-height: 280px;
-  overflow: hidden;
-}
-
-.truck-card > div:last-child {
-  flex: 1;
-  overflow-y: auto;
-}
-
-/* ===== RESPONSIVE POUR LES TRÈS GRANDS ÉCRANS - 6 CARTES MAX ===== */
-@media (min-width: 2560px) {
-  .trucks-grid {
-    grid-template-columns: repeat(6, 1fr) !important; /* ✅ 6 CARTES MAX */
-  }
-  
-  .truck-card {
-    max-height: 270px;
-  }
-}
-
-/* ===== ANIMATIONS PULSE POUR LES ELLIPSES ACTIVES ===== */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.02);
-  }
-}
-
-.animate-pulse-custom {
-  animation: pulse 2s infinite;
 }
 
 /* ===== SCROLLBAR PERSONNALISÉE ===== */
 .overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
+  width: 6px; /* ✅ PLUS FINE */
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
@@ -833,15 +563,193 @@ input[type="checkbox"]:checked::after {
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #d97706, #c2410c);
-  box-shadow: 0 0 5px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 0 5px rgba(245, 158, 11, 0.2); /* ✅ OMBRE RÉDUITE */
 }
 
-/* ===== ACCESSIBILITÉ ===== */
+/* ===== ANIMATIONS OPTIMISÉES ===== */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px); /* ✅ MOUVEMENT RÉDUIT */
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px); /* ✅ MOUVEMENT RÉDUIT */
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95); /* ✅ MOUVEMENT RÉDUIT */
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0,0,0);
+  }
+  40%, 43% {
+    transform: translate3d(0,-4px,0); /* ✅ MOUVEMENT RÉDUIT */
+  }
+  70% {
+    transform: translate3d(0,-2px,0);
+  }
+  90% {
+    transform: translate3d(0,-1px,0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05); /* ✅ MOUVEMENT RÉDUIT */
+  }
+}
+
+/* Classes d'animation */
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.4s ease-out; /* ✅ PLUS RAPIDE */
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.4s ease-out;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.3s ease-out; /* ✅ PLUS RAPIDE */
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+.animate-pulse-custom {
+  animation: pulse 2s infinite;
+}
+
+/* ===== RESPONSIVE DESIGN OPTIMISÉ ===== */
+@media (max-width: 768px) {
+  /* Grid responsive pour stats */
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important; /* ✅ GAP RÉDUIT */
+  }
+  
+  /* Grid responsive pour camions */
+  .trucks-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  
+  /* Ajuster les cartes sur mobile */
+  .truck-card {
+    margin: 0;
+    min-height: 280px; /* ✅ HAUTEUR RÉDUITE SUR MOBILE */
+  }
+  
+  /* Toolbar responsive */
+  .toolbar .flex {
+    flex-direction: column;
+    gap: 0.75rem; /* ✅ GAP RÉDUIT */
+  }
+  
+  /* Boutons plus petits sur mobile */
+  .btn {
+    padding: 0.5rem 0.75rem; /* ✅ PADDING RÉDUIT */
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Stats en une colonne sur très petit écran */
+  .grid-cols-4,
+  .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Espacements réduits */
+  .p-6 {
+    padding: 0.75rem !important; /* ✅ PADDING RÉDUIT */
+  }
+  
+  /* Texte plus petit */
+  .text-2xl {
+    font-size: 1.25rem !important; /* ✅ TAILLE RÉDUITE */
+  }
+  
+  .text-xl {
+    font-size: 1.125rem !important;
+  }
+  
+  /* Cartes encore plus compactes */
+  .truck-card {
+    min-height: 260px; /* ✅ HAUTEUR ENCORE PLUS RÉDUITE */
+  }
+}
+
+/* ===== CLASSES UTILITAIRES COMPACTES ===== */
+.compact-card {
+  max-height: 350px; /* ✅ HAUTEUR MAXIMALE COMPACTE */
+  min-height: 300px;
+}
+
+.compact-spacing {
+  padding: 0.5rem !important;
+  margin: 0.25rem !important;
+}
+
+.compact-text {
+  font-size: 0.75rem !important;
+  line-height: 1.2 !important;
+}
+
+.compact-gap {
+  gap: 0.5rem !important;
+}
+
+/* ===== OPTIMISATIONS SPÉCIFIQUES POUR LES CARTES ===== */
+.truck-card .truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.truck-card .max-w-20 {
+  max-width: 5rem;
+}
+
+.truck-card .text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/* ===== ACCESSIBILITÉ COMPACTE ===== */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid rgba(245, 158, 11, 0.5);
-  outline-offset: 1px;
+  outline: 2px solid rgba(245, 158, 11, 0.5); /* ✅ OUTLINE PLUS FIN */
+  outline-offset: 1px; /* ✅ OFFSET RÉDUIT */
   border-radius: var(--radius-md);
 }
 
@@ -857,6 +765,42 @@ select:focus-visible {
   border: 0;
 }
 
+/* Réduction des animations pour les utilisateurs qui les préfèrent */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== THÈME SOMBRE OPTIMISÉ ===== */
+@media (prefers-color-scheme: dark) {
+  .truck-card {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(71, 85, 105, 0.3);
+  }
+  
+  .info-section {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
+    border-color: rgba(71, 85, 105, 0.5);
+  }
+  
+  .form-input {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(71, 85, 105, 0.5);
+    color: #f1f5f9;
+  }
+  
+  .btn-secondary {
+    background: rgba(30, 41, 59, 0.9);
+    color: #f1f5f9;
+    border-color: rgba(71, 85, 105, 0.5);
+  }
+}
+
 /* ===== UTILITAIRES FINAUX ===== */
 .truncate {
   overflow: hidden;
@@ -865,7 +809,7 @@ select:focus-visible {
 }
 
 .glass-effect {
-  backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px); /* ✅ FLOU RÉDUIT */
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -875,21 +819,26 @@ select:focus-visible {
 }
 
 .hover-lift:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px); /* ✅ MOUVEMENT RÉDUIT */
   box-shadow: var(--shadow-md);
 }
 
 /* ===== STYLES D'IMPRESSION OPTIMISÉS ===== */
 @media print {
-  .ellipse-container,
+  .toolbar,
   .pagination,
+  .fixed.inset-y-0,
   button,
   input[type="checkbox"] {
     display: none !important;
   }
   
+  .ml-64 {
+    margin-left: 0 !important;
+  }
+  
   .trucks-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important; /* ✅ PLUS DE COLONNES EN IMPRESSION */
     gap: 0.25rem !important;
   }
   
@@ -897,7 +846,7 @@ select:focus-visible {
     break-inside: avoid;
     box-shadow: none !important;
     border: 1px solid #e5e7eb !important;
-    min-height: auto !important;
+    min-height: auto !important; /* ✅ HAUTEUR AUTO EN IMPRESSION */
     max-height: none !important;
   }
   
@@ -911,13 +860,80 @@ select:focus-visible {
   }
 }
 
-/* ===== RÉDUCTION DES ANIMATIONS POUR ACCESSIBILITÉ ===== */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+/* ===== CORRECTIONS SPÉCIFIQUES POUR LES PROBLÈMES IDENTIFIÉS ===== */
+
+/* ✅ CORRECTION DU POSITIONNEMENT DU TEXTE DANS LE FOOTER */
+.truck-card .border-t {
+  border-top: 1px solid rgba(226, 232, 240, 0.5);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.truck-card .space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.truck-card .space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+/* ✅ AMÉLIORATION DE LA LISIBILITÉ */
+.truck-card .text-xs {
+  font-size: 0.75rem;
+  line-height: 1.25;
+  font-weight: 500;
+}
+
+.truck-card .font-semibold {
+  font-weight: 600;
+}
+
+.truck-card .font-bold {
+  font-weight: 700;
+}
+
+/* ✅ CORRECTION DE L'ESPACEMENT INTERNE */
+.truck-card .px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.truck-card .py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.truck-card .px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.truck-card .py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* ✅ LIMITATION DE LA HAUTEUR DES CARTES */
+.truck-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 380px;
+  overflow: hidden;
+}
+
+.truck-card > div:last-child {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ✅ RESPONSIVE POUR LES TRÈS GRANDS ÉCRANS - 5 CARTES MAX */
+@media (min-width: 2560px) {
+  .trucks-grid {
+    grid-template-columns: repeat(5, 1fr) !important; /* ✅ 5 CARTES MAX */
+  }
+  
+  .truck-card {
+    max-height: 360px;
   }
 }

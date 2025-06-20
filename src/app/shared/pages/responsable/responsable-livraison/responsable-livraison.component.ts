@@ -88,17 +88,15 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
   searchTerm: string = '';
   startDate: string = '';
   endDate: string = '';
+  filtreStatut: 'TOUS' | 'ENTREE' | 'SORTIE' = 'TOUS';
+  filtreDestination: 'TOUS' | 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE' = 'TOUS';
+  showDestinationFilter: boolean = false;
   loading: boolean = false;
 
-  // ✅ NOUVEAUX FILTRES DE NAVIGATION AVEC ELLIPSES
-  filtreNavigation: 'ENTREE' | 'SORTIE' | '' = ''; // Filtre principal : Entrée/Sortie
-  filtreMarque: 'RENAULT' | 'FORLAND' | 'KAICENE' | 'TOUS' | '' = ''; // Filtre marque pour les entrées
-  filtreDestinationNav: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE' | 'TOUS' | '' = ''; // Filtre destination pour les sorties
-
-  // ✅ PAGINATION OPTIMISÉE POUR 6 CARTES PAR LIGNE ET 12 CARTES PAR PAGE
+  // ✅ PAGINATION OPTIMISÉE POUR 5 CARTES PAR LIGNE ET 10 CARTES PAR PAGE
   currentPage: number = 1;
-  itemsPerPage: number = 12; // ✅ 12 cartes par page (2 lignes de 6 cartes)
-  itemsPerPageOptions: number[] = [12, 24, 36, 48]; // ✅ Options optimisées pour 6 cartes par ligne
+  itemsPerPage: number = 10; // ✅ 10 cartes par page (2 lignes de 5 cartes)
+  itemsPerPageOptions: number[] = [10, 20, 30, 50]; // ✅ Options optimisées pour 5 cartes par ligne
 
   // ✅ GESTION DES ERREURS
   erreurExport: boolean = false;
@@ -114,11 +112,11 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     private http: HttpClient,
     private router: Router
   ) {
-    console.log('🔍 ResponsableLivraisonComponent initialisé - 6 cartes par ligne, 12 par page');
+    console.log('🔍 ResponsableLivraisonComponent initialisé - 5 cartes par ligne, 10 par page');
   }
 
   ngOnInit(): void {
-    console.log('🚀 Composant initialisé - 6 cartes par ligne, pagination 12 par page');
+    console.log('🚀 Composant initialisé - 5 cartes par ligne, pagination 10 par page');
     this.chargerCamions();
   }
 
@@ -152,7 +150,7 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
       clearTimeout(this.resizeTimeout);
     }
     
-    console.log('🧹 Composant détruit avec nettoyage complet (6 cartes par ligne)');
+    console.log('🧹 Composant détruit avec nettoyage complet (5 cartes par ligne)');
   }
 
   // ✅ CALLBACK LAYOUT UNIFIÉ
@@ -255,61 +253,28 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     this.subscriptions.push(subscription);
   }
 
-  // ✅ MÉTHODES DE NAVIGATION PAR ELLIPSES
-  changerFiltreNavigation(filtre: 'ENTREE' | 'SORTIE'): void {
-    console.log('🎯 Changement filtre navigation:', filtre);
-    this.filtreNavigation = filtre;
-    
-    // Réinitialiser les sous-filtres
-    this.filtreMarque = '';
-    this.filtreDestinationNav = '';
-    
+  // ✅ RECHERCHE OPTIMISÉE
+  rechercher(): void {
+    console.log('🔍 Recherche déclenchée:', this.searchTerm);
     this.currentPage = 1;
-    this.appliquerFiltresNavigation();
+    this.appliquerTousFiltres();
   }
 
-  changerFiltreMarque(marque: 'RENAULT' | 'FORLAND' | 'KAICENE' | 'TOUS'): void {
-    console.log('🎯 Changement filtre marque:', marque);
-    this.filtreMarque = marque;
+  // ✅ FILTRAGE PAR DATE
+  filtrerParDate(): void {
     this.currentPage = 1;
-    this.appliquerFiltresNavigation();
+    this.appliquerTousFiltres();
   }
 
-  changerFiltreDestinationNav(destination: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE' | 'TOUS'): void {
-    console.log('🎯 Changement filtre destination:', destination);
-    this.filtreDestinationNav = destination;
-    this.currentPage = 1;
-    this.appliquerFiltresNavigation();
-  }
-
-  // ✅ APPLICATION DES FILTRES DE NAVIGATION
-  private appliquerFiltresNavigation(): void {
-    console.log('🔍 Application des filtres de navigation...');
+  // ✅ APPLICATION DE TOUS LES FILTRES AVEC PAGINATION
+  private appliquerTousFiltres(): void {
+    console.log('🔍 Application des filtres...');
+    console.log('📊 Camions de base:', this.camions.length);
+    console.log('🔎 Terme de recherche:', this.searchTerm);
     
     let resultat = [...this.camions];
 
-    // ✅ FILTRE PRINCIPAL : ENTREE/SORTIE
-    if (this.filtreNavigation) {
-      resultat = resultat.filter(c => c.statut === this.filtreNavigation);
-      console.log(`📊 Après filtre ${this.filtreNavigation}:`, resultat.length);
-    }
-
-    // ✅ SOUS-FILTRE POUR ENTREE : MARQUE
-    if (this.filtreNavigation === 'ENTREE' && this.filtreMarque && this.filtreMarque !== 'TOUS') {
-      resultat = resultat.filter(c => {
-        const marque = c.marque.toUpperCase();
-        return marque.includes(this.filtreMarque) || marque === this.filtreMarque;
-      });
-      console.log(`📊 Après filtre marque ${this.filtreMarque}:`, resultat.length);
-    }
-
-    // ✅ SOUS-FILTRE POUR SORTIE : DESTINATION
-    if (this.filtreNavigation === 'SORTIE' && this.filtreDestinationNav && this.filtreDestinationNav !== 'TOUS') {
-      resultat = resultat.filter(c => c.typeDestination === this.filtreDestinationNav);
-      console.log(`📊 Après filtre destination ${this.filtreDestinationNav}:`, resultat.length);
-    }
-
-    // ✅ FILTRE DE RECHERCHE TEXTUELLE
+    // Filtre de recherche textuelle
     if (this.searchTerm?.trim()) {
       const terme = this.searchTerm.toLowerCase().trim();
       resultat = resultat.filter(c =>
@@ -323,10 +288,9 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
         (c.destination && c.destination.toLowerCase().includes(terme)) ||
         (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme))
       );
-      console.log(`📊 Après recherche "${terme}":`, resultat.length);
     }
 
-    // ✅ FILTRE PAR DATE
+    // Filtre par date
     if (this.startDate && this.endDate) {
       const start = new Date(this.startDate);
       const end = new Date(this.endDate);
@@ -337,69 +301,37 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
         const dateEntree = new Date(c.dateEntree);
         return dateEntree >= start && dateEntree <= end;
       });
-      console.log(`📊 Après filtre date:`, resultat.length);
     }
 
-    console.log('📊 Résultat final des filtres:', resultat.length);
+    console.log('📊 Camions après filtres:', resultat.length);
     this.camionsFiltres = resultat;
     
     // ✅ RECALCULER LA PAGINATION APRÈS FILTRAGE
     this.calculerPagination();
   }
 
-  // ✅ RECHERCHE OPTIMISÉE
-  rechercher(): void {
-    console.log('🔍 Recherche déclenchée:', this.searchTerm);
-    this.currentPage = 1;
-    this.appliquerFiltresNavigation();
-  }
-
-  // ✅ FILTRAGE PAR DATE
-  filtrerParDate(): void {
-    this.currentPage = 1;
-    this.appliquerFiltresNavigation();
-  }
-
-  // ✅ FILTRES PRÉDÉFINIS AJOUTÉS
-  filtrerParPeriodePredefinie(periode: 'aujourdhui' | 'semaine'): void {
-    console.log('📅 Filtrage par période:', periode);
-    const maintenant = new Date();
-    let debut: Date;
-    let fin: Date = new Date(maintenant);
-
-    switch (periode) {
-      case 'aujourdhui':
-        debut = new Date(maintenant);
-        debut.setHours(0, 0, 0, 0);
-        fin.setHours(23, 59, 59, 999);
-        break;
-      case 'semaine':
-        debut = new Date(maintenant);
-        debut.setDate(maintenant.getDate() - 7);
-        debut.setHours(0, 0, 0, 0);
-        fin.setHours(23, 59, 59, 999);
-        break;
-      default:
-        return;
+  // ✅ MÉTHODE DE CALCUL DE LA PAGINATION OPTIMISÉE
+  private calculerPagination(): void {
+    const totalPages = Math.ceil(this.camionsFiltres.length / this.itemsPerPage);
+    
+    // Ajuster la page courante si nécessaire
+    if (this.currentPage > totalPages && totalPages > 0) {
+      this.currentPage = totalPages;
     }
-
-    this.startDate = debut.toISOString().split('T')[0];
-    this.endDate = fin.toISOString().split('T')[0];
-    this.filtrerParDate();
+    if (this.currentPage < 1) {
+      this.currentPage = 1;
+    }
+    
+    console.log('📄 Pagination calculée (5 cartes par ligne, 10 par page):', {
+      totalCamions: this.camionsFiltres.length,
+      itemsPerPage: this.itemsPerPage,
+      totalPages: totalPages,
+      currentPage: this.currentPage,
+      camionsVisibles: this.camionsPage.length
+    });
   }
 
-  // ✅ MÉTHODES DE SÉLECTION AJOUTÉES
-  selectionnerTous(): void {
-    this.selectedCamions = [...this.camionsPage];
-    console.log('✅ Camions de la page courante sélectionnés:', this.selectedCamions.length);
-  }
-
-  deselectionnerTous(): void {
-    const count = this.selectedCamions.length;
-    this.selectedCamions = [];
-    console.log('❌ Tous les camions désélectionnés:', count);
-  }
-
+  // ✅ GESTION SÉLECTION AMÉLIORÉE
   toggleSelection(camion: Camion): void {
     if (this.isSelected(camion)) {
       this.selectedCamions = this.selectedCamions.filter(c => c.id !== camion.id);
@@ -415,7 +347,19 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     return this.selectedCamions.some(c => c.id === camion.id);
   }
 
-  // ✅ MÉTHODES UTILITAIRES POUR LES ELLIPSES
+  selectionnerTous(): void {
+    // ✅ SÉLECTIONNER SEULEMENT LES CAMIONS VISIBLES SUR LA PAGE COURANTE
+    this.selectedCamions = [...this.camionsPage];
+    console.log('✅ Camions de la page courante sélectionnés:', this.selectedCamions.length);
+  }
+
+  deselectionnerTous(): void {
+    const count = this.selectedCamions.length;
+    this.selectedCamions = [];
+    console.log('❌ Tous les camions désélectionnés:', count);
+  }
+
+  // ✅ MÉTHODES UTILITAIRES
   getCamionsByStatut(statut: 'ENTREE' | 'SORTIE'): Camion[] {
     return this.camions.filter(c => c.statut === statut);
   }
@@ -424,14 +368,6 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     return this.camions.filter(c => 
       c.statut === 'SORTIE' && c.typeDestination === destination
     );
-  }
-
-  // ✅ NOUVELLE MÉTHODE POUR FILTRER PAR MARQUE
-  getCamionsByMarque(marque: 'RENAULT' | 'FORLAND' | 'KAICENE'): Camion[] {
-    return this.camions.filter(c => {
-      const camionMarque = c.marque.toUpperCase();
-      return c.statut === 'ENTREE' && (camionMarque.includes(marque) || camionMarque === marque);
-    });
   }
 
   getCamionsPresents(): number {
@@ -520,11 +456,16 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
   }
 
   // ✅ EXPORT EXCEL OPTIMISÉ
-  exporterExcel(exportSelected: boolean = false): void {
+  exporterExcel(exportSelected: boolean): void {
     this.erreurExport = false;
     
     // Déterminer les données à exporter
-    let dataToExport: Camion[] = this.camionsFiltres;
+    let dataToExport: Camion[] = [];
+    if (exportSelected && this.selectedCamions.length > 0) {
+      dataToExport = this.selectedCamions;
+    } else {
+      dataToExport = this.camionsFiltres;
+    }
 
     if (dataToExport.length === 0) {
       this.erreurExport = true;
@@ -536,13 +477,8 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     }
 
     console.log('📤 Export Excel:', {
-      count: dataToExport.length,
-      filtres: {
-        navigation: this.filtreNavigation,
-        marque: this.filtreMarque,
-        destination: this.filtreDestinationNav,
-        recherche: this.searchTerm
-      }
+      type: exportSelected ? 'sélection' : 'tous',
+      count: dataToExport.length
     });
 
     const formattedData = dataToExport.map((c, index) => ({
@@ -561,8 +497,7 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
       'CIN Chauffeur': c.cinChauffeurLivraison || '-',
       'Entreprise': c.nomEntreprise || '-',
       'Durée Présence': this.formatDureePresence(c),
-      'Export Date': new Date().toLocaleString('fr-FR'),
-      'Filtres Appliqués': `Nav:${this.filtreNavigation || 'Tous'} | Marque:${this.filtreMarque || 'Toutes'} | Dest:${this.filtreDestinationNav || 'Toutes'}`
+      'Export Date': new Date().toLocaleString('fr-FR')
     }));
 
     try {
@@ -572,7 +507,7 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
       const columnWidths = [
         { wch: 5 }, { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
         { wch: 25 }, { wch: 20 }, { wch: 20 }, { wch: 12 }, { wch: 20 },
-        { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 20 }, { wch: 30 }
+        { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 20 }
       ];
       worksheet['!cols'] = columnWidths;
 
@@ -586,11 +521,10 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
       });
       
-      // Nom de fichier avec filtres appliqués
-      const prefix = 'camions_responsable';
-      const filtres = `${this.filtreNavigation || 'tous'}_${this.filtreMarque || 'toutes-marques'}_${this.filtreDestinationNav || 'toutes-dest'}`;
+      // Nom de fichier avec timestamp
+      const prefix = exportSelected ? 'camions_selection_responsable' : 'camions_export_responsable';
       const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-      const fileName = `${prefix}_${filtres}_${timestamp}.xlsx`;
+      const fileName = `${prefix}_${timestamp}.xlsx`;
       
       saveAs(blob, fileName);
       
@@ -611,27 +545,6 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     return `${nom || ''}${prenom ? ' ' + prenom : ''}`.trim();
   }
 
-  // ✅ MÉTHODE DE CALCUL DE LA PAGINATION OPTIMISÉE
-  private calculerPagination(): void {
-    const totalPages = Math.ceil(this.camionsFiltres.length / this.itemsPerPage);
-    
-    // Ajuster la page courante si nécessaire
-    if (this.currentPage > totalPages && totalPages > 0) {
-      this.currentPage = totalPages;
-    }
-    if (this.currentPage < 1) {
-      this.currentPage = 1;
-    }
-    
-    console.log('📄 Pagination calculée (6 cartes par ligne, 12 par page):', {
-      totalCamions: this.camionsFiltres.length,
-      itemsPerPage: this.itemsPerPage,
-      totalPages: totalPages,
-      currentPage: this.currentPage,
-      camionsVisibles: this.camionsPage.length
-    });
-  }
-
   // ✅ RÉINITIALISATION COMPLÈTE
   resetFiltres(): void {
     console.log('🔄 Réinitialisation des filtres...');
@@ -639,9 +552,9 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     this.startDate = '';
     this.endDate = '';
     this.selectedCamions = [];
-    this.filtreNavigation = '';
-    this.filtreMarque = '';
-    this.filtreDestinationNav = '';
+    this.filtreStatut = 'TOUS';
+    this.filtreDestination = 'TOUS';
+    this.showDestinationFilter = false;
     this.camionsFiltres = [...this.camions];
     this.currentPage = 1;
     this.erreurExport = false;
@@ -712,9 +625,113 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     }
   }
 
+  // ✅ FILTRES PRÉDÉFINIS AMÉLIORÉS
+  filtrerParPeriodePredefinie(periode: 'aujourdhui' | 'hier' | 'semaine' | 'mois'): void {
+    console.log('📅 Filtrage par période:', periode);
+    const maintenant = new Date();
+    let debut: Date;
+    let fin: Date = new Date(maintenant);
+
+    switch (periode) {
+      case 'aujourdhui':
+        debut = new Date(maintenant);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'hier':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 1);
+        debut.setHours(0, 0, 0, 0);
+        fin = new Date(debut);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'semaine':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 7);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      case 'mois':
+        debut = new Date(maintenant);
+        debut.setDate(maintenant.getDate() - 30);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        break;
+      default:
+        return;
+    }
+
+    this.startDate = debut.toISOString().split('T')[0];
+    this.endDate = fin.toISOString().split('T')[0];
+    this.filtrerParDate();
+  }
+
   // ✅ OPTIMISATION PERFORMANCE POUR CARTES COMPACTES
   trackByCamion(index: number, camion: Camion): any {
     return camion.id || camion.numeroChassis;
+  }
+
+  // ✅ FILTRES AVANCÉS (optionnel)
+  filtrerParStatut(statut: 'TOUS' | 'ENTREE' | 'SORTIE'): void {
+    this.filtreStatut = statut;
+    this.currentPage = 1;
+    
+    this.showDestinationFilter = statut === 'SORTIE';
+    if (statut !== 'SORTIE') {
+      this.filtreDestination = 'TOUS';
+    }
+    
+    this.appliquerFiltresAvances();
+  }
+
+  filtrerParDestination(destination: 'TOUS' | 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE'): void {
+    this.filtreDestination = destination;
+    this.currentPage = 1;
+    this.appliquerFiltresAvances();
+  }
+
+  private appliquerFiltresAvances(): void {
+    let filtres = [...this.camions];
+
+    if (this.filtreStatut !== 'TOUS') {
+      filtres = filtres.filter(c => c.statut === this.filtreStatut);
+    }
+
+    if (this.filtreDestination !== 'TOUS' && this.filtreStatut === 'SORTIE') {
+      filtres = filtres.filter(c => c.typeDestination === this.filtreDestination);
+    }
+
+    if (this.searchTerm) {
+      const terme = this.searchTerm.toLowerCase();
+      filtres = filtres.filter(c =>
+        c.numeroChassis.toLowerCase().includes(terme) ||
+        c.marque.toLowerCase().includes(terme) ||
+        c.modele.toLowerCase().includes(terme) ||
+        (c.nomChauffeur && c.nomChauffeur.toLowerCase().includes(terme)) ||
+        (c.prenomChauffeur && c.prenomChauffeur.toLowerCase().includes(terme)) ||
+        (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
+        (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme)) ||
+        (c.destination && c.destination.toLowerCase().includes(terme)) ||
+        (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme))
+      );
+    }
+
+    if (this.startDate || this.endDate) {
+      const start = this.startDate ? new Date(this.startDate) : new Date(0);
+      const end = this.endDate ? new Date(this.endDate) : new Date();
+      if (this.endDate) {
+        end.setHours(23, 59, 59, 999);
+      }
+
+      filtres = filtres.filter(c => {
+        if (!c.dateEntree) return false;
+        const dateEntree = new Date(c.dateEntree);
+        return dateEntree >= start && dateEntree <= end;
+      });
+    }
+
+    this.camionsFiltres = filtres;
+    this.calculerPagination();
   }
 
   // ✅ STATISTIQUES AVANCÉES
@@ -730,6 +747,20 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
   getPourcentageSortis(): number {
     if (this.camions.length === 0) return 0;
     return Math.round((this.getCamionsByStatut('SORTIE').length / this.camions.length) * 100);
+  }
+
+  getTempsPresenceMoyen(): string {
+    const camionsPresents = this.getCamionsByStatut('ENTREE');
+    if (camionsPresents.length === 0) return '0h';
+    
+    const totalHeures = camionsPresents.reduce((sum, camion) => {
+      if (!camion.dateEntree) return sum;
+      const diffMs = new Date().getTime() - new Date(camion.dateEntree).getTime();
+      return sum + Math.floor(diffMs / (1000 * 60 * 60));
+    }, 0);
+    
+    const moyenne = Math.floor(totalHeures / camionsPresents.length);
+    return `${moyenne}h`;
   }
 
   // ✅ MÉTHODES D'AFFICHAGE COMPACTES
@@ -766,12 +797,11 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     return `${diffHours}h`;
   }
 
-  // ✅ MÉTHODES DE RESPONSIVE DESIGN POUR 6 CARTES PAR LIGNE
+  // ✅ MÉTHODES DE RESPONSIVE DESIGN POUR 5 CARTES PAR LIGNE
   getCartesParLigne(): number {
     const width = window.innerWidth;
     
-    if (width >= 1920) return 6; // Très grand écran : 6 cartes
-    if (width >= 1536) return 5; // XL : 5 cartes
+    if (width >= 1536) return 5; // XL et plus : 5 cartes
     if (width >= 1280) return 4; // Large : 4 cartes
     if (width >= 1024) return 3; // Medium : 3 cartes
     if (width >= 768) return 2;  // Small : 2 cartes
@@ -780,11 +810,11 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
 
   ajusterItemsPerPageSelonEcran(): void {
     const cartesParLigne = this.getCartesParLigne();
-    const lignesOptimales = 2; // 2 lignes par défaut
+    const lignesOptimales = 2; // 2 lignes par défaut pour avoir 10 cartes
     const nouveauItemsPerPage = cartesParLigne * lignesOptimales;
     
-    // S'assurer qu'on a au minimum 12 cartes par page
-    const itemsPerPageAjuste = Math.max(12, nouveauItemsPerPage);
+    // S'assurer qu'on a au minimum 10 cartes par page
+    const itemsPerPageAjuste = Math.max(10, nouveauItemsPerPage);
     
     if (itemsPerPageAjuste !== this.itemsPerPage) {
       console.log(`📱 Ajustement pour écran: ${cartesParLigne} cartes/ligne → ${itemsPerPageAjuste} items/page`);
@@ -811,9 +841,9 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
       searchTerm: this.searchTerm,
       startDate: this.startDate,
       endDate: this.endDate,
-      filtreNavigation: this.filtreNavigation,
-      filtreMarque: this.filtreMarque,
-      filtreDestinationNav: this.filtreDestinationNav,
+      filtreStatut: this.filtreStatut,
+      filtreDestination: this.filtreDestination,
+      selectedCamions: this.selectedCamions.map(c => c.id),
       timestamp: Date.now()
     };
     
@@ -827,16 +857,22 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     
     try {
       this.currentPage = etat.currentPage || 1;
-      this.itemsPerPage = etat.itemsPerPage || 12; // ✅ Défaut 12 cartes
+      this.itemsPerPage = etat.itemsPerPage || 10; // ✅ Défaut 10 cartes
       this.searchTerm = etat.searchTerm || '';
       this.startDate = etat.startDate || '';
       this.endDate = etat.endDate || '';
-      this.filtreNavigation = etat.filtreNavigation || '';
-      this.filtreMarque = etat.filtreMarque || '';
-      this.filtreDestinationNav = etat.filtreDestinationNav || '';
+      this.filtreStatut = etat.filtreStatut || 'TOUS';
+      this.filtreDestination = etat.filtreDestination || 'TOUS';
+      
+      // Restaurer la sélection
+      if (etat.selectedCamions && Array.isArray(etat.selectedCamions)) {
+        this.selectedCamions = this.camions.filter(c => 
+          etat.selectedCamions.includes(c.id)
+        );
+      }
       
       console.log('🔄 État interface responsable restauré');
-      this.appliquerFiltresNavigation();
+      this.appliquerTousFiltres();
     } catch (e) {
       console.warn('⚠️ Erreur lors de la restauration de l\'état:', e);
     }
@@ -922,13 +958,13 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
       return false;
     }
     
-    if (this.itemsPerPage < 12) {
-      this.itemsPerPage = 12; // ✅ Minimum 12 cartes par page
+    if (this.itemsPerPage < 10) {
+      this.itemsPerPage = 10; // ✅ Minimum 10 cartes par page
       return false;
     }
     
     if (this.itemsPerPage > 100) {
-      this.itemsPerPage = 48; // ✅ Maximum 48 cartes par page
+      this.itemsPerPage = 50; // ✅ Maximum 50 cartes par page
       return false;
     }
     
@@ -940,6 +976,7 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     // Limitation du nombre d'éléments affichés pour améliorer les performances
     if (this.camionsFiltres.length > 1000) {
       console.warn('⚠️ Grand nombre de camions, optimisation des performances recommandée');
+      // Possibilité d'implémenter la virtualisation pour de très grandes listes
     }
   }
 
@@ -962,26 +999,54 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     return `${start}-${end} sur ${this.camionsFiltres.length}`;
   }
 
+  get hasSelection(): boolean {
+    return this.selectedCamions.length > 0;
+  }
+
+  // ✅ MÉTHODES DE NAVIGATION OPTIMISÉES
+  goToFirstPage(): void {
+    this.setPage(1);
+  }
+
+  goToLastPage(): void {
+    this.setPage(this.pages.length);
+  }
+
+  goToPreviousPage(): void {
+    if (!this.isFirstPage) {
+      this.setPage(this.currentPage - 1);
+    }
+  }
+
+  goToNextPage(): void {
+    if (!this.isLastPage) {
+      this.setPage(this.currentPage + 1);
+    }
+  }
+
   // ✅ MÉTHODES FINALES POUR CONFIGURATION
   getVersionInterface(): string {
-    return 'Responsable 6 Cartes par Ligne avec Ellipses v2.0';
+    return 'Responsable 5 Cartes par Ligne v1.0';
   }
 
   getConfigurationActuelle(): any {
     return {
       version: this.getVersionInterface(),
-      mode: '6_cartes_par_ligne_responsable_ellipses',
+      mode: '5_cartes_par_ligne_responsable',
       pagination: {
         itemsPerPage: this.itemsPerPage,
         currentPage: this.currentPage,
         totalPages: this.pages.length
       },
       filtres: {
-        navigation: this.filtreNavigation,
-        marque: this.filtreMarque,
-        destinationNav: this.filtreDestinationNav,
         searchTerm: this.searchTerm,
-        dateRange: this.startDate && this.endDate ? `${this.startDate} - ${this.endDate}` : null
+        dateRange: this.startDate && this.endDate ? `${this.startDate} - ${this.endDate}` : null,
+        statut: this.filtreStatut,
+        destination: this.filtreDestination
+      },
+      selection: {
+        count: this.selectedCamions.length,
+        percentage: this.camionsFiltres.length > 0 ? Math.round((this.selectedCamions.length / this.camionsFiltres.length) * 100) : 0
       },
       performance: {
         totalCamions: this.camions.length,
@@ -996,6 +1061,6 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
   afficherInfoSysteme(): void {
     const config = this.getConfigurationActuelle();
     console.table(config);
-    console.log('📊 Configuration responsable avec ellipses:', config);
+    console.log('📊 Configuration responsable actuelle:', config);
   }
 }
