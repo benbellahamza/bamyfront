@@ -98,10 +98,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     dateFin: ''
   };
 
-  // 📄 ÉTAT DE LA PAGINATION
+  // 📄 ÉTAT DE LA PAGINATION OPTIMISÉE
   private paginationState: PaginationState = {
     currentPage: 1,
-    itemsPerPage: 15,
+    itemsPerPage: 25, // ✅ AUGMENTÉ DE 15 À 25 pour plus d'affichage
     totalItems: 0
   };
 
@@ -203,11 +203,48 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeComponent();
     this.setupSearchDebounce();
+    
+    // ✅ CALCUL AUTOMATIQUE DU NOMBRE D'ÉLÉMENTS À L'INITIALISATION
+    this.paginationState.itemsPerPage = this.calculateOptimalItemsPerPage();
+    
+    // ✅ LOG POUR DÉBOGAGE
+    console.log(`🎯 Affichage optimisé : ${this.paginationState.itemsPerPage} éléments par page`);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  // ✅ CALCUL DYNAMIQUE DU NOMBRE OPTIMAL D'ÉLÉMENTS PAR PAGE
+  calculateOptimalItemsPerPage(): number {
+    if (typeof window === 'undefined') return 25;
+    
+    const windowHeight = window.innerHeight;
+    const headerHeight = 64; // 4rem
+    const footerHeight = 40; // 2.5rem
+    const toolbarHeight = 140; // Environ 8.5rem
+    const paginationHeight = 64; // 4rem
+    const otherSpacing = 100; // Marges et espacements divers
+    
+    const availableHeight = windowHeight - headerHeight - footerHeight - toolbarHeight - paginationHeight - otherSpacing;
+    const rowHeight = 48; // 3rem par ligne
+    
+    const optimalRows = Math.floor(availableHeight / rowHeight);
+    
+    // Minimum 20, maximum 50 pour les performances
+    return Math.max(20, Math.min(50, optimalRows));
+  }
+
+  // ✅ AJUSTEMENT AUTOMATIQUE LORS DU REDIMENSIONNEMENT
+  @HostListener('window:resize', ['$event'])
+  onWindowResize(): void {
+    const newItemsPerPage = this.calculateOptimalItemsPerPage();
+    if (newItemsPerPage !== this.paginationState.itemsPerPage) {
+      this.paginationState.itemsPerPage = newItemsPerPage;
+      this.paginationState.currentPage = 1;
+      // ✅ NOTIFICATION SUPPRIMÉE
+    }
   }
 
   // 🚀 INITIALISATION
@@ -243,6 +280,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
         case 'e':
           event.preventDefault();
           this.exporterExcelFiltre();
+          break;
+        case 'd':
+          event.preventDefault();
+          this.debugDisplayMode();
           break;
       }
     }
@@ -394,7 +435,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return 'Autre';
   }
 
-  // 🔍 FILTRAGE
+  // 🔍 FILTRAGE OPTIMISÉ
   appliquerFiltres(): void {
     let resultats = [...this.historique];
 
@@ -437,8 +478,28 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     // Mise à jour de l'état
     this.historiqueFiltered = resultats;
     this.paginationState.totalItems = resultats.length;
-    this.paginationState.currentPage = 1;
+    
+    // ✅ PAGINATION INTELLIGENTE
+    this.smartPagination();
+    
     this.mettreAJourSelectionTout();
+  }
+
+  // ✅ PAGINATION INTELLIGENTE
+  private smartPagination(): void {
+    const totalItems = this.historiqueFiltered.length;
+    const currentItemsPerPage = this.paginationState.itemsPerPage;
+    
+    // Si on a moins d'éléments que ce qu'on peut afficher, ajuster
+    if (totalItems <= currentItemsPerPage && totalItems > 0) {
+      this.paginationState.currentPage = 1;
+    }
+    
+    // Si on est sur une page qui n'existe plus après filtrage
+    const maxPage = this.totalPages();
+    if (this.paginationState.currentPage > maxPage && maxPage > 0) {
+      this.paginationState.currentPage = maxPage;
+    }
   }
 
   private filtrerParPeriode(data: HistoriqueAction[]): HistoriqueAction[] {
@@ -553,14 +614,14 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
 
   getPagesArray(): number[] {
     const total = this.totalPages();
-    const maxPagesToShow = 5;
+    const maxPagesToShow = 7;
     const currentPage = this.paginationState.currentPage;
     
     if (total <= maxPagesToShow) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
     
-    const start = Math.max(1, currentPage - 2);
+    const start = Math.max(1, currentPage - 3);
     const end = Math.min(total, start + maxPagesToShow - 1);
     
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
@@ -627,7 +688,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     ).length;
   }
 
-  // 📤 EXPORT EXCEL
+  // 📤 EXPORT EXCEL OPTIMISÉ
   exporterExcelTout(): void {
     if (this.historique.length === 0) {
       this.showNotification('Aucune donnée à exporter', 'warning');
@@ -658,14 +719,18 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
 
   exporterExcel(data: HistoriqueAction[], fileName: string): void {
     try {
+      // ✅ FEEDBACK DE DÉBUT D'EXPORT
+      this.showNotification('Préparation de l\'export en cours...', 'info');
+      
       const dataToExport = data.map((item, index) => ({
         'N°': index + 1,
         'Agent': this.getAgentFullName(item.agent),
         'Rôle': this.getAgentRole(item.agent),
-        'Statut Agent': this.getAgentStatus(item.agent),
+        'Statut Agent': this.getAgentStatus(item.agent) === 'actif' ? 'Actif' : 'Inactif',
         'Type d\'action': this.getCategorieAction(item),
         'Description': this.getCleanActionText(item.action),
-        'Date': item.dateAction ? new Date(item.dateAction).toLocaleString('fr-FR') : 'N/A',
+        'Date': item.dateAction ? new Date(item.dateAction).toLocaleDateString('fr-FR') : 'N/A',
+        'Heure': item.dateAction ? new Date(item.dateAction).toLocaleTimeString('fr-FR') : 'N/A',
         'Durée (ms)': item.metadata?.duration || 'N/A',
         'Adresse IP': item.metadata?.ipAddress || 'N/A',
         'ID': item.id
@@ -673,28 +738,36 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
 
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       
+      // ✅ LARGEURS DE COLONNES OPTIMISÉES
       const columnWidths = [
         { wch: 5 }, { wch: 25 }, { wch: 18 }, { wch: 12 }, { wch: 20 },
-        { wch: 50 }, { wch: 20 }, { wch: 12 }, { wch: 15 }, { wch: 10 }
+        { wch: 50 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 10 }
       ];
       worksheet['!cols'] = columnWidths;
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
       
+      // ✅ MÉTADONNÉES ENRICHIES
       workbook.Props = {
         Title: 'Historique des Actions - BAMY TRUCKS',
-        Subject: 'Export des données d\'historique',
+        Subject: `Export de ${data.length} actions d'historique`,
         Author: 'BAMY TRUCKS System',
-        CreatedDate: new Date()
+        CreatedDate: new Date(),
+        Comments: `Généré le ${new Date().toLocaleString('fr-FR')} - ${data.length} enregistrements`
       };
       
       XLSX.writeFile(workbook, fileName);
       
-      this.showNotification(`Export Excel réussi : ${fileName}`, 'success');
+      // ✅ FEEDBACK DE SUCCÈS AVEC DÉTAILS
+      this.showNotification(
+        `✅ Export Excel réussi : ${fileName} (${data.length} enregistrements)`, 
+        'success'
+      );
+      
     } catch (error) {
       console.error('❌ Erreur lors de l\'export Excel :', error);
-      this.showNotification('Erreur lors de l\'export Excel', 'error');
+      this.showNotification('❌ Erreur lors de l\'export Excel', 'error');
     }
   }
 
@@ -810,6 +883,116 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return action.id;
   }
 
+  // ✅ MÉTHODES OPTIMISÉES POUR LA GESTION DE L'AFFICHAGE
+  getVisibleItemsCount(): number {
+    const startIndex = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage;
+    const endIndex = Math.min(startIndex + this.paginationState.itemsPerPage, this.historiqueFiltered.length);
+    return endIndex - startIndex;
+  }
+
+  getCurrentPageData(): HistoriqueAction[] {
+    const startIndex = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage;
+    const endIndex = startIndex + this.paginationState.itemsPerPage;
+    return this.historiqueFiltered.slice(startIndex, endIndex);
+  }
+
+  // ✅ MÉTHODE POUR AJUSTER MANUELLEMENT LE NOMBRE D'ÉLÉMENTS
+  setItemsPerPage(count: number): void {
+    if (count >= 10 && count <= 100) {
+      this.paginationState.itemsPerPage = count;
+      this.paginationState.currentPage = 1;
+      this.showNotification(`Affichage modifié : ${count} éléments par page`, 'info');
+    }
+  }
+
+  // ✅ OPTIONS PRÉDÉFINIES POUR L'AFFICHAGE
+  getDisplayOptions(): number[] {
+    const optimal = this.calculateOptimalItemsPerPage();
+    return [15, 25, optimal, 50].filter((value, index, array) => array.indexOf(value) === index).sort((a, b) => a - b);
+  }
+
+  // ✅ MÉTHODE POUR VÉRIFIER SI ON PEUT AFFICHER PLUS D'ÉLÉMENTS
+  canDisplayMore(): boolean {
+    return this.paginationState.itemsPerPage < this.calculateOptimalItemsPerPage();
+  }
+
+  // ✅ MÉTHODE POUR OBTENIR LES STATISTIQUES D'AFFICHAGE
+  getDisplayStats(): { current: number; total: number; percentage: number } {
+    const current = this.getVisibleItemsCount();
+    const total = this.historiqueFiltered.length;
+    const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
+    
+    return { current, total, percentage };
+  }
+
+  // ✅ MÉTHODE POUR OBTENIR DES INFORMATIONS SUR LES PERFORMANCES
+  getPerformanceInfo(): { itemsPerPage: number; totalPages: number; currentLoad: string } {
+    const itemsPerPage = this.paginationState.itemsPerPage;
+    const totalPages = this.totalPages();
+    const currentLoad = this.historiqueFiltered.length > 1000 ? 'Élevée' : 
+                       this.historiqueFiltered.length > 500 ? 'Moyenne' : 'Faible';
+    
+    return { itemsPerPage, totalPages, currentLoad };
+  }
+
+  // ✅ MÉTHODE POUR BASCULER ENTRE DIFFÉRENTS MODES D'AFFICHAGE
+  toggleDisplayMode(): void {
+    const modes = [15, 25, this.calculateOptimalItemsPerPage(), 50];
+    const currentIndex = modes.indexOf(this.paginationState.itemsPerPage);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    
+    this.setItemsPerPage(modes[nextIndex]);
+  }
+
+  // ✅ MÉTHODE POUR VÉRIFIER LA SANTÉ DE L'AFFICHAGE
+  checkDisplayHealth(): { status: 'good' | 'warning' | 'critical'; message: string } {
+    const totalItems = this.historiqueFiltered.length;
+    const itemsPerPage = this.paginationState.itemsPerPage;
+    const totalPages = this.totalPages();
+    
+    if (totalPages > 20) {
+      return {
+        status: 'warning',
+        message: `Beaucoup de pages (${totalPages}). Considérez d'augmenter les éléments par page.`
+      };
+    }
+    
+    if (itemsPerPage < 15 && totalItems > 50) {
+      return {
+        status: 'warning',
+        message: 'Affichage sous-optimal. Vous pourriez afficher plus d\'éléments.'
+      };
+    }
+    
+    if (totalItems > 1000 && itemsPerPage > 50) {
+      return {
+        status: 'critical',
+        message: 'Performances potentiellement dégradées avec beaucoup d\'éléments.'
+      };
+    }
+    
+    return {
+      status: 'good',
+      message: 'Affichage optimal'
+    };
+  }
+
+  // ✅ MÉTHODE POUR LE MODE DEBUG DE L'AFFICHAGE
+  debugDisplayMode(): void {
+    const info = {
+      windowHeight: window.innerHeight,
+      calculatedItemsPerPage: this.calculateOptimalItemsPerPage(),
+      currentItemsPerPage: this.paginationState.itemsPerPage,
+      visibleItems: this.getVisibleItemsCount(),
+      totalFiltered: this.historiqueFiltered.length,
+      performance: this.getPerformanceInfo(),
+      displayHealth: this.checkDisplayHealth()
+    };
+    
+    console.log('🔍 Debug Display Mode:', info);
+    this.showNotification(`Debug: ${info.currentItemsPerPage} éléments/page (optimal: ${info.calculatedItemsPerPage})`, 'info');
+  }
+
   // 📊 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES
   rafraichirDonnees(): void {
     this.chargerHistorique();
@@ -835,6 +1018,16 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     console.log('État de la pagination :', this.paginationState);
     console.log('État du tri :', this.sortState);
     console.log('Sélections :', Array.from(this.lignesSelectionnees));
+  }
+
+  // ✅ MÉTHODE POUR OPTIMISER LES PERFORMANCES D'AFFICHAGE
+  optimizeDisplayPerformance(): void {
+    // Désactive les animations pendant le redimensionnement
+    document.body.classList.add('disable-animations');
+    
+    setTimeout(() => {
+      document.body.classList.remove('disable-animations');
+    }, 300);
   }
 
 }
