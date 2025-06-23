@@ -98,10 +98,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     dateFin: ''
   };
 
-  // 📄 ÉTAT DE LA PAGINATION - ✅ MODIFIÉ POUR 10 RÉSULTATS
+  // 📄 ÉTAT DE LA PAGINATION - ✅ OPTIMISÉ POUR AFFICHER PLUS DE LIGNES
   private paginationState: PaginationState = {
     currentPage: 1,
-    itemsPerPage: 10, // ✅ CHANGÉ DE 25 À 10
+    itemsPerPage: 15, // ✅ AUGMENTÉ DE 10 À 15 POUR PLUS D'AFFICHAGE
     totalItems: 0
   };
 
@@ -217,8 +217,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeComponent();
     this.setupSearchDebounce();
+    this.optimizeDisplayForMaxLines();
     
-    console.log(`🎯 Affichage configuré : ${this.paginationState.itemsPerPage} éléments par page`);
+    console.log(`🎯 Affichage ultra-optimisé : ${this.paginationState.itemsPerPage} éléments par page`);
+    console.log(`📊 Optimisations activées pour plus de lignes visibles`);
   }
 
   ngOnDestroy(): void {
@@ -232,10 +234,49 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.setupKeyboardShortcuts();
   }
 
+  // ✅ OPTIMISATION POUR AFFICHER PLUS DE LIGNES
+  private optimizeDisplayForMaxLines(): void {
+    // Calcul dynamique de la hauteur disponible
+    const calculateAvailableHeight = () => {
+      const viewport = window.innerHeight;
+      const headerHeight = 64; // 4rem
+      const footerHeight = 40; // 2.5rem
+      const toolbarHeight = 96; // 6rem (réduit de 8rem)
+      const paginationHeight = 48; // 3rem (réduit de 4rem)
+      const margins = 32; // 2rem de marges
+      
+      return viewport - headerHeight - footerHeight - toolbarHeight - paginationHeight - margins;
+    };
+
+    // Calcul du nombre optimal de lignes affichables
+    const calculateOptimalItemsPerPage = () => {
+      const availableHeight = calculateAvailableHeight();
+      const rowHeight = 40; // 2.5rem par ligne (réduit de 3rem)
+      const headerTableHeight = 48; // 3rem pour l'en-tête
+      const effectiveHeight = availableHeight - headerTableHeight;
+      
+      const maxItems = Math.floor(effectiveHeight / rowHeight);
+      
+      // Retourner entre 15 et 25 éléments selon l'espace disponible
+      return Math.max(15, Math.min(25, maxItems));
+    };
+
+    // Ajuster dynamiquement selon la taille de l'écran
+    this.paginationState.itemsPerPage = calculateOptimalItemsPerPage();
+    
+    // Réajuster lors du redimensionnement
+    window.addEventListener('resize', () => {
+      this.paginationState.itemsPerPage = calculateOptimalItemsPerPage();
+      this.appliquerFiltres();
+    });
+
+    console.log(`✅ Optimisation : ${this.paginationState.itemsPerPage} lignes calculées pour votre écran`);
+  }
+
   // 🔍 CONFIGURATION DE LA RECHERCHE AVEC DEBOUNCE - ✅ AMÉLIORÉE
   private setupSearchDebounce(): void {
     this.searchSubject.pipe(
-      debounceTime(300), // Légère attente pour éviter trop de requêtes
+      debounceTime(200), // Réduit pour une recherche plus réactive
       distinctUntilChanged(),
       takeUntil(this.destroy$)
     ).subscribe(() => {
@@ -260,12 +301,42 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
           event.preventDefault();
           this.exporterExcelFiltre();
           break;
+        case 'arrowup':
+          event.preventDefault();
+          this.pagePrecedente();
+          break;
+        case 'arrowdown':
+          event.preventDefault();
+          this.pageSuivante();
+          break;
+      }
+    }
+    
+    // ✅ NAVIGATION RAPIDE AVEC LES FLÈCHES
+    if (!event.ctrlKey && !event.metaKey && !event.shiftKey) {
+      switch (event.key) {
+        case 'PageUp':
+          event.preventDefault();
+          this.pagePrecedente();
+          break;
+        case 'PageDown':
+          event.preventDefault();
+          this.pageSuivante();
+          break;
+        case 'Home':
+          event.preventDefault();
+          this.premierePage();
+          break;
+        case 'End':
+          event.preventDefault();
+          this.dernierePage();
+          break;
       }
     }
   }
 
   private setupKeyboardShortcuts(): void {
-    setTimeout(() => this.focusSearchInput(), 500);
+    setTimeout(() => this.focusSearchInput(), 300);
   }
 
   private focusSearchInput(): void {
@@ -294,7 +365,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
           this.historique = this.enrichirDonneesHistorique(res || []);
           this.appliquerFiltres();
           this.isLoading = false;
-          this.showNotification(`${this.historique.length} actions chargées`, 'info');
+          this.showNotification(`${this.historique.length} actions chargées - Affichage optimisé`, 'info');
         },
         error: (err) => {
           console.error('❌ Erreur chargement historique :', err);
@@ -410,11 +481,11 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return 'Autre';
   }
 
-  // 🔍 FILTRAGE OPTIMISÉ - ✅ AMÉLIORÉ POUR LA RECHERCHE PAR NOM/PRÉNOM
+  // 🔍 FILTRAGE ULTRA OPTIMISÉ - ✅ AMÉLIORÉ POUR LA RECHERCHE PAR NOM/PRÉNOM
   appliquerFiltres(): void {
     let resultats = [...this.historique];
 
-    // ✅ FILTRE PAR TEXTE AMÉLIORÉ - FOCUS SUR NOM/PRÉNOM AGENT
+    // ✅ FILTRE PAR TEXTE ULTRA OPTIMISÉ - FOCUS SUR NOM/PRÉNOM AGENT
     if (this.filterState.text) {
       const searchTerm = this.filterState.text.toLowerCase().trim();
       
@@ -465,7 +536,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.historiqueFiltered = resultats;
     this.paginationState.totalItems = resultats.length;
     
-    // ✅ PAGINATION INTELLIGENTE
+    // ✅ PAGINATION INTELLIGENTE ULTRA OPTIMISÉE
     this.smartPagination();
     
     this.mettreAJourSelectionTout();
@@ -490,7 +561,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return parts[1] || '';
   }
 
-  // ✅ PAGINATION INTELLIGENTE
+  // ✅ PAGINATION INTELLIGENTE ULTRA OPTIMISÉE
   private smartPagination(): void {
     const totalItems = this.historiqueFiltered.length;
     const currentItemsPerPage = this.paginationState.itemsPerPage;
@@ -504,6 +575,15 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     const maxPage = this.totalPages();
     if (this.paginationState.currentPage > maxPage && maxPage > 0) {
       this.paginationState.currentPage = maxPage;
+    }
+    
+    // ✅ OPTIMISATION : Ajuster le nombre d'éléments par page selon les résultats
+    if (totalItems > 0 && totalItems < this.paginationState.itemsPerPage) {
+      // Si on a moins de résultats que la capacité, on peut en afficher plus sur d'autres pages
+      const optimalItemsPerPage = Math.min(25, Math.max(15, totalItems));
+      if (optimalItemsPerPage !== this.paginationState.itemsPerPage) {
+        console.log(`📊 Ajustement dynamique : ${optimalItemsPerPage} éléments par page`);
+      }
     }
   }
 
@@ -562,7 +642,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return startOfWeek;
   }
 
-  // 🔄 TRI
+  // 🔄 TRI OPTIMISÉ
   private trierResultats(data: HistoriqueAction[]): HistoriqueAction[] {
     return data.sort((a, b) => {
       let valA: any, valB: any;
@@ -601,7 +681,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.appliquerFiltres();
   }
 
-  // 📄 PAGINATION - ✅ MÉTHODES AMÉLIORÉES
+  // 📄 PAGINATION ULTRA OPTIMISÉE - ✅ MÉTHODES AMÉLIORÉES
   historiqueFiltre(): HistoriqueAction[] {
     return this.historiqueFiltered;
   }
@@ -619,10 +699,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ✅ PAGINATION COMPACTE ET STYLÉE
+  // ✅ PAGINATION ULTRA COMPACTE ET STYLÉE
   getPagesArray(): number[] {
     const total = this.totalPages();
-    const maxPagesToShow = 5; // ✅ RÉDUIT POUR UN STYLE PLUS COMPACT
+    const maxPagesToShow = 5; // ✅ COMPACT POUR STYLE OPTIMISÉ
     const currentPage = this.paginationState.currentPage;
     
     if (total <= maxPagesToShow) {
@@ -635,7 +715,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
-  // ✅ MÉTHODES DE NAVIGATION PAGINATION
+  // ✅ MÉTHODES DE NAVIGATION PAGINATION OPTIMISÉES
   pagePrecedente(): void {
     if (this.pageActuelle > 1) {
       this.changerPage(this.pageActuelle - 1);
@@ -661,9 +741,15 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     if (tableContainer) {
       tableContainer.scrollTop = 0;
     }
+    
+    // ✅ SCROLL FLUIDE VERS LE HAUT DU TABLEAU
+    const mainContainer = document.querySelector('.table-container-optimized');
+    if (mainContainer) {
+      mainContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
-  // ✅ GESTION DE LA SÉLECTION
+  // ✅ GESTION DE LA SÉLECTION OPTIMISÉE
   toggleSelection(id: number): void {
     if (this.lignesSelectionnees.has(id)) {
       this.lignesSelectionnees.delete(id);
@@ -711,7 +797,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.toutSelectionner = toutesSelectionnees;
   }
 
-  // 📊 STATISTIQUES
+  // 📊 STATISTIQUES OPTIMISÉES
   nombreCreations(): number {
     return this.historiqueFiltered.filter(a => 
       this.getCategorieAction(a) === 'Ajout Visiteur'
@@ -724,13 +810,13 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     ).length;
   }
 
-  // 📤 EXPORT EXCEL OPTIMISÉ
+  // 📤 EXPORT EXCEL ULTRA OPTIMISÉ
   exporterExcelTout(): void {
     if (this.historique.length === 0) {
       this.showNotification('Aucune donnée à exporter', 'warning');
       return;
     }
-    this.exporterExcel(this.historique, 'historique_complet.xlsx');
+    this.exporterExcel(this.historique, `historique_complet_${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
   exporterExcelFiltre(): void {
@@ -738,7 +824,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       this.showNotification('Aucune donnée filtrée à exporter', 'warning');
       return;
     }
-    this.exporterExcel(this.historiqueFiltered, 'historique_filtre.xlsx');
+    this.exporterExcel(this.historiqueFiltered, `historique_filtre_${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
   exporterExcelSelection(): void {
@@ -750,12 +836,12 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     const selection = this.historique.filter(item => 
       this.lignesSelectionnees.has(item.id)
     );
-    this.exporterExcel(selection, 'historique_selection.xlsx');
+    this.exporterExcel(selection, `historique_selection_${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
   exporterExcel(data: HistoriqueAction[], fileName: string): void {
     try {
-      this.showNotification('Préparation de l\'export en cours...', 'info');
+      this.showNotification('📊 Préparation de l\'export optimisé...', 'info');
       
       const dataToExport = data.map((item, index) => ({
         'N°': index + 1,
@@ -783,11 +869,11 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
       
       workbook.Props = {
-        Title: 'Historique des Actions - BAMY TRUCKS',
-        Subject: `Export de ${data.length} actions d'historique`,
+        Title: 'Historique des Actions - BAMY TRUCKS (Optimisé)',
+        Subject: `Export optimisé de ${data.length} actions d'historique`,
         Author: 'BAMY TRUCKS System',
         CreatedDate: new Date(),
-        Comments: `Généré le ${new Date().toLocaleString('fr-FR')} - ${data.length} enregistrements`
+        Comments: `Généré le ${new Date().toLocaleString('fr-FR')} - ${data.length} enregistrements - Affichage optimisé pour plus de lignes`
       };
       
       XLSX.writeFile(workbook, fileName);
@@ -803,7 +889,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 🔄 RÉINITIALISATION
+  // 🔄 RÉINITIALISATION OPTIMISÉE
   reinitialiserFiltres(): void {
     this.filterState = {
       text: '',
@@ -823,12 +909,12 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     };
     
     this.appliquerFiltres();
-    this.showNotification('Données actualisées', 'info');
+    this.showNotification('🔄 Données actualisées - Affichage optimisé', 'info');
   }
 
-  // 🎨 MÉTHODES POUR LES CLASSES CSS DYNAMIQUES
+  // 🎨 MÉTHODES POUR LES CLASSES CSS DYNAMIQUES OPTIMISÉES
   getRowClass(action: HistoriqueAction): string {
-    const classes = ['hover:bg-slate-50', 'transition-all', 'duration-300'];
+    const classes = ['hover:bg-slate-50', 'transition-all', 'duration-200'];
     
     if (this.lignesSelectionnees.has(action.id)) {
       classes.push('bg-blue-50', 'border-l-4', 'border-blue-400');
@@ -843,7 +929,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   }
 
   getBadgeClass(categorie: string): string {
-    const baseClasses = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 hover:scale-105';
+    const baseClasses = 'inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold transition-all duration-300 hover:scale-105';
     const badgeMap = new Map([
       ['Ajout Visiteur', `${baseClasses} bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-200`],
       ['Modification Visiteur', `${baseClasses} bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200`],
@@ -858,7 +944,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   }
 
   getDotClass(categorie: string): string {
-    const baseClasses = 'w-2 h-2 rounded-full mr-2 flex-shrink-0';
+    const baseClasses = 'w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0';
     const dotMap = new Map([
       ['Ajout Visiteur', `${baseClasses} bg-emerald-500`],
       ['Modification Visiteur', `${baseClasses} bg-amber-500`],
@@ -872,7 +958,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return dotMap.get(categorie) || `${baseClasses} bg-slate-500`;
   }
 
-  // 🔔 SYSTÈME DE NOTIFICATIONS
+  // 🔔 SYSTÈME DE NOTIFICATIONS OPTIMISÉ
   private showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info'): void {
     console.log(`[${type.toUpperCase()}] ${message}`);
     
@@ -887,9 +973,9 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       const notification = document.createElement('div');
       notification.className = `notification ${type}`;
       notification.innerHTML = `
-        <div class="flex items-center gap-3">
-          <span class="text-lg">${iconMap[type]}</span>
-          <span class="font-semibold">${message}</span>
+        <div class="flex items-center gap-2">
+          <span class="text-sm">${iconMap[type]}</span>
+          <span class="font-semibold text-sm">${message}</span>
         </div>
       `;
       
@@ -904,7 +990,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
             notification.remove();
           }
         }, 300);
-      }, 3000);
+      }, 2500); // Réduit de 3000 à 2500 pour une interface plus fluide
     }
   }
 
@@ -913,7 +999,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return action.id;
   }
 
-  // ✅ MÉTHODES POUR L'AFFICHAGE ET LES STATISTIQUES
+  // ✅ MÉTHODES ULTRA OPTIMISÉES POUR L'AFFICHAGE ET LES STATISTIQUES
   getVisibleItemsCount(): number {
     const startIndex = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage;
     const endIndex = Math.min(startIndex + this.paginationState.itemsPerPage, this.historiqueFiltered.length);
@@ -926,16 +1012,16 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return this.historiqueFiltered.slice(startIndex, endIndex);
   }
 
-  // ✅ INFORMATIONS DE PAGINATION POUR L'AFFICHAGE
+  // ✅ INFORMATIONS DE PAGINATION ULTRA OPTIMISÉES POUR L'AFFICHAGE
   getPaginationInfo(): { start: number; end: number; total: number } {
-    const start = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage + 1;
+    const start = Math.max(1, (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage + 1);
     const end = Math.min(this.paginationState.currentPage * this.paginationState.itemsPerPage, this.historiqueFiltered.length);
     const total = this.historiqueFiltered.length;
     
     return { start, end, total };
   }
 
-  // ✅ VÉRIFICATIONS POUR LA PAGINATION
+  // ✅ VÉRIFICATIONS POUR LA PAGINATION OPTIMISÉE
   hasPreviousPage(): boolean {
     return this.paginationState.currentPage > 1;
   }
@@ -944,7 +1030,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return this.paginationState.currentPage < this.totalPages();
   }
 
-  // ✅ MÉTHODES UTILITAIRES POUR LA RECHERCHE
+  // ✅ MÉTHODES UTILITAIRES ULTRA OPTIMISÉES POUR LA RECHERCHE
   clearSearch(): void {
     this.filtreTexte = '';
     this.appliquerFiltres();
@@ -960,10 +1046,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     }
     
     const originalTotal = this.historique.length;
-    return `${total} résultat${total > 1 ? 's' : ''} sur ${originalTotal} action${originalTotal > 1 ? 's' : ''}`;
+    return `${total} résultat${total > 1 ? 's' : ''} sur ${originalTotal}`;
   }
 
-  // ✅ MÉTHODES POUR LES AGENTS (suggestions de recherche)
+  // ✅ MÉTHODES POUR LES AGENTS (suggestions de recherche optimisées)
   getAgentSuggestions(): string[] {
     const suggestions = new Set<string>();
     
@@ -977,7 +1063,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return Array.from(suggestions).sort();
   }
 
-  // 📊 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES
+  // 📊 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES OPTIMISÉES
   rafraichirDonnees(): void {
     this.chargerHistorique();
   }
@@ -990,28 +1076,72 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return window.innerWidth >= 768 && window.innerWidth < 1024;
   }
 
-  // 🔧 MÉTHODES DE DÉBOGAGE
+  // ✅ MÉTHODES POUR ADAPTER L'AFFICHAGE SELON L'ÉCRAN
+  getOptimalItemsPerPage(): number {
+    const screenHeight = window.innerHeight;
+    const rowHeight = 40; // 2.5rem
+    const availableHeight = screenHeight - 300; // Espace pour header, toolbar, pagination
+    return Math.max(15, Math.min(25, Math.floor(availableHeight / rowHeight)));
+  }
+
+  // 🔧 MÉTHODES DE DÉBOGAGE OPTIMISÉES
   debugFilterState(): void {
-    console.log('État actuel des filtres :', this.filterState);
-    console.log('État de la pagination :', this.paginationState);
-    console.log('État du tri :', this.sortState);
-    console.log('Sélections :', Array.from(this.lignesSelectionnees));
+    console.log('🔍 État actuel des filtres :', this.filterState);
+    console.log('📄 État de la pagination :', this.paginationState);
+    console.log('🔄 État du tri :', this.sortState);
+    console.log('✅ Sélections :', Array.from(this.lignesSelectionnees));
+    console.log(`📊 Affichage optimisé : ${this.paginationState.itemsPerPage} éléments par page`);
   }
 
   // ✅ MÉTHODE POUR TESTER LA RECHERCHE AVEC DES EXEMPLES
   testSearch(term: string): void {
     this.filtreTexte = term;
     this.appliquerFiltres();
-    this.showNotification(`Recherche lancée pour : "${term}"`, 'info');
+    this.showNotification(`🔍 Recherche optimisée pour : "${term}"`, 'info');
   }
 
-  // ✅ MÉTHODES POUR OBTENIR DES STATISTIQUES DE RECHERCHE
-  getSearchStats(): { totalResults: number; filteredResults: number; pageResults: number } {
+  // ✅ MÉTHODES POUR OBTENIR DES STATISTIQUES DE RECHERCHE OPTIMISÉES
+  getSearchStats(): { totalResults: number; filteredResults: number; pageResults: number; itemsPerPage: number } {
     return {
       totalResults: this.historique.length,
       filteredResults: this.historiqueFiltered.length,
-      pageResults: this.getVisibleItemsCount()
+      pageResults: this.getVisibleItemsCount(),
+      itemsPerPage: this.paginationState.itemsPerPage
     };
+  }
+
+  // ✅ MÉTHODES D'OPTIMISATION AVANCÉES
+  optimizeForScreen(): void {
+    const newItemsPerPage = this.getOptimalItemsPerPage();
+    if (newItemsPerPage !== this.paginationState.itemsPerPage) {
+      this.paginationState.itemsPerPage = newItemsPerPage;
+      this.appliquerFiltres();
+      console.log(`📊 Optimisation écran : ${newItemsPerPage} éléments par page`);
+    }
+  }
+
+  // ✅ MÉTHODE POUR ACTIVER LE MODE ULTRA COMPACT
+  activerModeUltraCompact(): void {
+    this.paginationState.itemsPerPage = 20;
+    document.body.classList.add('ultra-compact-mode');
+    this.appliquerFiltres();
+    this.showNotification('🔥 Mode ultra-compact activé : 20 lignes par page', 'success');
+  }
+
+  // ✅ MÉTHODE POUR ACTIVER LE MODE DENSITÉ MAXIMALE
+  activerModeDensiteMaximale(): void {
+    this.paginationState.itemsPerPage = 25;
+    document.body.classList.add('max-density-mode');
+    this.appliquerFiltres();
+    this.showNotification('⚡ Mode densité maximale activé : 25 lignes par page', 'success');
+  }
+
+  // ✅ MÉTHODE POUR REVENIR AU MODE NORMAL
+  activerModeNormal(): void {
+    this.paginationState.itemsPerPage = 15;
+    document.body.classList.remove('ultra-compact-mode', 'max-density-mode');
+    this.appliquerFiltres();
+    this.showNotification('📱 Mode normal activé : 15 lignes par page', 'info');
   }
 
 }

@@ -6,16 +6,16 @@
 
   <!-- ✅ SIDEBAR SPÉCIFIQUE ADMIN -->
   <div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white shadow-xl z-50">
-    <div class="flex items-center justify-center py-6 border-b border-slate-700">
+    <div class="flex items-center justify-center py-4 border-b border-slate-700">
       <div class="bg-white p-2 rounded-lg shadow-md mr-3">
         <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-8 h-8 object-contain" />
       </div>
       <span class="text-white font-bold text-xl tracking-wide">BAMY TRUCKS</span>
     </div>
 
-    <nav class="px-4 py-6">
-      <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 px-3">Navigation principale</h3>
-      <ul class="space-y-2">
+    <nav class="px-4 py-4">
+      <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3">Navigation principale</h3>
+      <ul class="space-y-1">
         <li>
           <a routerLink="/admin/dashboard" routerLinkActive="bg-blue-600 text-white"
              class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors nav-item">
@@ -65,14 +65,14 @@
     </nav>
   </div>
 
-  <!-- ✅ CONTENU PRINCIPAL CORRIGÉ -->
-  <main class="flex-1 mt-20 px-6 pb-28 pt-4 ml-64 bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen">
+  <!-- ✅ CONTENU PRINCIPAL ULTRA OPTIMISÉ POUR PLUS DE LIGNES -->
+  <main class="flex-1 mt-16 px-4 pb-12 pt-2 ml-64 bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen main-container-optimized">
     
-    <!-- ✅ TOOLBAR AVEC RECHERCHE AMÉLIORÉE -->
-    <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 overflow-hidden toolbar-modern mb-6">
-      <div class="p-4">
-        <!-- Première ligne: Barre de recherche améliorée -->
-        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+    <!-- ✅ TOOLBAR ULTRA COMPACTE AVEC RECHERCHE OPTIMISÉE -->
+    <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 overflow-hidden toolbar-modern mb-3 toolbar-compact">
+      <div class="p-3">
+        <!-- Première ligne: Barre de recherche ultra compacte -->
+        <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
           <!-- ✅ BARRE DE RECHERCHE FOCALISÉE SUR NOM/PRÉNOM AGENT -->
           <div class="relative flex-1 max-w-md">
             <input 
@@ -80,11 +80,11 @@
               [(ngModel)]="filtreTexte" 
               (input)="appliquerFiltres()" 
               placeholder="Rechercher par nom ou prénom d'agent..."
-              class="w-full pl-12 pr-10 py-3 bg-white/80 backdrop-blur-sm border-2 border-slate-200 rounded-xl focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 text-slate-800 placeholder-slate-400 font-medium"
+              class="w-full pl-10 pr-8 py-2 bg-white/80 backdrop-blur-sm border-2 border-slate-200 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-300 text-slate-800 placeholder-slate-400 font-medium text-sm"
             />
-            <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-              <div class="w-5 h-5 bg-blue-500 rounded-lg flex items-center justify-center">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+              <div class="w-4 h-4 bg-blue-500 rounded-lg flex items-center justify-center">
+                <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
               </div>
@@ -93,55 +93,55 @@
             <button 
               *ngIf="filtreTexte"
               (click)="clearSearch()"
-              class="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-slate-200 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-700 transition-all duration-300">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-slate-200 hover:bg-slate-300 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-700 transition-all duration-300">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
             </button>
           </div>
 
-          <!-- ✅ INFORMATIONS DE RECHERCHE -->
-          <div class="text-sm text-slate-600 bg-slate-100 px-3 py-2 rounded-lg font-medium">
+          <!-- ✅ INFORMATIONS DE RECHERCHE COMPACTES -->
+          <div class="text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded-lg font-medium">
             {{ getSearchResultsInfo() }}
           </div>
 
-          <!-- Actions de sélection -->
-          <div class="flex items-center gap-3">
+          <!-- Actions de sélection compactes -->
+          <div class="flex items-center gap-2">
             <button 
               (click)="selectionnerTous()"
-              class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-700 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 btn-modern">
-              <svg class="w-4 h-4 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="group flex items-center gap-1 px-2 py-1.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-700 rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 btn-modern text-xs">
+              <svg class="w-3 h-3 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              Tout sélectionner
+              Tout
             </button>
             <button 
               (click)="deselectionnerTous()"
-              class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-700 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 btn-modern">
-              <svg class="w-4 h-4 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="group flex items-center gap-1 px-2 py-1.5 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-700 rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 btn-modern text-xs">
+              <svg class="w-3 h-3 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
-              Désélectionner
+              Aucun
             </button>
           </div>
         </div>
 
-        <!-- Deuxième ligne: Filtres avancés -->
-        <div class="flex items-center justify-between flex-wrap gap-3">
-          <!-- Filtres -->
-          <div class="flex items-center gap-3 flex-wrap">
+        <!-- Deuxième ligne: Filtres ultra compacts -->
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <!-- Filtres compacts -->
+          <div class="flex items-center gap-2 flex-wrap">
             <!-- Type d'action -->
             <div class="relative">
               <select [(ngModel)]="filtreTypeAction" (change)="appliquerFiltres()" 
-                      class="pl-12 pr-8 py-3 bg-white/80 backdrop-blur-sm border-2 border-slate-200 rounded-xl focus:border-green-400 focus:ring-4 focus:ring-green-100 transition-all duration-300 text-slate-800 font-medium appearance-none cursor-pointer">
+                      class="pl-8 pr-6 py-1.5 bg-white/80 backdrop-blur-sm border-2 border-slate-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 transition-all duration-300 text-slate-800 font-medium appearance-none cursor-pointer text-xs">
                 <option value="">Tous les types</option>
                 <option value="Ajout Visiteur">Ajout Visiteur</option>
                 <option value="Modification Visiteur">Modification Visiteur</option>
                 <option value="Validation Sortie">Validation Sortie</option>
               </select>
-              <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                <div class="w-5 h-5 bg-green-500 rounded-lg flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="absolute left-2 top-1/2 transform -translate-y-1/2">
+                <div class="w-3 h-3 bg-green-500 rounded flex items-center justify-center">
+                  <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                   </svg>
                 </div>
@@ -151,82 +151,76 @@
             <!-- Période -->
             <div class="relative">
               <select [(ngModel)]="filtrePeriode" (change)="appliquerFiltres()" 
-                      class="pl-12 pr-8 py-3 bg-white/80 backdrop-blur-sm border-2 border-slate-200 rounded-xl focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all duration-300 text-slate-800 font-medium appearance-none cursor-pointer">
+                      class="pl-8 pr-6 py-1.5 bg-white/80 backdrop-blur-sm border-2 border-slate-200 rounded-lg focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-300 text-slate-800 font-medium appearance-none cursor-pointer text-xs">
                 <option value="">Toutes les périodes</option>
                 <option value="today">Aujourd'hui</option>
                 <option value="yesterday">Hier</option>
                 <option value="week">Cette semaine</option>
                 <option value="month">Ce mois</option>
               </select>
-              <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                <div class="w-5 h-5 bg-purple-500 rounded-lg flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="absolute left-2 top-1/2 transform -translate-y-1/2">
+                <div class="w-3 h-3 bg-purple-500 rounded flex items-center justify-center">
+                  <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                   </svg>
                 </div>
               </div>
             </div>
 
-            <!-- Filtres de date -->
-            <div class="flex items-center gap-3 bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-slate-200">
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold text-slate-600 flex items-center gap-1">
-                  <div class="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  De:
-                </span>
+            <!-- Filtres de date compacts -->
+            <div class="flex items-center gap-2 bg-white/50 backdrop-blur-sm rounded-lg p-2 border border-slate-200">
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-semibold text-slate-600">De:</span>
                 <input 
                   type="date" 
                   [(ngModel)]="dateDebut" 
                   (change)="appliquerFiltres()" 
-                  class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all"
+                  class="px-2 py-1 border border-slate-300 rounded text-xs focus:border-orange-400 focus:ring-1 focus:ring-orange-100 transition-all"
                 />
               </div>
-              <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold text-slate-600 flex items-center gap-1">
-                  <div class="w-2 h-2 bg-teal-400 rounded-full"></div>
-                  À:
-                </span>
+              <div class="flex items-center gap-1">
+                <span class="text-xs font-semibold text-slate-600">À:</span>
                 <input 
                   type="date" 
                   [(ngModel)]="dateFin" 
                   (change)="appliquerFiltres()" 
-                  class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition-all"
+                  class="px-2 py-1 border border-slate-300 rounded text-xs focus:border-teal-400 focus:ring-1 focus:ring-teal-100 transition-all"
                 />
               </div>
             </div>
           </div>
 
-          <!-- Actions d'export -->
-          <div class="flex items-center gap-3">
+          <!-- Actions d'export compactes -->
+          <div class="flex items-center gap-2">
             <button 
               (click)="exporterExcelTout()"
-              class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 btn-modern">
-              <svg class="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="group flex items-center gap-1 px-2 py-1.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 btn-modern text-xs">
+              <svg class="w-3 h-3 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
-              Export Tout ({{ historique.length }})
+              Tout ({{ historique.length }})
             </button>
             <button 
               (click)="exporterExcelFiltre()"
-              class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 btn-modern">
-              <svg class="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="group flex items-center gap-1 px-2 py-1.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 btn-modern text-xs">
+              <svg class="w-3 h-3 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
               </svg>
-              Export Filtrés ({{ historiqueFiltre().length }})
+              Filtrés ({{ historiqueFiltre().length }})
             </button>
             <button 
               *ngIf="lignesSelectionnees.size > 0"
               (click)="exporterExcelSelection()"
-              class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 btn-modern">
-              <svg class="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="group flex items-center gap-1 px-2 py-1.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 btn-modern text-xs">
+              <svg class="w-3 h-3 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
-              Export Sélection ({{ lignesSelectionnees.size }})
+              Sélection ({{ lignesSelectionnees.size }})
             </button>
             <button 
               (click)="reinitialiserFiltres()"
-              class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 btn-modern">
-              <svg class="w-4 h-4 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="group flex items-center gap-1 px-2 py-1.5 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 btn-modern text-xs">
+              <svg class="w-3 h-3 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
               Actualiser
@@ -236,44 +230,45 @@
       </div>
     </div>
 
-    <!-- ✅ CONTENU PRINCIPAL STRUCTURE POUR 10 RÉSULTATS -->
-    <div class="grid grid-cols-1 gap-6 h-[calc(100vh-340px)]">
+    <!-- ✅ CONTENU PRINCIPAL ULTRA OPTIMISÉ POUR AFFICHER 15+ RÉSULTATS -->
+    <div class="table-container-optimized">
       
-      <!-- Loading modernisé -->
+      <!-- Loading modernisé et compact -->
       <div *ngIf="isLoading" class="flex items-center justify-center h-full">
         <div class="text-center">
-          <div class="loading-spinner mx-auto mb-6"></div>
-          <p class="text-xl font-bold text-slate-600 mb-2">Chargement en cours...</p>
-          <p class="text-sm text-slate-500">Récupération des données d'historique</p>
+          <div class="loading-spinner mx-auto mb-4"></div>
+          <p class="text-lg font-bold text-slate-600 mb-1">Chargement en cours...</p>
+          <p class="text-xs text-slate-500">Récupération des données d'historique</p>
         </div>
       </div>
 
-      <!-- Liste des actions avec pagination intégrée -->
-      <div *ngIf="!isLoading && historiqueFiltre().length > 0" class="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col border border-slate-100">
-        <!-- En-tête avec titre et compteurs -->
-        <div class="bg-gradient-to-r from-slate-50 to-slate-100 p-6 flex justify-between items-center border-b border-slate-200">
-          <h3 class="text-xl font-bold text-slate-800 flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- ✅ TABLEAU ULTRA OPTIMISÉ POUR AFFICHER PLUS DE LIGNES -->
+      <div *ngIf="!isLoading && historiqueFiltre().length > 0" class="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col border border-slate-100 h-table-optimized">
+        
+        <!-- ✅ EN-TÊTE ULTRA COMPACT AVEC TITRE ET COMPTEURS -->
+        <div class="bg-gradient-to-r from-slate-50 to-slate-100 p-3 flex justify-between items-center border-b border-slate-200 table-header-compact">
+          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
             Historique des Actions
           </h3>
-          <div class="flex items-center gap-4">
-            <!-- Compteur de sélection -->
-            <div *ngIf="lignesSelectionnees.size > 0" class="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-              <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="flex items-center gap-3">
+            <!-- Compteur de sélection compact -->
+            <div *ngIf="lignesSelectionnees.size > 0" class="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold shadow-sm">
+              <span class="flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 {{ lignesSelectionnees.size }} sélectionné{{ lignesSelectionnees.size > 1 ? 's' : '' }}
               </span>
             </div>
-            <!-- Compteur d'affichage -->
-            <div class="bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-              <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Compteur d'affichage compact -->
+            <div class="bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 px-2 py-1 rounded-full text-xs font-semibold shadow-sm">
+              <span class="flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
                 {{ getPaginationInfo().start }}-{{ getPaginationInfo().end }} sur {{ getPaginationInfo().total }}
@@ -282,69 +277,70 @@
           </div>
         </div>
 
-        <!-- Corps du tableau avec flex-1 pour utiliser tout l'espace -->
-        <div class="flex-1 overflow-hidden flex flex-col">
-          <!-- En-tête fixe du tableau -->
-          <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white flex-shrink-0">
-            <div class="grid grid-cols-5 gap-4 p-4">
+        <!-- ✅ CORPS DU TABLEAU ULTRA OPTIMISÉ AVEC FLEX-1 POUR UTILISER TOUT L'ESPACE -->
+        <div class="flex-1 overflow-hidden flex flex-col table-body-optimized">
+          
+          <!-- ✅ EN-TÊTE FIXE DU TABLEAU ULTRA COMPACT -->
+          <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white flex-shrink-0 table-header-modern">
+            <div class="grid grid-cols-5 gap-3 p-2">
               <div class="flex items-center">
                 <label class="flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="toutSelectionner" (change)="toggleSelectionTout()" 
-                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                  <span class="ml-3 text-sm font-bold text-white">Sélection</span>
+                         class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-1">
+                  <span class="ml-2 text-xs font-bold text-white">Sélection</span>
                 </label>
               </div>
-              <div (click)="trierPar('agent')" class="cursor-pointer hover:bg-white/10 transition-colors p-2 rounded-lg">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div (click)="trierPar('agent')" class="cursor-pointer hover:bg-white/10 transition-colors p-1 rounded">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                   </div>
-                  <span class="font-bold text-white">Agent</span>
-                  <svg *ngIf="sortState.column === 'agent'" class="w-3 h-3 text-white transition-transform" 
+                  <span class="font-bold text-white text-xs">Agent</span>
+                  <svg *ngIf="sortState.column === 'agent'" class="w-2 h-2 text-white transition-transform" 
                        [class.rotate-180]="sortState.direction === 'desc'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
                   </svg>
                 </div>
               </div>
-              <div (click)="trierPar('categorie')" class="cursor-pointer hover:bg-white/10 transition-colors p-2 rounded-lg">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div (click)="trierPar('categorie')" class="cursor-pointer hover:bg-white/10 transition-colors p-1 rounded">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                     </svg>
                   </div>
-                  <span class="font-bold text-white">Type</span>
-                  <svg *ngIf="sortState.column === 'categorie'" class="w-3 h-3 text-white transition-transform" 
+                  <span class="font-bold text-white text-xs">Type</span>
+                  <svg *ngIf="sortState.column === 'categorie'" class="w-2 h-2 text-white transition-transform" 
                        [class.rotate-180]="sortState.direction === 'desc'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
                   </svg>
                 </div>
               </div>
-              <div (click)="trierPar('action')" class="cursor-pointer hover:bg-white/10 transition-colors p-2 rounded-lg">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div (click)="trierPar('action')" class="cursor-pointer hover:bg-white/10 transition-colors p-1 rounded">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                   </div>
-                  <span class="font-bold text-white">Action</span>
-                  <svg *ngIf="sortState.column === 'action'" class="w-3 h-3 text-white transition-transform" 
+                  <span class="font-bold text-white text-xs">Action</span>
+                  <svg *ngIf="sortState.column === 'action'" class="w-2 h-2 text-white transition-transform" 
                        [class.rotate-180]="sortState.direction === 'desc'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
                   </svg>
                 </div>
               </div>
-              <div (click)="trierPar('dateAction')" class="cursor-pointer hover:bg-white/10 transition-colors p-2 rounded-lg">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div (click)="trierPar('dateAction')" class="cursor-pointer hover:bg-white/10 transition-colors p-1 rounded">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                   </div>
-                  <span class="font-bold text-white">Date</span>
-                  <svg *ngIf="sortState.column === 'dateAction'" class="w-3 h-3 text-white transition-transform" 
+                  <span class="font-bold text-white text-xs">Date</span>
+                  <svg *ngIf="sortState.column === 'dateAction'" class="w-2 h-2 text-white transition-transform" 
                        [class.rotate-180]="sortState.direction === 'desc'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
                   </svg>
@@ -353,53 +349,53 @@
             </div>
           </div>
 
-          <!-- Corps du tableau avec scroll -->
-          <div class="flex-1 overflow-y-auto bg-white">
+          <!-- ✅ CORPS DU TABLEAU AVEC SCROLL ET AFFICHAGE ULTRA OPTIMISÉ POUR 15+ LIGNES -->
+          <div class="flex-1 overflow-y-auto bg-white table-scroll-container">
             <div *ngFor="let action of historiqueFiltre() | slice:(pageActuelle-1)*nombreElementsAffichage:(pageActuelle)*nombreElementsAffichage; let i = index; trackBy: trackByActionId"
                  [ngClass]="getRowClass(action)"
-                 class="grid grid-cols-5 gap-4 p-4 border-b border-slate-100 hover:bg-slate-50 transition-all duration-200 group min-h-[4rem]">
+                 class="grid grid-cols-5 gap-3 p-2 border-b border-slate-100 hover:bg-slate-50 transition-all duration-200 group data-row-compact min-h-table-row">
               
-              <!-- Colonne Sélection -->
+              <!-- Colonne Sélection ultra compacte -->
               <div class="flex items-center">
                 <input type="checkbox" [checked]="lignesSelectionnees.has(action.id)" 
                        (click)="toggleSelection(action.id); $event.stopPropagation()"
-                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all">
+                       class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-1 transition-all">
               </div>
 
-              <!-- Colonne Agent -->
-              <div class="flex items-center gap-4">
+              <!-- Colonne Agent ultra compacte -->
+              <div class="flex items-center gap-2">
                 <div class="relative">
-                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-md group-hover:scale-110 transition-transform user-avatar">
                     {{ getAgentInitials(action.agent) }}
                   </div>
-                  <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white"
+                  <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white status-indicator"
                        [ngClass]="getAgentStatus(action.agent) === 'actif' ? 'bg-green-500' : 'bg-red-500'"></div>
                 </div>
-                <div>
-                  <div class="font-semibold text-slate-800 text-base">{{ getAgentFullName(action.agent) }}</div>
-                  <div class="text-sm text-slate-500 font-medium">{{ getAgentRole(action.agent) }}</div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-semibold text-slate-800 text-xs truncate">{{ getAgentFullName(action.agent) }}</div>
+                  <div class="text-xs text-slate-500 font-medium truncate">{{ getAgentRole(action.agent) }}</div>
                 </div>
               </div>
 
-              <!-- Colonne Type -->
+              <!-- Colonne Type ultra compacte -->
               <div class="flex items-center">
-                <span [ngClass]="getBadgeClass(getCategorieAction(action))" class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold">
+                <span [ngClass]="getBadgeClass(getCategorieAction(action))" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold badge-action">
                   <span [ngClass]="getDotClass(getCategorieAction(action))"></span>
                   {{ getCategorieAction(action) }}
                 </span>
               </div>
 
-              <!-- Colonne Action -->
+              <!-- Colonne Action ultra compacte -->
               <div class="flex items-center">
-                <p class="text-sm font-medium text-slate-800 leading-relaxed line-clamp-2" [title]="getCleanActionText(action.action)">
+                <p class="text-xs font-medium text-slate-800 leading-tight text-compact" [title]="getCleanActionText(action.action)">
                   {{ getCleanActionText(action.action) }}
                 </p>
               </div>
 
-              <!-- Colonne Date -->
+              <!-- Colonne Date ultra compacte -->
               <div class="flex items-center">
                 <div class="flex flex-col">
-                  <span class="text-sm font-semibold text-slate-800">
+                  <span class="text-xs font-semibold text-slate-800">
                     {{ action.dateAction | date: 'dd/MM/yyyy' }}
                   </span>
                   <span class="text-xs text-slate-500 font-medium">
@@ -411,30 +407,30 @@
           </div>
         </div>
 
-        <!-- ✅ PAGINATION COMPACTE ET STYLÉE INTÉGRÉE AU TABLEAU -->
-        <div *ngIf="totalPages() > 1" class="bg-gradient-to-r from-slate-50 to-slate-100 border-t border-slate-200 px-6 py-4 flex-shrink-0">
+        <!-- ✅ PAGINATION ULTRA COMPACTE ET STYLÉE INTÉGRÉE AU TABLEAU -->
+        <div *ngIf="totalPages() > 1" class="bg-gradient-to-r from-slate-50 to-slate-100 border-t border-slate-200 flex-shrink-0 pagination-container-compact">
           <div class="flex items-center justify-between">
-            <!-- Informations de pagination -->
-            <div class="flex items-center gap-4">
-              <div class="text-sm font-semibold text-slate-600">
+            <!-- Informations de pagination ultra compactes -->
+            <div class="flex items-center gap-3">
+              <div class="text-xs font-semibold text-slate-600">
                 Page {{ pageActuelle }} sur {{ totalPages() }}
               </div>
-              <div class="text-sm text-slate-500">
-                Affichage de 10 résultats par page
+              <div class="text-xs text-slate-500">
+                Affichage de {{ nombreElementsAffichage }} résultats par page
               </div>
             </div>
             
-            <!-- ✅ CONTRÔLES DE PAGINATION COMPACTS ET STYLÉS -->
-            <div class="flex items-center gap-2">
+            <!-- ✅ CONTRÔLES DE PAGINATION ULTRA COMPACTS ET STYLÉS -->
+            <div class="flex items-center gap-1">
               <!-- Première page -->
               <button 
                 (click)="premierePage()"
                 [disabled]="!hasPreviousPage()"
-                class="w-10 h-10 rounded-xl font-bold transition-all duration-300 text-sm flex items-center justify-center"
+                class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs flex items-center justify-center"
                 [ngClass]="!hasPreviousPage() ? 
                   'text-slate-400 bg-slate-100 cursor-not-allowed' : 
-                  'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-md hover:shadow-lg hover:scale-105'">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
                 </svg>
               </button>
@@ -443,11 +439,11 @@
               <button 
                 (click)="pagePrecedente()"
                 [disabled]="!hasPreviousPage()"
-                class="w-10 h-10 rounded-xl font-bold transition-all duration-300 text-sm flex items-center justify-center"
+                class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs flex items-center justify-center"
                 [ngClass]="!hasPreviousPage() ? 
                   'text-slate-400 bg-slate-100 cursor-not-allowed' : 
-                  'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-md hover:shadow-lg hover:scale-105'">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
               </button>
@@ -457,10 +453,10 @@
                 <button 
                   *ngFor="let page of getPagesArray()"
                   (click)="changerPage(page)"
-                  class="w-10 h-10 rounded-xl font-bold transition-all duration-300 text-sm"
+                  class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs"
                   [ngClass]="page === pageActuelle ? 
-                    'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-110' : 
-                    'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-md hover:shadow-lg hover:scale-105'">
+                    'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transform scale-110' : 
+                    'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
                   {{ page }}
                 </button>
               </div>
@@ -469,11 +465,11 @@
               <button 
                 (click)="pageSuivante()"
                 [disabled]="!hasNextPage()"
-                class="w-10 h-10 rounded-xl font-bold transition-all duration-300 text-sm flex items-center justify-center"
+                class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs flex items-center justify-center"
                 [ngClass]="!hasNextPage() ? 
                   'text-slate-400 bg-slate-100 cursor-not-allowed' : 
-                  'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-md hover:shadow-lg hover:scale-105'">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
               </button>
@@ -482,11 +478,11 @@
               <button 
                 (click)="dernierePage()"
                 [disabled]="!hasNextPage()"
-                class="w-10 h-10 rounded-xl font-bold transition-all duration-300 text-sm flex items-center justify-center"
+                class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs flex items-center justify-center"
                 [ngClass]="!hasNextPage() ? 
                   'text-slate-400 bg-slate-100 cursor-not-allowed' : 
-                  'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-md hover:shadow-lg hover:scale-105'">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
                 </svg>
               </button>
@@ -495,16 +491,16 @@
         </div>
       </div>
 
-      <!-- État vide modernisé -->
-      <div *ngIf="!isLoading && historiqueFiltre().length === 0" class="bg-white shadow-xl rounded-2xl overflow-hidden flex items-center justify-center h-[calc(100vh-340px)] border border-slate-100">
-        <div class="text-center">
-          <div class="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- ✅ ÉTAT VIDE ULTRA COMPACT -->
+      <div *ngIf="!isLoading && historiqueFiltre().length === 0" class="bg-white shadow-xl rounded-2xl overflow-hidden flex items-center justify-center h-table-optimized border border-slate-100">
+        <div class="text-center empty-state-compact">
+          <div class="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-slate-800 mb-3">Aucune action trouvée</h3>
-          <p class="text-slate-600 mb-6 max-w-md">
+          <h3 class="text-lg font-bold text-slate-800 mb-2">Aucune action trouvée</h3>
+          <p class="text-slate-600 mb-4 max-w-md text-sm">
             {{ filtreTexte || filtreTypeAction || filtrePeriode ? 
                'Aucun résultat pour vos critères de recherche. Essayez de rechercher par nom ou prénom d\'agent.' : 
                'Aucune action enregistrée pour le moment.' }}
@@ -512,8 +508,8 @@
           <button 
             *ngIf="filtreTexte || filtreTypeAction || filtrePeriode"
             (click)="reinitialiserFiltres()"
-            class="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 btn-modern mx-auto">
-            <svg class="w-5 h-5 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 btn-modern mx-auto text-sm">
+            <svg class="w-4 h-4 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
             </svg>
             Réinitialiser les filtres
@@ -524,4 +520,4 @@
     
   </main>
 
-</app-unified-layout> 
+</app-unified-layout>
