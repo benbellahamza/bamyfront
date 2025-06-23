@@ -4,7 +4,7 @@ import { AdminService } from 'app/core/services/admin/admin.service';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import * as XLSX from 'xlsx';
 
-// 🔧 INTERFACES OPTIMISÉES
+// 🔧 INTERFACES POUR LE TYPAGE
 interface HistoriqueAction {
   id: number;
   agent: string;
@@ -89,7 +89,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   historique: HistoriqueAction[] = [];
   historiqueFiltered: HistoriqueAction[] = [];
   
-  // 🔍 ÉTAT DES FILTRES - OPTIMISÉ
+  // 🔍 ÉTAT DES FILTRES
   private filterState: FilterState = {
     text: '',
     typeAction: '',
@@ -98,14 +98,14 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     dateFin: ''
   };
 
-  // 📄 ÉTAT DE LA PAGINATION - OPTIMISÉ
+  // 📄 ÉTAT DE LA PAGINATION
   private paginationState: PaginationState = {
     currentPage: 1,
     itemsPerPage: 10,
     totalItems: 0
   };
 
-  // 🔄 ÉTAT DU TRI - OPTIMISÉ
+  // 🔄 ÉTAT DU TRI
   private sortState: SortState = {
     column: 'dateAction',
     direction: 'desc'
@@ -120,10 +120,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   actionSelectionnee: HistoriqueAction | null = null;
   isLoading = false;
   
-  // 📅 PROPRIÉTÉS CALCULÉES
-  currentYear = new Date().getFullYear();
-
-  // 👥 BASE DE DONNÉES SIMULÉE DES AGENTS ENRICHIE
+  // 👥 BASE DE DONNÉES DES AGENTS
   private agents: Utilisateur[] = [
     { 
       nom: 'Dupont', 
@@ -162,7 +159,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     }
   ];
 
-  // 🎯 GETTERS POUR L'ÉTAT - OPTIMISÉS
+  // 🎯 GETTERS ET SETTERS POUR L'ÉTAT
   get filtreTexte(): string { return this.filterState.text; }
   set filtreTexte(value: string) { 
     this.filterState.text = value;
@@ -197,13 +194,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   set pageActuelle(value: number) { this.paginationState.currentPage = value; }
 
   get nombreElementsAffichage(): number { return this.paginationState.itemsPerPage; }
-  set nombreElementsAffichage(value: number) { 
-    this.paginationState.itemsPerPage = value;
-    this.paginationState.currentPage = 1;
-  }
-
-  get colonneTri(): string { return this.sortState.column; }
-  get ordreTri(): 'asc' | 'desc' { return this.sortState.direction; }
 
   constructor(
     private historiqueService: HistoriqueService,
@@ -220,7 +210,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // 🚀 INITIALISATION OPTIMISÉE
+  // 🚀 INITIALISATION
   private initializeComponent(): void {
     this.chargerHistorique();
     this.setupKeyboardShortcuts();
@@ -259,12 +249,11 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   }
 
   private setupKeyboardShortcuts(): void {
-    // Focus automatique sur le champ de recherche au chargement
     setTimeout(() => this.focusSearchInput(), 500);
   }
 
   private focusSearchInput(): void {
-    const searchInput = document.querySelector('input[placeholder*="Nom, prénom"]') as HTMLInputElement;
+    const searchInput = document.querySelector('input[placeholder*="Rechercher"]') as HTMLInputElement;
     if (searchInput) {
       searchInput.focus();
       searchInput.select();
@@ -276,11 +265,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    */
   onPasswordChanged(): void {
     console.log('✅ Mot de passe utilisateur changé depuis le layout unifié');
-    // Ici vous pouvez ajouter une logique spécifique si nécessaire
     this.showNotification('Mot de passe mis à jour avec succès', 'success');
   }
 
-  // 📊 CHARGEMENT DES DONNÉES OPTIMISÉ
+  // 📊 CHARGEMENT DES DONNÉES
   chargerHistorique(): void {
     this.isLoading = true;
     this.historiqueService.getHistorique()
@@ -319,16 +307,14 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
   }
 
-  // 👤 GESTION DES INFORMATIONS AGENT OPTIMISÉE
+  // 👤 GESTION DES INFORMATIONS AGENT
   getAgentFullName(agentString: string): string {
     if (!agentString) return 'Agent inconnu';
     
-    // Si c'est déjà un nom complet, on le retourne
     if (agentString.includes(' ')) {
       return agentString;
     }
     
-    // Recherche optimisée dans la base de données
     const agent = this.findAgentByString(agentString);
     return agent ? `${agent.prenom} ${agent.nom}` : agentString;
   }
@@ -367,17 +353,15 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     );
   }
 
-  // ✨ NETTOYAGE DU TEXTE D'ACTION AMÉLIORÉ
+  // ✨ NETTOYAGE DU TEXTE D'ACTION
   getCleanActionText(actionText: string): string {
     if (!actionText) return 'Action non définie';
     
     let cleanText = actionText.trim();
     
-    // Supprimer les préfixes de type d'action avec regex optimisée
     const prefixRegex = /^(Validation Sortie|Ajout Visiteur|Modification Visiteur|Modification)\s*:\s*/i;
     cleanText = cleanText.replace(prefixRegex, '');
     
-    // Nettoyer les doubles espaces et caractères spéciaux
     cleanText = cleanText
       .replace(/\s+/g, ' ')
       .replace(/[^\w\s\u00C0-\u017F]/g, ' ')
@@ -386,7 +370,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return cleanText || 'Action non définie';
   }
 
-  // 🏷️ GESTION DES CATÉGORIES OPTIMISÉE
+  // 🏷️ GESTION DES CATÉGORIES
   getCategorieAction(action: HistoriqueAction): string {
     if (!action?.action) return 'Autre';
     
@@ -410,11 +394,11 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return 'Autre';
   }
 
-  // 🔍 FILTRAGE OPTIMISÉ
+  // 🔍 FILTRAGE
   appliquerFiltres(): void {
     let resultats = [...this.historique];
 
-    // Filtre par texte avec recherche intelligente
+    // Filtre par texte
     if (this.filterState.text) {
       const searchTerms = this.filterState.text.toLowerCase().split(' ').filter(term => term.length > 0);
       resultats = resultats.filter(action => {
@@ -437,17 +421,17 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       );
     }
 
-    // Filtre par période optimisé
+    // Filtre par période
     if (this.filterState.periode) {
       resultats = this.filtrerParPeriode(resultats);
     }
 
-    // Filtre par dates personnalisées (DE À)
+    // Filtre par dates personnalisées
     if (this.filterState.dateDebut || this.filterState.dateFin) {
       resultats = this.filtrerParDatePersonnalisee(resultats);
     }
 
-    // Tri optimisé
+    // Tri
     resultats = this.trierResultats(resultats);
 
     // Mise à jour de l'état
@@ -512,7 +496,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return startOfWeek;
   }
 
-  // 🔄 TRI OPTIMISÉ
+  // 🔄 TRI
   private trierResultats(data: HistoriqueAction[]): HistoriqueAction[] {
     return data.sort((a, b) => {
       let valA: any, valB: any;
@@ -551,7 +535,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.appliquerFiltres();
   }
 
-  // 📄 PAGINATION OPTIMISÉE
+  // 📄 PAGINATION
   historiqueFiltre(): HistoriqueAction[] {
     return this.historiqueFiltered;
   }
@@ -582,7 +566,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
-  // ✅ GESTION DE LA SÉLECTION OPTIMISÉE - CORRIGÉE
+  // ✅ GESTION DE LA SÉLECTION
   toggleSelection(id: number): void {
     if (this.lignesSelectionnees.has(id)) {
       this.lignesSelectionnees.delete(id);
@@ -596,26 +580,25 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     const donneesPage = this.getDonneesPageActuelle();
     
     if (this.toutSelectionner) {
-      // Sélectionner tous les éléments de la page
       donneesPage.forEach(item => this.lignesSelectionnees.add(item.id));
     } else {
-      // Désélectionner tous les éléments de la page
       donneesPage.forEach(item => this.lignesSelectionnees.delete(item.id));
     }
     
     this.mettreAJourSelectionTout();
   }
 
-  // ✅ NOUVELLES MÉTHODES DE SÉLECTION
   selectionnerTous(): void {
     const donneesPage = this.getDonneesPageActuelle();
     donneesPage.forEach(item => this.lignesSelectionnees.add(item.id));
     this.mettreAJourSelectionTout();
+    this.showNotification(`${donneesPage.length} éléments sélectionnés`, 'success');
   }
 
   deselectionnerTous(): void {
     this.lignesSelectionnees.clear();
     this.toutSelectionner = false;
+    this.showNotification('Sélection effacée', 'info');
   }
 
   private getDonneesPageActuelle(): HistoriqueAction[] {
@@ -631,7 +614,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.toutSelectionner = toutesSelectionnees;
   }
 
-  // 📊 STATISTIQUES OPTIMISÉES
+  // 📊 STATISTIQUES
   nombreCreations(): number {
     return this.historiqueFiltered.filter(a => 
       this.getCategorieAction(a) === 'Ajout Visiteur'
@@ -644,19 +627,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     ).length;
   }
 
-  nombreAgentsActifs(): number {
-    const agents = this.historiqueFiltered
-      .map(a => a.agent)
-      .filter(agent => agent && agent.trim() !== '');
-    return new Set(agents).size;
-  }
-
-  pourcentageTotal(): number {
-    if (this.historique.length === 0) return 0;
-    return Math.round((this.historiqueFiltered.length / this.historique.length) * 100);
-  }
-
-  // 📤 EXPORT EXCEL OPTIMISÉ
+  // 📤 EXPORT EXCEL
   exporterExcelTout(): void {
     if (this.historique.length === 0) {
       this.showNotification('Aucune donnée à exporter', 'warning');
@@ -702,37 +673,15 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
 
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       
-      // Configuration des colonnes optimisée
       const columnWidths = [
-        { wch: 5 },   // N°
-        { wch: 25 },  // Agent
-        { wch: 18 },  // Rôle
-        { wch: 12 },  // Statut
-        { wch: 20 },  // Type
-        { wch: 50 },  // Description
-        { wch: 20 },  // Date
-        { wch: 12 },  // Durée
-        { wch: 15 },  // IP
-        { wch: 10 }   // ID
+        { wch: 5 }, { wch: 25 }, { wch: 18 }, { wch: 12 }, { wch: 20 },
+        { wch: 50 }, { wch: 20 }, { wch: 12 }, { wch: 15 }, { wch: 10 }
       ];
       worksheet['!cols'] = columnWidths;
-
-      // Styles des en-têtes
-      const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
-      for (let col = range.s.c; col <= range.e.c; col++) {
-        const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
-        if (!worksheet[cellAddress]) continue;
-        worksheet[cellAddress].s = {
-          font: { bold: true, color: { rgb: 'FFFFFF' } },
-          fill: { fgColor: { rgb: '1E293B' } },
-          alignment: { horizontal: 'center' }
-        };
-      }
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
       
-      // Métadonnées du fichier
       workbook.Props = {
         Title: 'Historique des Actions - BAMY TRUCKS',
         Subject: 'Export des données d\'historique',
@@ -743,14 +692,13 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       XLSX.writeFile(workbook, fileName);
       
       this.showNotification(`Export Excel réussi : ${fileName}`, 'success');
-      console.log(`✅ Export Excel réussi : ${fileName}`);
     } catch (error) {
       console.error('❌ Erreur lors de l\'export Excel :', error);
       this.showNotification('Erreur lors de l\'export Excel', 'error');
     }
   }
 
-  // 🔄 RÉINITIALISATION OPTIMISÉE
+  // 🔄 RÉINITIALISATION
   reinitialiserFiltres(): void {
     this.filterState = {
       text: '',
@@ -764,30 +712,23 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.lignesSelectionnees.clear();
     this.toutSelectionner = false;
     
-    // Réinitialiser le tri
     this.sortState = {
       column: 'dateAction',
       direction: 'desc'
     };
     
     this.appliquerFiltres();
-    this.showNotification('Filtres réinitialisés', 'info');
-  }
-
-  // 🔄 REFRESH DES DONNÉES
-  raffraichirDonnees(): void {
-    this.chargerHistorique();
+    this.showNotification('Données actualisées', 'info');
   }
 
   // 🎨 MÉTHODES POUR LES CLASSES CSS DYNAMIQUES
   getRowClass(action: HistoriqueAction): string {
-    const classes = ['hover:bg-slate-50', 'transition-colors', 'duration-200'];
+    const classes = ['hover:bg-slate-50', 'transition-all', 'duration-300'];
     
     if (this.lignesSelectionnees.has(action.id)) {
       classes.push('bg-blue-50', 'border-l-4', 'border-blue-400');
     }
     
-    // Classe selon le statut de l'agent
     const status = this.getAgentStatus(action.agent);
     if (status === 'inactif') {
       classes.push('opacity-75');
@@ -797,24 +738,24 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   }
 
   getBadgeClass(categorie: string): string {
-    const baseClasses = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200';
+    const baseClasses = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 hover:scale-105';
     const badgeMap = new Map([
-      ['Ajout Visiteur', `${baseClasses} bg-green-100 text-green-800 hover:bg-green-200`],
-      ['Modification Visiteur', `${baseClasses} bg-amber-100 text-amber-800 hover:bg-amber-200`],
-      ['Validation Sortie', `${baseClasses} bg-blue-100 text-blue-800 hover:bg-blue-200`],
-      ['Connexion', `${baseClasses} bg-indigo-100 text-indigo-800 hover:bg-indigo-200`],
-      ['Déconnexion', `${baseClasses} bg-gray-100 text-gray-800 hover:bg-gray-200`],
-      ['Export', `${baseClasses} bg-purple-100 text-purple-800 hover:bg-purple-200`],
-      ['Import', `${baseClasses} bg-cyan-100 text-cyan-800 hover:bg-cyan-200`]
+      ['Ajout Visiteur', `${baseClasses} bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-200`],
+      ['Modification Visiteur', `${baseClasses} bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200`],
+      ['Validation Sortie', `${baseClasses} bg-blue-100 text-blue-800 hover:bg-blue-200 border border-blue-200`],
+      ['Connexion', `${baseClasses} bg-indigo-100 text-indigo-800 hover:bg-indigo-200 border border-indigo-200`],
+      ['Déconnexion', `${baseClasses} bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200`],
+      ['Export', `${baseClasses} bg-purple-100 text-purple-800 hover:bg-purple-200 border border-purple-200`],
+      ['Import', `${baseClasses} bg-cyan-100 text-cyan-800 hover:bg-cyan-200 border border-cyan-200`]
     ]);
 
-    return badgeMap.get(categorie) || `${baseClasses} bg-slate-100 text-slate-800 hover:bg-slate-200`;
+    return badgeMap.get(categorie) || `${baseClasses} bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200`;
   }
 
   getDotClass(categorie: string): string {
-    const baseClasses = 'w-1.5 h-1.5 rounded-full mr-1.5';
+    const baseClasses = 'w-2 h-2 rounded-full mr-2 flex-shrink-0';
     const dotMap = new Map([
-      ['Ajout Visiteur', `${baseClasses} bg-green-500`],
+      ['Ajout Visiteur', `${baseClasses} bg-emerald-500`],
       ['Modification Visiteur', `${baseClasses} bg-amber-500`],
       ['Validation Sortie', `${baseClasses} bg-blue-500`],
       ['Connexion', `${baseClasses} bg-indigo-500`],
@@ -826,125 +767,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return dotMap.get(categorie) || `${baseClasses} bg-slate-500`;
   }
 
-  // 🔧 MÉTHODES UTILITAIRES AVANCÉES
-  changerNombreElementsAffichage(nombre: number): void {
-    this.nombreElementsAffichage = nombre;
-    this.showNotification(`Affichage modifié : ${nombre} éléments par page`, 'info');
-  }
-
-  // 🔍 RECHERCHE AVANCÉE
-  rechercherParAgent(nomAgent: string): void {
-    this.filtreTexte = nomAgent;
-    this.showNotification(`Recherche par agent : ${nomAgent}`, 'info');
-  }
-
-  filtrerParPeriodePersonnalisee(debut: string, fin: string): void {
-    this.filtrePeriode = 'custom';
-    this.dateDebut = debut;
-    this.dateFin = fin;
-    this.showNotification(`Période personnalisée appliquée`, 'info');
-  }
-
-  // 📊 MÉTHODES D'ANALYSE AVANCÉES
-  obtenirTendanceActions(): { [key: string]: number } {
-    const tendances: { [key: string]: number } = {};
-    
-    this.historiqueFiltered.forEach(action => {
-      const categorie = this.getCategorieAction(action);
-      tendances[categorie] = (tendances[categorie] || 0) + 1;
-    });
-    
-    return tendances;
-  }
-
-  obtenirActiviteParHeure(): { [key: string]: number } {
-    const activite: { [key: string]: number } = {};
-    
-    this.historiqueFiltered.forEach(action => {
-      if (action.dateAction) {
-        const heure = new Date(action.dateAction).getHours();
-        const heureKey = `${heure}h`;
-        activite[heureKey] = (activite[heureKey] || 0) + 1;
-      }
-    });
-    
-    return activite;
-  }
-
-  obtenirTopAgents(limit: number = 5): Array<{agent: string, actions: number}> {
-    const agentActions: { [key: string]: number } = {};
-    
-    this.historiqueFiltered.forEach(action => {
-      const fullName = this.getAgentFullName(action.agent);
-      agentActions[fullName] = (agentActions[fullName] || 0) + 1;
-    });
-    
-    return Object.entries(agentActions)
-      .map(([agent, actions]) => ({ agent, actions }))
-      .sort((a, b) => b.actions - a.actions)
-      .slice(0, limit);
-  }
-
-  // 🔍 RECHERCHE INTELLIGENTE PAR MOTS-CLÉS
-  rechercherParMotsCles(motsClés: string[]): void {
-    this.filtreTexte = motsClés.join(' ');
-    this.showNotification(`Recherche par mots-clés : ${motsClés.join(', ')}`, 'info');
-  }
-
-  // 📅 FILTRES RAPIDES DE DATES
-  filtrerAujourdhui(): void {
-    this.filtrePeriode = 'today';
-    this.appliquerFiltres();
-    this.showNotification('Filtre appliqué : Aujourd\'hui', 'info');
-  }
-
-  filtrerCetteSemaine(): void {
-    this.filtrePeriode = 'week';
-    this.appliquerFiltres();
-    this.showNotification('Filtre appliqué : Cette semaine', 'info');
-  }
-
-  filtrerCeMois(): void {
-    this.filtrePeriode = 'month';
-    this.appliquerFiltres();
-    this.showNotification('Filtre appliqué : Ce mois', 'info');
-  }
-
-  // 💾 SAUVEGARDE ET RESTAURATION D'ÉTAT
-  sauvegarderEtatFiltre(): void {
-    const etat = {
-      filterState: this.filterState,
-      sortState: this.sortState,
-      paginationState: this.paginationState
-    };
-    
-    localStorage.setItem('historique_filter_state', JSON.stringify(etat));
-    this.showNotification('État des filtres sauvegardé', 'success');
-  }
-
-  restaurerEtatFiltre(): void {
-    try {
-      const etatSauve = localStorage.getItem('historique_filter_state');
-      if (etatSauve) {
-        const etat = JSON.parse(etatSauve);
-        this.filterState = { ...this.filterState, ...etat.filterState };
-        this.sortState = { ...this.sortState, ...etat.sortState };
-        this.paginationState = { ...this.paginationState, ...etat.paginationState };
-        this.appliquerFiltres();
-        this.showNotification('État des filtres restauré', 'success');
-      }
-    } catch (error) {
-      console.error('Erreur lors de la restauration de l\'état :', error);
-      this.showNotification('Erreur lors de la restauration', 'error');
-    }
-  }
-
   // 🔔 SYSTÈME DE NOTIFICATIONS
   private showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info'): void {
-    // Simulation d'un système de notification
     console.log(`[${type.toUpperCase()}] ${message}`);
     
-    // Optionnel : Affichage d'une notification temporaire dans l'interface
     if (typeof window !== 'undefined') {
       const iconMap = {
         success: '✅',
@@ -954,27 +780,29 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       };
       
       const notification = document.createElement('div');
-      notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${this.getNotificationClass(type)}`;
-      notification.innerHTML = `${iconMap[type]} ${message}`;
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-lg">${iconMap[type]}</span>
+          <span class="font-semibold">${message}</span>
+        </div>
+      `;
       
       document.body.appendChild(notification);
       
+      // Animation d'entrée
+      setTimeout(() => notification.classList.add('show'), 100);
+      
+      // Suppression automatique
       setTimeout(() => {
-        if (notification.parentNode) {
-          notification.remove();
-        }
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 300);
       }, 3000);
     }
-  }
-
-  private getNotificationClass(type: string): string {
-    const classes = {
-      success: 'bg-green-500 text-white',
-      error: 'bg-red-500 text-white',
-      warning: 'bg-amber-500 text-white',
-      info: 'bg-blue-500 text-white'
-    };
-    return classes[type as keyof typeof classes] || classes.info;
   }
 
   // 🎯 MÉTHODES D'OPTIMISATION DE PERFORMANCE
@@ -982,62 +810,17 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return action.id;
   }
 
-  // 🔄 GESTION D'ÉTAT AVANCÉE
-  resetToInitialState(): void {
-    this.filterState = {
-      text: '',
-      typeAction: '',
-      periode: '',
-      dateDebut: '',
-      dateFin: ''
-    };
-    
-    this.paginationState = {
-      currentPage: 1,
-      itemsPerPage: 10,
-      totalItems: 0
-    };
-    
-    this.sortState = {
-      column: 'dateAction',
-      direction: 'desc'
-    };
-    
-    this.lignesSelectionnees.clear();
-    this.toutSelectionner = false;
-    this.appliquerFiltres();
+  // 📊 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES
+  rafraichirDonnees(): void {
+    this.chargerHistorique();
   }
 
-  // 📊 MÉTHODES DE VALIDATION
-  private validateDateRange(): boolean {
-    if (this.filterState.dateDebut && this.filterState.dateFin) {
-      const debut = new Date(this.filterState.dateDebut);
-      const fin = new Date(this.filterState.dateFin);
-      
-      if (debut > fin) {
-        this.showNotification('La date de début doit être antérieure à la date de fin', 'warning');
-        return false;
-      }
-      
-      const diffInDays = Math.abs(fin.getTime() - debut.getTime()) / (1000 * 60 * 60 * 24);
-      if (diffInDays > 365) {
-        this.showNotification('La période sélectionnée ne peut excéder 365 jours', 'warning');
-        return false;
-      }
-    }
-    return true;
+  changerNombreElementsAffichage(nombre: number): void {
+    this.paginationState.itemsPerPage = nombre;
+    this.paginationState.currentPage = 1;
+    this.showNotification(`Affichage modifié : ${nombre} éléments par page`, 'info');
   }
 
-  // 🎨 MÉTHODES POUR ANIMATIONS
-  onActionRowClick(action: HistoriqueAction): void {
-    this.actionSelectionnee = this.actionSelectionnee?.id === action.id ? null : action;
-  }
-
-  isActionSelected(action: HistoriqueAction): boolean {
-    return this.actionSelectionnee?.id === action.id;
-  }
-
-  // 📱 MÉTHODES POUR RESPONSIVE
   isMobileView(): boolean {
     return window.innerWidth < 768;
   }
@@ -1046,55 +829,12 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return window.innerWidth >= 768 && window.innerWidth < 1024;
   }
 
-  // 🔧 MÉTHODES DE DÉBOGAGE (à retirer en production)
+  // 🔧 MÉTHODES DE DÉBOGAGE
   debugFilterState(): void {
     console.log('État actuel des filtres :', this.filterState);
     console.log('État de la pagination :', this.paginationState);
     console.log('État du tri :', this.sortState);
     console.log('Sélections :', Array.from(this.lignesSelectionnees));
-  }
-
-  // 📈 MÉTHODES POUR MÉTRIQUES
-  calculerTempsLePlusFrequent(): string {
-    const heures: { [key: number]: number } = {};
-    
-    this.historiqueFiltered.forEach(action => {
-      if (action.dateAction) {
-        const heure = new Date(action.dateAction).getHours();
-        heures[heure] = (heures[heure] || 0) + 1;
-      }
-    });
-    
-    const heureLaPlusFrequente = Object.entries(heures)
-      .sort(([,a], [,b]) => b - a)[0];
-    
-    return heureLaPlusFrequente ? `${heureLaPlusFrequente[0]}h` : 'N/A';
-  }
-
-  calculerDureeeMoyenneAction(): number {
-    const durees = this.historiqueFiltered
-      .map(action => action.metadata?.duration)
-      .filter(duration => duration !== undefined) as number[];
-    
-    if (durees.length === 0) return 0;
-    
-    const sommeDurees = durees.reduce((sum, duration) => sum + duration, 0);
-    return Math.round(sommeDurees / durees.length);
-  }
-
-  // 📊 STATISTIQUES POUR DASHBOARD
-  obtenirStatistiquesRapides() {
-    const donnees = this.historiqueFiltered;
-    return {
-      total: donnees.length,
-      ajouts: this.nombreCreations(),
-      modifications: this.nombreModifications(),
-      agents: this.nombreAgentsActifs(),
-      pourcentage: this.pourcentageTotal(),
-      periodeActiveFilters: this.filterState.periode ? 1 : 0,
-      textActiveFilters: this.filterState.text ? 1 : 0,
-      typeActiveFilters: this.filterState.typeAction ? 1 : 0
-    };
   }
 
 }
