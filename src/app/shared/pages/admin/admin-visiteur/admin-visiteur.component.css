@@ -1,253 +1,228 @@
-/* ===== STYLES POUR L'INTERFACE PROFESSIONNELLE ===== */
+/* ✅ STYLES SPÉCIFIQUES AU ADMIN VISITEUR - COHÉRENT AVEC DASHBOARD ADMIN */
 
-/* Reset et base */
-* {
-  box-sizing: border-box;
-}
-
-/* ===== LAYOUT PRINCIPAL ===== */
-.main-container {
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* Navigation sidebar */
+/* Animation pour les éléments de navigation */
 .nav-item {
-  position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-item:hover {
-  transform: translateX(2px);
+  transform: translateX(4px);
 }
 
-/* ===== HEADER STATISTIQUES ===== */
+/* ✅ ANIMATIONS POUR LES CARTES DE STATISTIQUES */
 .stats-card {
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* ✅ ANIMATIONS POUR LES CARTES VISITEURS */
+.visitor-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.visitor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* ✅ STYLES POUR LES BADGES */
+.badge-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+/* ✅ ANIMATIONS POUR LES BOUTONS D'ACTION */
+.action-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+/* ✅ STYLES POUR LES AVATARS */
+.visitor-avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.visitor-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ INDICATEUR DE STATUT SUR L'AVATAR */
+.status-indicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-indicator.present {
+  background-color: #f59e0b;
+}
+
+.status-indicator.exited {
+  background-color: #22c55e;
+}
+
+/* ✅ STYLES POUR LA TOOLBAR */
+.toolbar-item {
+  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+}
+
+.toolbar-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== TOOLBAR ===== */
-.toolbar {
-  background: white;
-  border-bottom: 1px solid #e2e8f0;
+/* ✅ ANIMATIONS POUR LES ICÔNES */
+.icon-rotate {
+  transition: transform 0.3s ease;
 }
 
-/* Responsive toolbar */
-@media (max-width: 1024px) {
-  .toolbar .flex {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+.group:hover .icon-rotate {
+  transform: rotate(5deg);
+}
+
+.icon-bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0,0,0);
   }
-  
-  .toolbar .flex > div {
-    flex-direction: column;
-    align-items: stretch;
+  40%, 43% {
+    transform: translate3d(0,-5px,0);
   }
-}
-
-/* ===== GRILLE VISITEURS ===== */
-.visitors-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-/* Responsive grid */
-@media (min-width: 1024px) {
-  .visitors-grid {
-    grid-template-columns: repeat(2, 1fr);
+  70% {
+    transform: translate3d(0,-3px,0);
+  }
+  90% {
+    transform: translate3d(0,-1px,0);
   }
 }
 
-@media (min-width: 1280px) {
-  .visitors-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+/* ✅ STYLES POUR LES FORMULAIRES DANS LA TOOLBAR */
+.form-field {
+  position: relative;
 }
 
-@media (min-width: 1536px) {
-  .visitors-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1920px) {
-  .visitors-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-/* ===== CARTES VISITEURS ===== */
-.visitor-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  transition: all 0.2s ease;
-  height: fit-content;
-}
-
-.visitor-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-/* Header de carte */
-.visitor-card-header {
-  background: #f8fafc;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-/* Body de carte */
-.visitor-card-body {
-  padding: 1rem;
-}
-
-/* ===== BADGES DE STATUT ===== */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+.form-input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.75rem;
   font-weight: 500;
 }
 
-.status-present {
-  background-color: #fef3c7;
-  color: #d97706;
-}
-
-.status-exited {
-  background-color: #d1fae5;
-  color: #059669;
-}
-
-/* ===== INPUTS ET BOUTONS ===== */
-.form-input {
-  transition: all 0.2s ease;
-}
-
 .form-input:focus {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.btn {
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.btn:hover:not(:disabled) {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
   transform: translateY(-1px);
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
+.form-input::placeholder {
+  color: #94a3b8;
 }
 
-/* ===== LOADING ET ÉTATS VIDES ===== */
-.loading-container,
-.empty-container {
+/* ✅ STYLES POUR LES MESSAGES D'ERREUR */
+.error-message {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #ef4444;
+  font-weight: 500;
 }
 
-.loading-spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 4px solid #f3f4f6;
-  border-top: 4px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* ===== PAGINATION ===== */
-.pagination {
-  background: white;
-  border-top: 1px solid #e2e8f0;
-}
-
-.pagination button {
-  transition: all 0.2s ease;
-}
-
-.pagination button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-/* ===== SCROLLBAR PERSONNALISÉE ===== */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
+/* ✅ OPTIMISATIONS RESPONSIVE */
 @media (max-width: 768px) {
-  /* Masquer la sidebar sur mobile */
-  .fixed.inset-y-0.left-0 {
-    transform: translateX(-100%);
+  .nav-item {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
   }
   
-  /* Ajuster le contenu principal */
-  .ml-64 {
-    margin-left: 0 !important;
+  .stats-card {
+    padding: 1rem;
   }
   
-  /* Grid responsive */
-  .grid-cols-4 {
-    grid-template-columns: repeat(2, 1fr) !important;
+  .visitor-card {
+    margin-bottom: 1rem;
   }
   
+  .action-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  
+  /* Grid responsive pour mobile */
   .visitors-grid {
     grid-template-columns: 1fr !important;
   }
+  
+  /* Toolbar responsive */
+  .toolbar-responsive {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 
-@media (max-width: 640px) {
-  .grid-cols-4 {
-    grid-template-columns: 1fr !important;
+/* ✅ STYLES POUR LES DISPOSITIFS TACTILES */
+@media (hover: none) and (pointer: coarse) {
+  .action-btn:hover {
+    transform: none;
   }
   
-  .flex-wrap > * {
-    width: 100% !important;
+  .stats-card:hover {
+    transform: none;
+  }
+  
+  .visitor-card:hover {
+    transform: none;
   }
 }
 
-/* ===== ANIMATIONS ===== */
+/* ✅ ANIMATION D'ENTRÉE POUR LES ÉLÉMENTS */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -255,17 +230,66 @@
   }
 }
 
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
+/* ✅ STYLES POUR LE LOADING STATE */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
 }
 
-/* ===== ACCESSIBILITÉ ===== */
-button:focus-visible,
-input:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
+/* ✅ STYLES POUR LA SIDEBAR SPÉCIFIQUE ADMIN */
+.admin-sidebar {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+.admin-nav-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.admin-nav-item:hover {
+  background-color: rgba(71, 85, 105, 0.5);
+  transform: translateX(4px);
+}
+
+.admin-nav-item.active {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* ✅ STYLES POUR LES STATISTIQUES RAPIDES */
+.quick-stats {
+  background: rgba(71, 85, 105, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  transition: all 0.3s ease;
+}
+
+.quick-stats:hover {
+  background: rgba(71, 85, 105, 0.4);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* ✅ STYLES POUR LA PAGINATION */
+.pagination-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ AMÉLIORATION DE L'ACCESSIBILITÉ */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -278,22 +302,26 @@ input:focus-visible {
   border: 0;
 }
 
-/* ===== UTILITAIRES ===== */
-.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* ✅ FOCUS STATES POUR L'ACCESSIBILITÉ */
+.focus\:ring-2:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #2563eb;
 }
 
-/* ===== PRINT STYLES ===== */
+/* ✅ STYLES POUR L'IMPRESSION */
 @media print {
-  .toolbar,
-  .pagination,
-  .fixed.inset-y-0 {
+  .no-print {
     display: none !important;
   }
   
-  .ml-64 {
+  .admin-sidebar,
+  .toolbar,
+  .pagination {
+    display: none !important;
+  }
+  
+  .main-content {
     margin-left: 0 !important;
   }
   
@@ -301,8 +329,84 @@ input:focus-visible {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 0.5rem !important;
   }
-  
-  .visitor-card {
-    break-inside: avoid;
+}
+
+/* ✅ VARIABLES CSS POUR LA COHÉRENCE */
+:root {
+  --admin-primary: #2563eb;
+  --admin-primary-dark: #1d4ed8;
+  --admin-success: #22c55e;
+  --admin-warning: #f59e0b;
+  --admin-danger: #ef4444;
+  --admin-info: #06b6d4;
+  --admin-sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  --admin-border-radius: 0.75rem;
+  --admin-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --admin-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --admin-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --admin-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ✅ SCROLLBAR PERSONNALISÉE COHÉRENTE */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ✅ ÉTATS DE HOVER POUR LES CARTES DE VISITEURS */
+.visitor-card-header {
+  transition: all 0.3s ease;
+}
+
+.visitor-card:hover .visitor-card-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* ✅ STYLES POUR LES FILTRES RAPIDES */
+.filter-quick-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.5rem;
+}
+
+.filter-quick-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ STYLES POUR LES CHECKBOXES PERSONNALISÉES */
+.custom-checkbox {
+  transition: all 0.3s ease;
+}
+
+.custom-checkbox:hover {
+  transform: scale(1.1);
+}
+
+/* ✅ ANIMATIONS POUR LES ÉTATS VIDES */
+.empty-state {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
