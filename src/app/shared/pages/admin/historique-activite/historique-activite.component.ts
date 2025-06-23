@@ -98,15 +98,15 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     dateFin: ''
   };
 
-  // 📄 ÉTAT DE LA PAGINATION OPTIMISÉE
+  // 📄 ÉTAT DE LA PAGINATION - ✅ MODIFIÉ POUR 10 RÉSULTATS
   private paginationState: PaginationState = {
     currentPage: 1,
-    itemsPerPage: 25, // ✅ AUGMENTÉ DE 15 À 25 pour plus d'affichage
+    itemsPerPage: 10, // ✅ CHANGÉ DE 25 À 10
     totalItems: 0
   };
 
-  // 🔄 ÉTAT DU TRI
-  private sortState: SortState = {
+  // 🔄 ÉTAT DU TRI - ✅ PUBLIC POUR ACCÈS DEPUIS LE TEMPLATE
+  sortState: SortState = {
     column: 'dateAction',
     direction: 'desc'
   };
@@ -120,7 +120,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   actionSelectionnee: HistoriqueAction | null = null;
   isLoading = false;
   
-  // 👥 BASE DE DONNÉES DES AGENTS
+  // 👥 BASE DE DONNÉES DES AGENTS - ✅ ENRICHIE POUR MEILLEURE RECHERCHE
   private agents: Utilisateur[] = [
     { 
       nom: 'Dupont', 
@@ -156,6 +156,20 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       email: 'paul.moreau@bamytrucks.com', 
       role: 'Agent sécurité',
       isActive: false
+    },
+    { 
+      nom: 'Leroy', 
+      prenom: 'Emma', 
+      email: 'emma.leroy@bamytrucks.com', 
+      role: 'Responsable',
+      isActive: true
+    },
+    { 
+      nom: 'Roux', 
+      prenom: 'Thomas', 
+      email: 'thomas.roux@bamytrucks.com', 
+      role: 'Agent sécurité',
+      isActive: true
     }
   ];
 
@@ -204,47 +218,12 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.initializeComponent();
     this.setupSearchDebounce();
     
-    // ✅ CALCUL AUTOMATIQUE DU NOMBRE D'ÉLÉMENTS À L'INITIALISATION
-    this.paginationState.itemsPerPage = this.calculateOptimalItemsPerPage();
-    
-    // ✅ LOG POUR DÉBOGAGE
-    console.log(`🎯 Affichage optimisé : ${this.paginationState.itemsPerPage} éléments par page`);
+    console.log(`🎯 Affichage configuré : ${this.paginationState.itemsPerPage} éléments par page`);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  // ✅ CALCUL DYNAMIQUE DU NOMBRE OPTIMAL D'ÉLÉMENTS PAR PAGE
-  calculateOptimalItemsPerPage(): number {
-    if (typeof window === 'undefined') return 25;
-    
-    const windowHeight = window.innerHeight;
-    const headerHeight = 64; // 4rem
-    const footerHeight = 40; // 2.5rem
-    const toolbarHeight = 140; // Environ 8.5rem
-    const paginationHeight = 64; // 4rem
-    const otherSpacing = 100; // Marges et espacements divers
-    
-    const availableHeight = windowHeight - headerHeight - footerHeight - toolbarHeight - paginationHeight - otherSpacing;
-    const rowHeight = 48; // 3rem par ligne
-    
-    const optimalRows = Math.floor(availableHeight / rowHeight);
-    
-    // Minimum 20, maximum 50 pour les performances
-    return Math.max(20, Math.min(50, optimalRows));
-  }
-
-  // ✅ AJUSTEMENT AUTOMATIQUE LORS DU REDIMENSIONNEMENT
-  @HostListener('window:resize', ['$event'])
-  onWindowResize(): void {
-    const newItemsPerPage = this.calculateOptimalItemsPerPage();
-    if (newItemsPerPage !== this.paginationState.itemsPerPage) {
-      this.paginationState.itemsPerPage = newItemsPerPage;
-      this.paginationState.currentPage = 1;
-      // ✅ NOTIFICATION SUPPRIMÉE
-    }
   }
 
   // 🚀 INITIALISATION
@@ -253,10 +232,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.setupKeyboardShortcuts();
   }
 
-  // 🔍 CONFIGURATION DE LA RECHERCHE AVEC DEBOUNCE
+  // 🔍 CONFIGURATION DE LA RECHERCHE AVEC DEBOUNCE - ✅ AMÉLIORÉE
   private setupSearchDebounce(): void {
     this.searchSubject.pipe(
-      debounceTime(300),
+      debounceTime(300), // Légère attente pour éviter trop de requêtes
       distinctUntilChanged(),
       takeUntil(this.destroy$)
     ).subscribe(() => {
@@ -280,10 +259,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
         case 'e':
           event.preventDefault();
           this.exporterExcelFiltre();
-          break;
-        case 'd':
-          event.preventDefault();
-          this.debugDisplayMode();
           break;
       }
     }
@@ -435,23 +410,34 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return 'Autre';
   }
 
-  // 🔍 FILTRAGE OPTIMISÉ
+  // 🔍 FILTRAGE OPTIMISÉ - ✅ AMÉLIORÉ POUR LA RECHERCHE PAR NOM/PRÉNOM
   appliquerFiltres(): void {
     let resultats = [...this.historique];
 
-    // Filtre par texte
+    // ✅ FILTRE PAR TEXTE AMÉLIORÉ - FOCUS SUR NOM/PRÉNOM AGENT
     if (this.filterState.text) {
-      const searchTerms = this.filterState.text.toLowerCase().split(' ').filter(term => term.length > 0);
+      const searchTerm = this.filterState.text.toLowerCase().trim();
+      
       resultats = resultats.filter(action => {
-        const searchableText = [
-          this.getAgentFullName(action.agent),
-          action.agent,
-          this.getCleanActionText(action.action),
-          this.getCategorieAction(action),
-          this.getAgentRole(action.agent)
-        ].join(' ').toLowerCase();
-
-        return searchTerms.every(term => searchableText.includes(term));
+        // ✅ RECHERCHE PRIORITAIRE PAR NOM/PRÉNOM D'AGENT
+        const agentFullName = this.getAgentFullName(action.agent).toLowerCase();
+        const agentFirstName = this.getAgentFirstName(action.agent).toLowerCase();
+        const agentLastName = this.getAgentLastName(action.agent).toLowerCase();
+        
+        // Recherche exacte ou partielle dans nom/prénom
+        const agentMatch = agentFullName.includes(searchTerm) ||
+                          agentFirstName.includes(searchTerm) ||
+                          agentLastName.includes(searchTerm) ||
+                          agentFirstName.startsWith(searchTerm) ||
+                          agentLastName.startsWith(searchTerm);
+        
+        // ✅ RECHERCHE SECONDAIRE DANS LES AUTRES CHAMPS
+        const otherFieldsMatch = this.getCleanActionText(action.action).toLowerCase().includes(searchTerm) ||
+                                this.getCategorieAction(action).toLowerCase().includes(searchTerm) ||
+                                this.getAgentRole(action.agent).toLowerCase().includes(searchTerm);
+        
+        // Priorité à la recherche d'agent, puis aux autres champs
+        return agentMatch || otherFieldsMatch;
       });
     }
 
@@ -483,6 +469,25 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.smartPagination();
     
     this.mettreAJourSelectionTout();
+  }
+
+  // ✅ NOUVELLES MÉTHODES POUR EXTRAIRE NOM/PRÉNOM
+  private getAgentFirstName(agentString: string): string {
+    const agent = this.findAgentByString(agentString);
+    if (agent) return agent.prenom;
+    
+    const fullName = this.getAgentFullName(agentString);
+    const parts = fullName.split(' ');
+    return parts[0] || '';
+  }
+
+  private getAgentLastName(agentString: string): string {
+    const agent = this.findAgentByString(agentString);
+    if (agent) return agent.nom;
+    
+    const fullName = this.getAgentFullName(agentString);
+    const parts = fullName.split(' ');
+    return parts[1] || '';
   }
 
   // ✅ PAGINATION INTELLIGENTE
@@ -596,7 +601,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.appliquerFiltres();
   }
 
-  // 📄 PAGINATION
+  // 📄 PAGINATION - ✅ MÉTHODES AMÉLIORÉES
   historiqueFiltre(): HistoriqueAction[] {
     return this.historiqueFiltered;
   }
@@ -609,22 +614,53 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   changerPage(page: number): void {
     if (page >= 1 && page <= this.totalPages()) {
       this.paginationState.currentPage = page;
+      // ✅ SCROLL VERS LE HAUT APRÈS CHANGEMENT DE PAGE
+      this.scrollToTop();
     }
   }
 
+  // ✅ PAGINATION COMPACTE ET STYLÉE
   getPagesArray(): number[] {
     const total = this.totalPages();
-    const maxPagesToShow = 7;
+    const maxPagesToShow = 5; // ✅ RÉDUIT POUR UN STYLE PLUS COMPACT
     const currentPage = this.paginationState.currentPage;
     
     if (total <= maxPagesToShow) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
     
-    const start = Math.max(1, currentPage - 3);
+    const start = Math.max(1, currentPage - 2);
     const end = Math.min(total, start + maxPagesToShow - 1);
     
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }
+
+  // ✅ MÉTHODES DE NAVIGATION PAGINATION
+  pagePrecedente(): void {
+    if (this.pageActuelle > 1) {
+      this.changerPage(this.pageActuelle - 1);
+    }
+  }
+
+  pageSuivante(): void {
+    if (this.pageActuelle < this.totalPages()) {
+      this.changerPage(this.pageActuelle + 1);
+    }
+  }
+
+  premierePage(): void {
+    this.changerPage(1);
+  }
+
+  dernierePage(): void {
+    this.changerPage(this.totalPages());
+  }
+
+  private scrollToTop(): void {
+    const tableContainer = document.querySelector('.table-scroll-container');
+    if (tableContainer) {
+      tableContainer.scrollTop = 0;
+    }
   }
 
   // ✅ GESTION DE LA SÉLECTION
@@ -719,7 +755,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
 
   exporterExcel(data: HistoriqueAction[], fileName: string): void {
     try {
-      // ✅ FEEDBACK DE DÉBUT D'EXPORT
       this.showNotification('Préparation de l\'export en cours...', 'info');
       
       const dataToExport = data.map((item, index) => ({
@@ -738,7 +773,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
 
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       
-      // ✅ LARGEURS DE COLONNES OPTIMISÉES
       const columnWidths = [
         { wch: 5 }, { wch: 25 }, { wch: 18 }, { wch: 12 }, { wch: 20 },
         { wch: 50 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 10 }
@@ -748,7 +782,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
       
-      // ✅ MÉTADONNÉES ENRICHIES
       workbook.Props = {
         Title: 'Historique des Actions - BAMY TRUCKS',
         Subject: `Export de ${data.length} actions d'historique`,
@@ -759,7 +792,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       
       XLSX.writeFile(workbook, fileName);
       
-      // ✅ FEEDBACK DE SUCCÈS AVEC DÉTAILS
       this.showNotification(
         `✅ Export Excel réussi : ${fileName} (${data.length} enregistrements)`, 
         'success'
@@ -863,10 +895,8 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       
       document.body.appendChild(notification);
       
-      // Animation d'entrée
       setTimeout(() => notification.classList.add('show'), 100);
       
-      // Suppression automatique
       setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => {
@@ -883,7 +913,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return action.id;
   }
 
-  // ✅ MÉTHODES OPTIMISÉES POUR LA GESTION DE L'AFFICHAGE
+  // ✅ MÉTHODES POUR L'AFFICHAGE ET LES STATISTIQUES
   getVisibleItemsCount(): number {
     const startIndex = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage;
     const endIndex = Math.min(startIndex + this.paginationState.itemsPerPage, this.historiqueFiltered.length);
@@ -896,112 +926,60 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return this.historiqueFiltered.slice(startIndex, endIndex);
   }
 
-  // ✅ MÉTHODE POUR AJUSTER MANUELLEMENT LE NOMBRE D'ÉLÉMENTS
-  setItemsPerPage(count: number): void {
-    if (count >= 10 && count <= 100) {
-      this.paginationState.itemsPerPage = count;
-      this.paginationState.currentPage = 1;
-      this.showNotification(`Affichage modifié : ${count} éléments par page`, 'info');
-    }
-  }
-
-  // ✅ OPTIONS PRÉDÉFINIES POUR L'AFFICHAGE
-  getDisplayOptions(): number[] {
-    const optimal = this.calculateOptimalItemsPerPage();
-    return [15, 25, optimal, 50].filter((value, index, array) => array.indexOf(value) === index).sort((a, b) => a - b);
-  }
-
-  // ✅ MÉTHODE POUR VÉRIFIER SI ON PEUT AFFICHER PLUS D'ÉLÉMENTS
-  canDisplayMore(): boolean {
-    return this.paginationState.itemsPerPage < this.calculateOptimalItemsPerPage();
-  }
-
-  // ✅ MÉTHODE POUR OBTENIR LES STATISTIQUES D'AFFICHAGE
-  getDisplayStats(): { current: number; total: number; percentage: number } {
-    const current = this.getVisibleItemsCount();
+  // ✅ INFORMATIONS DE PAGINATION POUR L'AFFICHAGE
+  getPaginationInfo(): { start: number; end: number; total: number } {
+    const start = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage + 1;
+    const end = Math.min(this.paginationState.currentPage * this.paginationState.itemsPerPage, this.historiqueFiltered.length);
     const total = this.historiqueFiltered.length;
-    const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
     
-    return { current, total, percentage };
+    return { start, end, total };
   }
 
-  // ✅ MÉTHODE POUR OBTENIR DES INFORMATIONS SUR LES PERFORMANCES
-  getPerformanceInfo(): { itemsPerPage: number; totalPages: number; currentLoad: string } {
-    const itemsPerPage = this.paginationState.itemsPerPage;
-    const totalPages = this.totalPages();
-    const currentLoad = this.historiqueFiltered.length > 1000 ? 'Élevée' : 
-                       this.historiqueFiltered.length > 500 ? 'Moyenne' : 'Faible';
-    
-    return { itemsPerPage, totalPages, currentLoad };
+  // ✅ VÉRIFICATIONS POUR LA PAGINATION
+  hasPreviousPage(): boolean {
+    return this.paginationState.currentPage > 1;
   }
 
-  // ✅ MÉTHODE POUR BASCULER ENTRE DIFFÉRENTS MODES D'AFFICHAGE
-  toggleDisplayMode(): void {
-    const modes = [15, 25, this.calculateOptimalItemsPerPage(), 50];
-    const currentIndex = modes.indexOf(this.paginationState.itemsPerPage);
-    const nextIndex = (currentIndex + 1) % modes.length;
-    
-    this.setItemsPerPage(modes[nextIndex]);
+  hasNextPage(): boolean {
+    return this.paginationState.currentPage < this.totalPages();
   }
 
-  // ✅ MÉTHODE POUR VÉRIFIER LA SANTÉ DE L'AFFICHAGE
-  checkDisplayHealth(): { status: 'good' | 'warning' | 'critical'; message: string } {
-    const totalItems = this.historiqueFiltered.length;
-    const itemsPerPage = this.paginationState.itemsPerPage;
-    const totalPages = this.totalPages();
+  // ✅ MÉTHODES UTILITAIRES POUR LA RECHERCHE
+  clearSearch(): void {
+    this.filtreTexte = '';
+    this.appliquerFiltres();
+    this.focusSearchInput();
+  }
+
+  getSearchResultsInfo(): string {
+    const total = this.historiqueFiltered.length;
+    const hasFilter = this.filterState.text || this.filterState.typeAction || this.filterState.periode;
     
-    if (totalPages > 20) {
-      return {
-        status: 'warning',
-        message: `Beaucoup de pages (${totalPages}). Considérez d'augmenter les éléments par page.`
-      };
+    if (!hasFilter) {
+      return `${total} action${total > 1 ? 's' : ''} au total`;
     }
     
-    if (itemsPerPage < 15 && totalItems > 50) {
-      return {
-        status: 'warning',
-        message: 'Affichage sous-optimal. Vous pourriez afficher plus d\'éléments.'
-      };
-    }
-    
-    if (totalItems > 1000 && itemsPerPage > 50) {
-      return {
-        status: 'critical',
-        message: 'Performances potentiellement dégradées avec beaucoup d\'éléments.'
-      };
-    }
-    
-    return {
-      status: 'good',
-      message: 'Affichage optimal'
-    };
+    const originalTotal = this.historique.length;
+    return `${total} résultat${total > 1 ? 's' : ''} sur ${originalTotal} action${originalTotal > 1 ? 's' : ''}`;
   }
 
-  // ✅ MÉTHODE POUR LE MODE DEBUG DE L'AFFICHAGE
-  debugDisplayMode(): void {
-    const info = {
-      windowHeight: window.innerHeight,
-      calculatedItemsPerPage: this.calculateOptimalItemsPerPage(),
-      currentItemsPerPage: this.paginationState.itemsPerPage,
-      visibleItems: this.getVisibleItemsCount(),
-      totalFiltered: this.historiqueFiltered.length,
-      performance: this.getPerformanceInfo(),
-      displayHealth: this.checkDisplayHealth()
-    };
+  // ✅ MÉTHODES POUR LES AGENTS (suggestions de recherche)
+  getAgentSuggestions(): string[] {
+    const suggestions = new Set<string>();
     
-    console.log('🔍 Debug Display Mode:', info);
-    this.showNotification(`Debug: ${info.currentItemsPerPage} éléments/page (optimal: ${info.calculatedItemsPerPage})`, 'info');
+    // Ajouter les noms complets
+    this.agents.forEach(agent => {
+      suggestions.add(`${agent.prenom} ${agent.nom}`);
+      suggestions.add(agent.prenom);
+      suggestions.add(agent.nom);
+    });
+    
+    return Array.from(suggestions).sort();
   }
 
   // 📊 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES
   rafraichirDonnees(): void {
     this.chargerHistorique();
-  }
-
-  changerNombreElementsAffichage(nombre: number): void {
-    this.paginationState.itemsPerPage = nombre;
-    this.paginationState.currentPage = 1;
-    this.showNotification(`Affichage modifié : ${nombre} éléments par page`, 'info');
   }
 
   isMobileView(): boolean {
@@ -1020,14 +998,20 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     console.log('Sélections :', Array.from(this.lignesSelectionnees));
   }
 
-  // ✅ MÉTHODE POUR OPTIMISER LES PERFORMANCES D'AFFICHAGE
-  optimizeDisplayPerformance(): void {
-    // Désactive les animations pendant le redimensionnement
-    document.body.classList.add('disable-animations');
-    
-    setTimeout(() => {
-      document.body.classList.remove('disable-animations');
-    }, 300);
+  // ✅ MÉTHODE POUR TESTER LA RECHERCHE AVEC DES EXEMPLES
+  testSearch(term: string): void {
+    this.filtreTexte = term;
+    this.appliquerFiltres();
+    this.showNotification(`Recherche lancée pour : "${term}"`, 'info');
+  }
+
+  // ✅ MÉTHODES POUR OBTENIR DES STATISTIQUES DE RECHERCHE
+  getSearchStats(): { totalResults: number; filteredResults: number; pageResults: number } {
+    return {
+      totalResults: this.historique.length,
+      filteredResults: this.historiqueFiltered.length,
+      pageResults: this.getVisibleItemsCount()
+    };
   }
 
 }
