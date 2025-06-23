@@ -101,7 +101,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   // 📄 ÉTAT DE LA PAGINATION
   private paginationState: PaginationState = {
     currentPage: 1,
-    itemsPerPage: 10,
+    itemsPerPage: 15,
     totalItems: 0
   };
 

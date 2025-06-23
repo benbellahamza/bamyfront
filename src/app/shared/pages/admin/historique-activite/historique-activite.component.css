@@ -9,22 +9,13 @@
   transform: translateX(4px);
 }
 
-/* ✅ ANIMATIONS POUR LES CARTES DE STATISTIQUES */
-.stats-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.stats-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
 /* ✅ STRUCTURE FLEXBOX POUR MAIN CONTAINER */
 main {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 5rem); /* Hauteur totale moins header */
-  padding-bottom: 2rem; /* Espace pour le footer */
+  /* Hauteur disponible = 100vh - header (4rem) - footer (2.5rem) */
+  height: calc(100vh - 6.5rem);
+  overflow: hidden; /* Évite le débordement */
 }
 
 /* ✅ CONTAINER PRINCIPAL QUI PREND TOUTE LA HAUTEUR */
@@ -35,14 +26,72 @@ main {
   min-height: 0; /* Important pour le flex */
 }
 
-/* ✅ ANIMATIONS POUR LES LIGNES DU TABLEAU */
+/* ✅ OPTIMISATION POUR AFFICHER PLUS DE LIGNES */
 .table-row {
   transition: all 0.2s ease-in-out;
+  min-height: 2.5rem; /* Hauteur encore plus réduite */
 }
 
 .table-row:hover {
   background-color: rgba(248, 250, 252, 0.8);
-  transform: scale(1.002);
+  transform: scale(1.001);
+}
+
+/* ✅ RÉDUCTION DES ESPACES POUR PLUS DE CONTENU */
+.table-modern th,
+.table-modern td {
+  padding: 0.5rem; /* Padding encore plus réduit */
+  vertical-align: middle;
+  font-size: 0.875rem; /* Texte légèrement plus petit */
+}
+
+/* ✅ AVATARS PLUS COMPACTS */
+.user-avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.625rem; /* Taille encore plus réduite */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  width: 2rem;
+  height: 2rem;
+}
+
+/* ✅ PAGINATION ULTRA COMPACTE */
+.pagination-modern {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  position: relative;
+  z-index: 1;
+  padding: 0.5rem !important;
+}
+
+.pagination-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.375rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 
 /* ✅ STYLES POUR LES BADGES */
@@ -251,25 +300,24 @@ main {
   border: 1px solid rgba(226, 232, 240, 0.8);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
-  flex-shrink: 0; /* Ne se réduit pas */
+  border-radius: 1rem;
 }
 
 .toolbar-modern:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ STYLES POUR LE TABLEAU MODERNISÉ */
+/* ✅ STYLES POUR LE TABLEAU MODERNISÉ - OPTIMISÉ POUR PLUS DE LIGNES */
 .table-modern {
   background: white;
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  /* IMPORTANT: Structure flexbox pour prendre toute la hauteur */
+  /* IMPORTANT: Structure flexbox pour utiliser tout l'espace disponible */
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
+  height: 100%; /* Prend toute la hauteur du conteneur parent */
 }
 
 .table-modern:hover {
@@ -281,19 +329,29 @@ main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .table-modern thead {
   flex-shrink: 0; /* Header ne se réduit pas */
-}
-
-.table-modern tbody {
-  flex: 1;
-  overflow-y: auto; /* Scroll si nécessaire */
   display: block;
 }
 
-.table-modern thead tr,
+.table-modern thead tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table-modern tbody {
+  /* Le tbody utilise tout l'espace disponible avec scroll */
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: block;
+  min-height: 0;
+}
+
 .table-modern tbody tr {
   display: table;
   width: 100%;
@@ -368,7 +426,8 @@ main {
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
-  flex-shrink: 0; /* Ne se réduit pas */
+  position: relative;
+  z-index: 1;
 }
 
 .pagination-btn {
@@ -429,10 +488,6 @@ main {
     padding: 0.5rem 0.75rem;
   }
   
-  .stats-card {
-    padding: 1rem;
-  }
-  
   .table-responsive {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -457,11 +512,6 @@ main {
   .ml-64 {
     margin-left: 0 !important;
   }
-  
-  /* Grid responsive pour les cartes */
-  .grid-cols-2 {
-    grid-template-columns: 1fr !important;
-  }
 
   /* Ajustements pour mobile */
   main {
@@ -485,7 +535,6 @@ main {
 /* ✅ STYLES POUR LES DISPOSITIFS TACTILES */
 @media (hover: none) and (pointer: coarse) {
   .action-btn:hover,
-  .stats-card:hover,
   .table-row:hover,
   .btn-modern:hover {
     transform: none;
@@ -795,72 +844,78 @@ body {
   overflow-x: hidden;
 }
 
-/* ✅ STYLES POUR LA GESTION DU FOOTER UNIFIÉ */
-.main-layout-wrapper {
-  min-height: 100vh;
+/* ✅ STYLES SPÉCIFIQUES POUR RESPECTER LE LAYOUT UNIFIÉ */
+.main-content-with-footer {
+  height: calc(100vh - 6.5rem); /* header (4rem) + footer (2.5rem) */
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-/* ✅ CORRECTIONS POUR LES ÉLÉMENTS STICKY */
-.sticky-bottom {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-}
-
-/* ✅ AMÉLIORATIONS POUR LA NAVIGATION RESPONSIVE */
-@media (max-width: 1024px) {
-  .toolbar-modern .flex {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-  }
-  
-  .toolbar-modern .flex > div {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
-/* ✅ STYLES POUR LES INDICATEURS DE CHARGEMENT */
-.loading-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ✅ ASSURER QUE LE CONTENU RESPECTE LA ZONE DISPONIBLE */
+.content-wrapper {
   flex: 1;
-  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important pour que flex fonctionne correctement */
 }
 
-/* ✅ CORRECTIONS POUR LA HAUTEUR DU TABLEAU */
-.table-modern tbody {
-  /* Assure que le tbody peut scroller indépendamment */
-  max-height: calc(100vh - 400px); /* Ajustement dynamique */
-  overflow-y: auto;
-  overflow-x: hidden;
+/* ✅ GESTION SPÉCIFIQUE DE L'ESPACE FOOTER DANS LE LAYOUT UNIFIÉ */
+.historique-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-/* ✅ STYLES POUR LES TRANSITIONS FLUIDES */
-* {
-  scroll-behavior: smooth;
+/* ✅ STYLES POUR LA TOOLBAR COMPACTE */
+.toolbar-modern {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  border-radius: 1rem;
 }
 
-/* ✅ CORRECTION POUR LES BOUTONS DANS LA TOOLBAR */
-.toolbar-modern button {
-  white-space: nowrap;
+.toolbar-modern:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ AMÉLIORATION DE LA STRUCTURE FLEXBOX */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1.5rem;
+}
+
+/* ✅ OPTIMISATION DU CONTENU CENTRAL */
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 1rem;
+}
+
+/* ✅ SECTION TABLEAU OPTIMISÉE */
+.table-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ HEADER DU TABLEAU AMÉLIORÉ */
+.table-header-section {
   flex-shrink: 0;
-}
-
-/* ✅ AMÉLIORATIONS POUR L'AFFICHAGE DES DONNÉES */
-.data-display {
-  word-break: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
-
-/* ✅ STYLES POUR LES TRANSITIONS DE PAGE */
-.page-transition {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
 /* ✅ CORRECTIONS FINALES POUR LA STRUCTURE */
