@@ -5,7 +5,7 @@
   (passwordChanged)="onPasswordChanged()">
 
   <!-- ✅ SIDEBAR SPÉCIFIQUE ADMIN -->
-  <div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white shadow-xl z-50">
+  <div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white shadow-xl z-30">
     <div class="flex items-center justify-center py-6 border-b border-slate-700">
       <div class="bg-white p-2 rounded-lg shadow-md mr-3">
         <img src="assets/images/bamytrucks.png" alt="Logo BAMY TRUCKS" class="w-8 h-8 object-contain" />
@@ -65,13 +65,13 @@
     </nav>
   </div>
 
-  <!-- ✅ CONTENU PRINCIPAL AVEC MARGIN POUR LA SIDEBAR -->
-  <main class="flex-1 mt-20 px-6 pb-28 pt-4 ml-64 bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen">
+  <!-- ✅ CONTENU PRINCIPAL AVEC CONTRAINTES Z-INDEX ET LAYOUT -->
+  <main class="main-content">
     
-    <!-- ✅ CARTES DE STATISTIQUES -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <!-- ✅ CARTES DE STATISTIQUES (CARTE SÉLECTIONNÉS SUPPRIMÉE) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <!-- Total visiteurs -->
-      <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-100 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 stats-card">
+      <div class="stats-card">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-slate-500 text-sm font-medium">Total Visiteurs</p>
@@ -86,7 +86,7 @@
       </div>
 
       <!-- Visiteurs sortis -->
-      <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-100 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 stats-card">
+      <div class="stats-card">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-slate-500 text-sm font-medium">Visiteurs Sortis</p>
@@ -101,7 +101,7 @@
       </div>
 
       <!-- Encore présents -->
-      <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-100 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 stats-card">
+      <div class="stats-card">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-slate-500 text-sm font-medium">Encore Présents</p>
@@ -114,25 +114,10 @@
           </div>
         </div>
       </div>
-
-      <!-- Sélectionnés -->
-      <div class="bg-white rounded-2xl shadow-lg p-6 border border-slate-100 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 stats-card">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-slate-500 text-sm font-medium">Sélectionnés</p>
-            <p class="text-3xl font-bold text-purple-600 mt-2">{{ selectedVisiteurs.length }}</p>
-          </div>
-          <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-            </svg>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- ✅ TOOLBAR MODERNISÉE -->
-    <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-100 mb-6">
+    <div class="toolbar-container">
       <div class="bg-gradient-to-r from-slate-50 to-slate-100 p-6 border-b border-slate-200">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <!-- Titre et recherche -->
@@ -224,15 +209,27 @@
                 <svg class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
-                Export ({{ visiteursFiltres.length }})
+                Export Tout ({{ visiteursFiltres.length }})
               </button>
+              
+              <!-- NOUVEAU: Export sélectionnés -->
+              <button 
+                *ngIf="selectedVisiteurs.length > 0"
+                (click)="exporterSelectionnes()"
+                class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <svg class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+                Export Sélection ({{ selectedVisiteurs.length }})
+              </button>
+              
               <button 
                 (click)="resetFiltres()"
                 class="group flex items-center gap-2 px-3 py-2.5 bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105">
                 <svg class="w-4 h-4 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                 </svg>
-                Reset
+                Actualiser
               </button>
             </div>
           </div>
@@ -248,8 +245,8 @@
       </div>
     </div>
 
-    <!-- ✅ CONTENU PRINCIPAL -->
-    <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-100">
+    <!-- ✅ CONTENU PRINCIPAL AVEC CONTRAINTES -->
+    <div class="content-container">
       
       <!-- Loading -->
       <div *ngIf="loading" class="flex items-center justify-center h-96">
@@ -273,6 +270,10 @@
               </svg>
             </div>
             Liste des visiteurs
+            <span *ngIf="selectedVisiteurs.length > 0" 
+                  class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-bold">
+              {{ selectedVisiteurs.length }} sélectionné(s)
+            </span>
           </h3>
           <div class="bg-gradient-to-r from-slate-100 to-slate-200 px-4 py-2 rounded-xl border border-slate-300">
             <span class="text-sm font-semibold text-slate-700">
@@ -281,27 +282,29 @@
           </div>
         </div>
 
-        <!-- Grille visiteurs modernisée -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <!-- Grille visiteurs modernisée et professionnelle -->
+        <div class="visitors-grid">
           <div *ngFor="let v of visiteursPage; trackBy: trackByVisiteurId" 
-               class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 visitor-card group">
+               class="visitor-card group"
+               [class.selected]="isSelected(v)">
             
             <!-- Header carte modernisé -->
-            <div class="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-b border-slate-200 visitor-card-header">
+            <div class="visitor-card-header">
               <div class="flex items-center justify-between">
                 <label class="flex items-center gap-3 cursor-pointer group-hover:scale-105 transition-transform">
                   <input 
                     type="checkbox" 
-                    class="w-5 h-5 text-blue-600 rounded border-2 border-slate-300 focus:ring-2 focus:ring-blue-200 transition-all custom-checkbox" 
+                    class="custom-checkbox" 
                     [checked]="isSelected(v)" 
                     (change)="toggleSelection(v)" 
                   />
                   <div class="flex items-center gap-3">
                     <div class="relative">
-                      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-lg visitor-avatar">
+                      <div class="visitor-avatar"
+                           [style.background]="getAvatarColor(v)">
                         {{ v.nom.charAt(0) }}{{ v.prenom.charAt(0) }}
                       </div>
-                      <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white status-indicator"
+                      <div class="status-indicator"
                            [ngClass]="v.dateSortie ? 'exited' : 'present'"></div>
                     </div>
                     <div>
@@ -311,11 +314,11 @@
                   </div>
                 </label>
                 
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold badge-status"
+                <div class="badge-status"
                      [ngClass]="v.dateSortie ? 
-                       'bg-emerald-100 text-emerald-800' : 
-                       'bg-amber-100 text-amber-800'">
-                  <span class="w-2 h-2 rounded-full"
+                       'bg-emerald-100 text-emerald-800 border border-emerald-200' : 
+                       'bg-amber-100 text-amber-800 border border-amber-200'">
+                  <span class="status-dot"
                         [ngClass]="v.dateSortie ? 'bg-emerald-500' : 'bg-amber-500'"></span>
                   {{ v.dateSortie ? 'Sorti' : 'Présent' }}
                 </div>
@@ -323,51 +326,51 @@
             </div>
 
             <!-- Body carte modernisé -->
-            <div class="p-6 space-y-4">
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-50 rounded-lg p-3">
-                  <span class="text-xs text-slate-500 font-medium block mb-1">Genre</span>
-                  <span class="font-bold text-slate-800 text-sm">{{ v.genre }}</span>
+            <div class="visitor-card-body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Genre</span>
+                  <span class="info-value">{{ v.genre }}</span>
                 </div>
-                <div class="bg-slate-50 rounded-lg p-3">
-                  <span class="text-xs text-slate-500 font-medium block mb-1">Type</span>
-                  <span class="font-bold text-slate-800 text-sm">{{ v.typeVisiteur || 'Particulier' }}</span>
+                <div class="info-item">
+                  <span class="info-label">Type</span>
+                  <span class="info-value">{{ v.typeVisiteur || 'Particulier' }}</span>
                 </div>
               </div>
               
-              <div class="bg-blue-50 rounded-lg p-3">
-                <span class="text-xs text-blue-600 font-medium block mb-1">Destination</span>
-                <span class="font-bold text-blue-800 text-sm">{{ v.destination }}</span>
+              <div class="info-item-special destination">
+                <span class="info-label">Destination</span>
+                <span class="info-value">{{ v.destination }}</span>
               </div>
               
-              <div *ngIf="v.telephone" class="bg-green-50 rounded-lg p-3">
-                <span class="text-xs text-green-600 font-medium block mb-1">Téléphone</span>
-                <span class="font-bold text-green-800 text-sm">{{ v.telephone }}</span>
+              <div *ngIf="v.telephone" class="info-item-special telephone">
+                <span class="info-label">Téléphone</span>
+                <span class="info-value">{{ v.telephone }}</span>
               </div>
 
-              <div class="border-t-2 border-slate-100 pt-4 space-y-3">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 bg-green-500 rounded-lg flex items-center justify-center">
+              <div class="visit-times">
+                <div class="time-entry">
+                  <div class="time-icon entrance">
                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                     </svg>
                   </div>
                   <div>
-                    <span class="text-xs text-slate-500 font-medium">Entrée</span>
-                    <p class="font-bold text-slate-800 text-sm">{{ v.dateEntree | date:'dd/MM/yyyy à HH:mm' }}</p>
+                    <span class="time-label">Entrée</span>
+                    <p class="time-value">{{ v.dateEntree | date:'dd/MM/yyyy à HH:mm' }}</p>
                   </div>
                 </div>
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-lg flex items-center justify-center"
-                       [ngClass]="v.dateSortie ? 'bg-red-500' : 'bg-amber-500'">
+                <div class="time-entry">
+                  <div class="time-icon"
+                       [ngClass]="v.dateSortie ? 'exit' : 'pending'">
                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
                   </div>
                   <div>
-                    <span class="text-xs text-slate-500 font-medium">Sortie</span>
-                    <p *ngIf="v.dateSortie" class="font-bold text-red-700 text-sm">{{ v.dateSortie | date:'dd/MM/yyyy à HH:mm' }}</p>
-                    <p *ngIf="!v.dateSortie" class="font-bold text-amber-700 text-sm">Encore présent</p>
+                    <span class="time-label">Sortie</span>
+                    <p *ngIf="v.dateSortie" class="time-value exit">{{ v.dateSortie | date:'dd/MM/yyyy à HH:mm' }}</p>
+                    <p *ngIf="!v.dateSortie" class="time-value pending">Encore présent</p>
                   </div>
                 </div>
               </div>
@@ -377,11 +380,11 @@
       </div>
 
       <!-- État vide modernisé -->
-      <div *ngIf="!loading && visiteursFiltres.length === 0" class="flex items-center justify-center h-96 empty-state">
+      <div *ngIf="!loading && visiteursFiltres.length === 0" class="empty-state">
         <div class="text-center">
           <div class="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
             <svg class="h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
             </svg>
           </div>
           <h3 class="text-2xl font-bold text-slate-800 mb-3">Aucun visiteur trouvé</h3>
@@ -401,7 +404,7 @@
       </div>
 
       <!-- ✅ PAGINATION MODERNISÉE -->
-      <div *ngIf="pages.length > 1" class="bg-gradient-to-r from-slate-50 to-slate-100 border-t border-slate-200 p-6">
+      <div *ngIf="pages.length > 1" class="pagination-container">
         <div class="flex items-center justify-between">
           <div class="text-sm font-semibold text-slate-700 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
             Page {{ currentPage }} sur {{ pages.length }}

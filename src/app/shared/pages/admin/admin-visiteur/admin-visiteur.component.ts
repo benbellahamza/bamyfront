@@ -77,6 +77,22 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
   // ✅ SUBSCRIPTIONS
   private subscriptions: any[] = [];
 
+  // ✅ COULEURS AVATAR PRÉDÉFINIES
+  private avatarColors = [
+    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+    'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+    'linear-gradient(135deg, #ff8a80 0%, #ea6100 100%)',
+    'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)',
+    'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+    'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)'
+  ];
+
   constructor(
     private http: HttpClient, 
     private router: Router
@@ -87,13 +103,10 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
     this.initAnimations();
   }
 
-
-
   /**
    * ✅ Initialise les animations d'entrée
    */
   private initAnimations(): void {
-    // Ajouter les classes d'animation après un court délai
     setTimeout(() => {
       const elements = document.querySelectorAll('.stats-card, .visitor-card');
       elements.forEach((el, index) => {
@@ -107,8 +120,6 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
   // ✅ CALLBACK LAYOUT UNIFIÉ
   onPasswordChanged(): void {
     console.log('✅ Mot de passe utilisateur changé depuis le layout unifié');
-    // Ici vous pouvez ajouter une logique spécifique si nécessaire
-    // Par exemple, recharger certaines données ou afficher une notification
   }
 
   // ✅ CHARGEMENT DES DONNÉES
@@ -264,7 +275,7 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
     return this.visiteurs.filter(v => !v.dateSortie).length;
   }
 
-  // ✅ EXPORT EXCEL AMÉLIORÉ
+  // ✅ EXPORT EXCEL AMÉLIORÉ - TOUT
   exporterExcel(exportAll: boolean): void {
     this.erreurExport = false;
     const dataToExport = exportAll ? this.visiteursFiltres : this.selectedVisiteurs;
@@ -280,7 +291,23 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formattedData = dataToExport.map(v => ({
+    this.exporterDonnees(dataToExport, exportAll ? 'tous' : 'selection');
+  }
+
+  // ✅ NOUVEAU: EXPORT SÉLECTIONNÉS UNIQUEMENT
+  exporterSelectionnes(): void {
+    if (this.selectedVisiteurs.length === 0) {
+      this.afficherNotificationErreur('Aucun visiteur sélectionné à exporter');
+      return;
+    }
+
+    console.log('📤 Export des visiteurs sélectionnés :', this.selectedVisiteurs.length);
+    this.exporterDonnees(this.selectedVisiteurs, 'selection');
+  }
+
+  // ✅ MÉTHODE UNIFIÉE D'EXPORT
+  private exporterDonnees(data: Visiteur[], type: 'tous' | 'selection'): void {
+    const formattedData = data.map(v => ({
       'Nom': v.nom,
       'Prénom': v.prenom,
       'CIN': v.cin,
@@ -314,11 +341,15 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
       });
       
-      const fileName = `visiteurs_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+      const typeLabel = type === 'tous' ? 'tous' : 'selection';
+      const fileName = `visiteurs_${typeLabel}_${new Date().toISOString().split('T')[0]}.xlsx`;
       saveAs(blob, fileName);
 
       console.log('✅ Export Excel réussi :', fileName);
-      this.afficherNotificationSucces(`Export réussi : ${dataToExport.length} visiteurs exportés`);
+      const message = type === 'tous' 
+        ? `Export réussi : ${data.length} visiteurs exportés` 
+        : `Export de la sélection réussi : ${data.length} visiteurs exportés`;
+      this.afficherNotificationSucces(message);
 
     } catch (error) {
       console.error('❌ Erreur export Excel :', error);
@@ -402,7 +433,7 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
       console.log('📄 Changement de page :', page);
       
       // Scroll vers le haut du contenu
-      const mainContent = document.querySelector('main');
+      const mainContent = document.querySelector('.main-content');
       if (mainContent) {
         mainContent.scrollTop = 0;
       }
@@ -466,8 +497,16 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ Méthodes utilitaires pour l'interface
+   * ✅ NOUVELLES MÉTHODES UTILITAIRES POUR L'INTERFACE
    */
+
+  /**
+   * Retourne une couleur d'avatar basée sur l'ID du visiteur
+   */
+  getAvatarColor(visiteur: Visiteur): string {
+    const index = visiteur.id % this.avatarColors.length;
+    return this.avatarColors[index];
+  }
 
   /**
    * Retourne les initiales d'un visiteur
@@ -508,7 +547,7 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ Méthodes de notification
+   * ✅ MÉTHODES DE NOTIFICATION AMÉLIORÉES
    */
 
   /**
@@ -516,12 +555,6 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
    */
   private afficherNotificationSucces(message: string): void {
     console.log('✅ SUCCESS:', message);
-    
-    // Vous pouvez intégrer ici un service de notification
-    // Pour l'instant, on utilise une notification temporaire
-    // this.notificationService.success(message);
-    
-    // Optionnel : notification toast personnalisée
     this.creerNotificationToast(message, 'success');
   }
 
@@ -530,21 +563,15 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
    */
   private afficherNotificationErreur(message: string): void {
     console.error('❌ ERROR:', message);
-    
-    // Vous pouvez intégrer ici un service de notification
-    // this.notificationService.error(message);
-    
-    // Optionnel : notification toast personnalisée
     this.creerNotificationToast(message, 'error');
   }
 
   /**
-   * Crée une notification toast personnalisée
+   * Crée une notification toast personnalisée et moderne
    */
   private creerNotificationToast(message: string, type: 'success' | 'error'): void {
-    // Implémentation d'une notification toast simple
     const toast = document.createElement('div');
-    toast.className = `fixed top-24 right-6 z-[9999] px-6 py-4 rounded-xl shadow-2xl transform translate-x-full transition-all duration-500 ${
+    toast.className = `fixed top-24 right-6 z-[9999] px-6 py-4 rounded-xl shadow-2xl transform translate-x-full transition-all duration-500 max-w-md ${
       type === 'success' 
         ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
         : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
@@ -552,13 +579,20 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
     
     toast.innerHTML = `
       <div class="flex items-center gap-3">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          ${type === 'success' 
-            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
-            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
-          }
-        </svg>
-        <span class="font-medium">${message}</span>
+        <div class="flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ${type === 'success' 
+              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+              : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+            }
+          </svg>
+        </div>
+        <span class="font-medium text-sm">${message}</span>
+        <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white/80 hover:text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
       </div>
     `;
     
@@ -569,19 +603,19 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
       toast.style.transform = 'translateX(0)';
     }, 100);
     
-    // Animation de sortie et suppression
+    // Animation de sortie et suppression automatique
     setTimeout(() => {
-      toast.style.transform = 'translateX(full)';
+      toast.style.transform = 'translateX(100%)';
       setTimeout(() => {
         if (document.body.contains(toast)) {
           document.body.removeChild(toast);
         }
       }, 500);
-    }, 3000);
+    }, 4000);
   }
 
   /**
-   * ✅ Méthodes de cycle de vie et nettoyage
+   * ✅ MÉTHODES SUPPLÉMENTAIRES
    */
 
   /**
