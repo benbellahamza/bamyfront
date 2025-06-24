@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
@@ -55,7 +55,7 @@ interface Camion {
   templateUrl: './responsable-livraison.component.html',
   styleUrls: ['./responsable-livraison.component.css']
 })
-export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ResponsableLivraisonComponent implements OnInit, OnDestroy {
   
   // ✅ CONFIGURATION NAVIGATION
   navigationItems = [
@@ -88,15 +88,11 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
   searchTerm: string = '';
   startDate: string = '';
   endDate: string = '';
-  filtreStatut: 'TOUS' | 'ENTREE' | 'SORTIE' = 'TOUS';
-  filtreDestination: 'TOUS' | 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE' = 'TOUS';
-  showDestinationFilter: boolean = false;
   loading: boolean = false;
 
-  // ✅ PAGINATION OPTIMISÉE POUR 5 CARTES PAR LIGNE ET 10 CARTES PAR PAGE
+  // ✅ PAGINATION IDENTIQUE À L'ADMIN
   currentPage: number = 1;
-  itemsPerPage: number = 10; // ✅ 10 cartes par page (2 lignes de 5 cartes)
-  itemsPerPageOptions: number[] = [10, 20, 30, 50]; // ✅ Options optimisées pour 5 cartes par ligne
+  itemsPerPage: number = 16; // Même valeur que l'admin
 
   // ✅ GESTION DES ERREURS
   erreurExport: boolean = false;
@@ -104,69 +100,62 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
   // ✅ UTILITAIRES
   Math = Math;
 
-  // ✅ SUBSCRIPTIONS ET TIMEOUTS
+  // ✅ SUBSCRIPTIONS
   private subscriptions: any[] = [];
-  private resizeTimeout: any;
+
+  // ✅ COULEURS AVATAR PRÉDÉFINIES (IDENTIQUE À L'ADMIN)
+  private avatarColors = [
+    'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)',
+    'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    'linear-gradient(135deg, #ea580c 0%, #dc2626 100%)',
+    'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+    'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+    'linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%)',
+    'linear-gradient(135deg, #059669 0%, #047857 100%)',
+    'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+    'linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)',
+    'linear-gradient(135deg, #be123c 0%, #9f1239 100%)',
+    'linear-gradient(135deg, #a21caf 0%, #86198f 100%)',
+    'linear-gradient(135deg, #0891b2 0%, #0e7490 100%)'
+  ];
 
   constructor(
     private http: HttpClient,
     private router: Router
-  ) {
-    console.log('🔍 ResponsableLivraisonComponent initialisé - 5 cartes par ligne, 10 par page');
-  }
+  ) {}
 
   ngOnInit(): void {
-    console.log('🚀 Composant initialisé - 5 cartes par ligne, pagination 10 par page');
     this.chargerCamions();
+    this.initAnimations();
   }
 
-  ngAfterViewInit(): void {
-    // Optimiser l'affichage après rendu
+  /**
+   * ✅ Initialise les animations d'entrée (IDENTIQUE À L'ADMIN)
+   */
+  private initAnimations(): void {
     setTimeout(() => {
-      this.optimiserAffichage();
-      this.restaurerEtat();
+      const elements = document.querySelectorAll('.stats-card, .truck-card');
+      elements.forEach((el, index) => {
+        setTimeout(() => {
+          el.classList.add('fade-in');
+        }, index * 100);
+      });
     }, 100);
-    
-    // Écouter les changements de taille d'écran
-    window.addEventListener('resize', () => this.onWindowResize());
-  }
-
-  ngOnDestroy(): void {
-    // Sauvegarder l'état avant destruction
-    this.sauvegarderEtat();
-    
-    // Nettoyer les subscriptions
-    this.subscriptions.forEach(sub => {
-      if (sub && typeof sub.unsubscribe === 'function') {
-        sub.unsubscribe();
-      }
-    });
-    
-    // Nettoyer les event listeners
-    window.removeEventListener('resize', () => this.onWindowResize());
-    
-    // Nettoyer les timeouts
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
-    }
-    
-    console.log('🧹 Composant détruit avec nettoyage complet (5 cartes par ligne)');
   }
 
   // ✅ CALLBACK LAYOUT UNIFIÉ
   onPasswordChanged(): void {
-    console.log('🔐 Mot de passe changé depuis l\'interface responsable livraison');
+    console.log('✅ Mot de passe utilisateur changé depuis le layout unifié - Responsable');
   }
 
-  // ✅ CHARGEMENT DES DONNÉES AVEC PAGINATION OPTIMISÉE
+  // ✅ CHARGEMENT DES DONNÉES (IDENTIQUE À L'ADMIN)
   chargerCamions(): void {
     this.loading = true;
-    console.log('🔄 Chargement des camions depuis: http://localhost:8085/api/livraison/all');
-
+    console.log('🔄 Chargement des camions...');
+    
     const subscription = this.http.get<any[]>('http://localhost:8085/api/livraison/all').subscribe({
       next: (data) => {
         console.log('✅ Données reçues du serveur:', data);
-        console.log('📊 Nombre de camions reçus:', data?.length || 0);
         
         if (!data || !Array.isArray(data)) {
           console.warn('⚠️ Données invalides reçues');
@@ -188,7 +177,7 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
             const nomChauffeur = camion.chauffeurEntree?.nom || camion.nomChauffeur || '';
             const prenomChauffeur = camion.chauffeurEntree?.prenom || camion.prenomChauffeur || '';
 
-            // ✅ LOGIQUE SIMPLIFIÉE DE DESTINATION
+            // ✅ LOGIQUE DE DESTINATION (IDENTIQUE À L'ADMIN)
             let typeDestination: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE' = 'PARK';
             let nomChauffeurLivraison = '';
             let prenomChauffeurLivraison = '';
@@ -231,51 +220,87 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
           })
           .sort((a, b) => new Date(b.dateEntree || '').getTime() - new Date(a.dateEntree || '').getTime());
         
-        console.log('✅ Camions traités:', this.camions.length);
-        console.log('📋 Détail des camions:', this.camions);
-        
         this.camionsFiltres = [...this.camions];
-        
-        // ✅ CALCULER LA PAGINATION APRÈS CHARGEMENT
-        this.calculerPagination();
-        
         this.loading = false;
         
-        console.log('🎉 Chargement terminé avec succès');
-        console.log('📄 Nombre de pages:', this.pages.length);
-        console.log('📋 Camions sur cette page:', this.camionsPage.length);
+        console.log('✅ Camions chargés :', this.camions.length);
+        this.initAnimations();
+        this.afficherNotificationSucces(`${this.camions.length} camions chargés avec succès`);
       },
       error: (err) => {
-        console.error('❌ Erreur chargement camions', err);
-        this.gererErreurChargement(err);
+        console.error('❌ Erreur chargement camions :', err);
+        this.loading = false;
+        this.afficherNotificationErreur('Erreur lors du chargement des camions');
       }
     });
     this.subscriptions.push(subscription);
   }
 
-  // ✅ RECHERCHE OPTIMISÉE
+  // ✅ RECHERCHE AMÉLIORÉE (IDENTIQUE À L'ADMIN)
   rechercher(): void {
-    console.log('🔍 Recherche déclenchée:', this.searchTerm);
     this.currentPage = 1;
-    this.appliquerTousFiltres();
+    const terme = this.searchTerm.toLowerCase().trim();
+    
+    console.log('🔍 Recherche avec terme :', terme);
+    
+    if (!terme) {
+      this.appliquerTousFiltres();
+      return;
+    }
+
+    this.camionsFiltres = this.camions.filter(c =>
+      c.numeroChassis.toLowerCase().includes(terme) ||
+      c.marque.toLowerCase().includes(terme) ||
+      c.modele.toLowerCase().includes(terme) ||
+      (c.nomChauffeur && c.nomChauffeur.toLowerCase().includes(terme)) ||
+      (c.prenomChauffeur && c.prenomChauffeur.toLowerCase().includes(terme)) ||
+      (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
+      (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme)) ||
+      (c.destination && c.destination.toLowerCase().includes(terme)) ||
+      (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme)) ||
+      (c.typeCamion && c.typeCamion.toLowerCase().includes(terme))
+    );
+
+    this.appliquerFiltresDate();
+    console.log('✅ Résultats de recherche :', this.camionsFiltres.length);
   }
 
-  // ✅ FILTRAGE PAR DATE
+  // ✅ FILTRAGE PAR DATE AMÉLIORÉ (IDENTIQUE À L'ADMIN)
   filtrerParDate(): void {
     this.currentPage = 1;
-    this.appliquerTousFiltres();
+    console.log('📅 Filtrage par date :', this.startDate, '->', this.endDate);
+    this.appliquerFiltresDate();
   }
 
-  // ✅ APPLICATION DE TOUS LES FILTRES AVEC PAGINATION
-  private appliquerTousFiltres(): void {
-    console.log('🔍 Application des filtres...');
-    console.log('📊 Camions de base:', this.camions.length);
-    console.log('🔎 Terme de recherche:', this.searchTerm);
+  private appliquerFiltresDate(): void {
+    if (!this.startDate || !this.endDate) {
+      if (this.searchTerm) {
+        this.rechercher();
+      } else {
+        this.camionsFiltres = [...this.camions];
+      }
+      return;
+    }
+
+    const start = new Date(this.startDate);
+    const end = new Date(this.endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const listeBase = this.searchTerm ? this.camionsFiltres : this.camions;
     
+    this.camionsFiltres = listeBase.filter(c => {
+      const dateEntree = new Date(c.dateEntree || '');
+      return dateEntree >= start && dateEntree <= end;
+    });
+
+    console.log('✅ Résultats après filtrage par date :', this.camionsFiltres.length);
+  }
+
+  private appliquerTousFiltres(): void {
     let resultat = [...this.camions];
 
-    // Filtre de recherche textuelle
-    if (this.searchTerm?.trim()) {
+    // Filtrage par terme de recherche
+    if (this.searchTerm) {
       const terme = this.searchTerm.toLowerCase().trim();
       resultat = resultat.filter(c =>
         c.numeroChassis.toLowerCase().includes(terme) ||
@@ -286,61 +311,36 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
         (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
         (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme)) ||
         (c.destination && c.destination.toLowerCase().includes(terme)) ||
-        (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme))
+        (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme)) ||
+        (c.typeCamion && c.typeCamion.toLowerCase().includes(terme))
       );
     }
 
-    // Filtre par date
+    // Filtrage par date
     if (this.startDate && this.endDate) {
       const start = new Date(this.startDate);
       const end = new Date(this.endDate);
       end.setHours(23, 59, 59, 999);
 
       resultat = resultat.filter(c => {
-        if (!c.dateEntree) return false;
-        const dateEntree = new Date(c.dateEntree);
+        const dateEntree = new Date(c.dateEntree || '');
         return dateEntree >= start && dateEntree <= end;
       });
     }
 
-    console.log('📊 Camions après filtres:', resultat.length);
     this.camionsFiltres = resultat;
-    
-    // ✅ RECALCULER LA PAGINATION APRÈS FILTRAGE
-    this.calculerPagination();
   }
 
-  // ✅ MÉTHODE DE CALCUL DE LA PAGINATION OPTIMISÉE
-  private calculerPagination(): void {
-    const totalPages = Math.ceil(this.camionsFiltres.length / this.itemsPerPage);
-    
-    // Ajuster la page courante si nécessaire
-    if (this.currentPage > totalPages && totalPages > 0) {
-      this.currentPage = totalPages;
-    }
-    if (this.currentPage < 1) {
-      this.currentPage = 1;
-    }
-    
-    console.log('📄 Pagination calculée (5 cartes par ligne, 10 par page):', {
-      totalCamions: this.camionsFiltres.length,
-      itemsPerPage: this.itemsPerPage,
-      totalPages: totalPages,
-      currentPage: this.currentPage,
-      camionsVisibles: this.camionsPage.length
-    });
-  }
-
-  // ✅ GESTION SÉLECTION AMÉLIORÉE
+  // ✅ GESTION SÉLECTION AMÉLIORÉE (IDENTIQUE À L'ADMIN)
   toggleSelection(camion: Camion): void {
     if (this.isSelected(camion)) {
       this.selectedCamions = this.selectedCamions.filter(c => c.id !== camion.id);
-      console.log('➖ Camion désélectionné:', camion.marque, camion.modele);
+      console.log('➖ Camion désélectionné :', camion.marque, camion.modele);
     } else {
       this.selectedCamions.push(camion);
-      console.log('➕ Camion sélectionné:', camion.marque, camion.modele);
+      console.log('➕ Camion sélectionné :', camion.marque, camion.modele);
     }
-    console.log('📋 Total sélectionnés:', this.selectedCamions.length);
+    console.log('📊 Total sélectionnés :', this.selectedCamions.length);
   }
 
   isSelected(camion: Camion): boolean {
@@ -348,18 +348,21 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
   }
 
   selectionnerTous(): void {
-    // ✅ SÉLECTIONNER SEULEMENT LES CAMIONS VISIBLES SUR LA PAGE COURANTE
-    this.selectedCamions = [...this.camionsPage];
-    console.log('✅ Camions de la page courante sélectionnés:', this.selectedCamions.length);
+    this.selectedCamions = [...this.camionsFiltres];
+    console.log('✅ Tous les camions sélectionnés :', this.selectedCamions.length);
+    this.afficherNotificationSucces(`${this.selectedCamions.length} camions sélectionnés`);
   }
 
   deselectionnerTous(): void {
     const count = this.selectedCamions.length;
     this.selectedCamions = [];
-    console.log('❌ Tous les camions désélectionnés:', count);
+    console.log('❌ Tous les camions désélectionnés');
+    if (count > 0) {
+      this.afficherNotificationSucces('Sélection effacée');
+    }
   }
 
-  // ✅ MÉTHODES UTILITAIRES
+  // ✅ STATISTIQUES AMÉLIORÉES (IDENTIQUE À L'ADMIN)
   getCamionsByStatut(statut: 'ENTREE' | 'SORTIE'): Camion[] {
     return this.camions.filter(c => c.statut === statut);
   }
@@ -378,6 +381,114 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     return this.getCamionsByStatut('SORTIE').length;
   }
 
+  // ✅ EXPORT EXCEL AMÉLIORÉ (IDENTIQUE À L'ADMIN)
+  exporterExcel(exportSelected: boolean): void {
+    this.erreurExport = false;
+    const dataToExport = exportSelected ? this.selectedCamions : this.camionsFiltres;
+
+    console.log('📤 Export Excel :', exportSelected ? 'Sélectionnés' : 'Tous', '- Nombre :', dataToExport.length);
+
+    if (dataToExport.length === 0) {
+      this.erreurExport = true;
+      this.afficherNotificationErreur('Aucune donnée à exporter');
+      setTimeout(() => {
+        this.erreurExport = false;
+      }, 5000);
+      return;
+    }
+
+    this.exporterDonnees(dataToExport, exportSelected ? 'selection' : 'tous');
+  }
+
+  // ✅ MÉTHODE UNIFIÉE D'EXPORT (IDENTIQUE À L'ADMIN)
+  private exporterDonnees(data: Camion[], type: 'tous' | 'selection'): void {
+    const formattedData = data.map(c => ({
+      'N° Châssis': c.numeroChassis,
+      'Marque': c.marque,
+      'Modèle': c.modele,
+      'Type Camion': c.typeCamion || 'Standard',
+      'Chauffeur Entrée': this.formatNomComplet(c.nomChauffeur, c.prenomChauffeur),
+      'Date Entrée': c.dateEntreeFormatee || 'Non définie',
+      'Date Sortie': c.dateSortieFormatee || 'Non sorti',
+      'Statut': c.statut === 'ENTREE' ? 'Présent' : 'Sorti',
+      'Type Destination': c.typeDestination ? this.getDestinationLabel(c.typeDestination) : 'Non défini',
+      'Destination': c.destination || 'Non définie',
+      'Chauffeur Livraison': this.formatNomComplet(c.nomChauffeurLivraison, c.prenomChauffeurLivraison),
+      'CIN Chauffeur': c.cinChauffeurLivraison || 'Non défini',
+      'Entreprise': c.nomEntreprise || 'Non définie',
+      'Durée de présence': this.calculerDureePresence(c)
+    }));
+
+    try {
+      const worksheet = XLSX.utils.json_to_sheet(formattedData);
+      
+      // Configuration des largeurs de colonnes
+      const columnWidths = [
+        { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 25 },
+        { wch: 20 }, { wch: 20 }, { wch: 12 }, { wch: 20 }, { wch: 25 },
+        { wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 15 }
+      ];
+      worksheet['!cols'] = columnWidths;
+
+      const workbook = { 
+        Sheets: { 'Camions': worksheet }, 
+        SheetNames: ['Camions'] 
+      };
+      
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+      
+      const typeLabel = type === 'tous' ? 'tous_responsable' : 'selection_responsable';
+      const fileName = `camions_${typeLabel}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      saveAs(blob, fileName);
+
+      console.log('✅ Export Excel réussi :', fileName);
+      const message = type === 'tous' 
+        ? `Export réussi : ${data.length} camions exportés` 
+        : `Export de la sélection réussi : ${data.length} camions exportés`;
+      this.afficherNotificationSucces(message);
+
+    } catch (error) {
+      console.error('❌ Erreur export Excel :', error);
+      this.erreurExport = true;
+      this.afficherNotificationErreur('Erreur lors de l\'export Excel');
+      setTimeout(() => {
+        this.erreurExport = false;
+      }, 5000);
+    }
+  }
+
+  /**
+   * ✅ UTILITAIRES POUR L'EXPORT (IDENTIQUE À L'ADMIN)
+   */
+  private formatNomComplet(nom?: string, prenom?: string): string {
+    if (!nom && !prenom) return 'Non défini';
+    return `${nom || ''}${prenom ? ' ' + prenom : ''}`.trim();
+  }
+
+  /**
+   * ✅ Calcule la durée de présence (IDENTIQUE À L'ADMIN)
+   */
+  private calculerDureePresence(camion: Camion): string {
+    if (!camion.dateEntree) return 'Non définie';
+    
+    const entree = new Date(camion.dateEntree);
+    const sortie = camion.dateSortie ? new Date(camion.dateSortie) : new Date();
+    
+    const dureeMs = sortie.getTime() - entree.getTime();
+    const heures = Math.floor(dureeMs / (1000 * 60 * 60));
+    const minutes = Math.floor((dureeMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (heures > 0) {
+      return `${heures}h ${minutes}min`;
+    } else {
+      return `${minutes}min`;
+    }
+  }
+
+  // ✅ MÉTHODES UTILITAIRES (IDENTIQUE À L'ADMIN)
   getDestinationLabel(type: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE'): string {
     switch (type) {
       case 'PARK': return 'Park';
@@ -405,22 +516,20 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     );
   }
 
-  // ✅ FORMATAGE DES DATES AMÉLIORÉ POUR CARTES COMPACTES
+  // ✅ FORMATAGE DES DATES (IDENTIQUE À L'ADMIN)
   private formatDate(dateStr: string | undefined): string {
     if (!dateStr) return '';
     
     try {
       const date = new Date(dateStr);
-      
       if (isNaN(date.getTime())) {
         return 'Date invalide';
       }
       
-      // Format français compact pour cartes
-      return date.toLocaleString('fr-FR', {
+      return date.toLocaleDateString('fr-FR', {
         day: '2-digit',
         month: '2-digit',
-        year: '2-digit', // ✅ ANNÉE SUR 2 CHIFFRES POUR GAGNER DE L'ESPACE
+        year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
       });
@@ -430,154 +539,30 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     }
   }
 
-  // ✅ FORMATAGE DATE COMPLET POUR EXPORT
-  private formatDateComplete(dateStr: string | undefined): string {
-    if (!dateStr) return '';
-    
-    try {
-      const date = new Date(dateStr);
-      
-      if (isNaN(date.getTime())) {
-        return 'Date invalide';
-      }
-      
-      // Format complet pour export
-      return date.toLocaleString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch (e) {
-      console.error('❌ Erreur formatage date complète:', e);
-      return 'Erreur de date';
-    }
-  }
-
-  // ✅ EXPORT EXCEL OPTIMISÉ
-  exporterExcel(exportSelected: boolean): void {
-    this.erreurExport = false;
-    
-    // Déterminer les données à exporter
-    let dataToExport: Camion[] = [];
-    if (exportSelected && this.selectedCamions.length > 0) {
-      dataToExport = this.selectedCamions;
-    } else {
-      dataToExport = this.camionsFiltres;
-    }
-
-    if (dataToExport.length === 0) {
-      this.erreurExport = true;
-      console.warn('⚠️ Aucune donnée à exporter');
-      setTimeout(() => {
-        this.erreurExport = false;
-      }, 5000);
-      return;
-    }
-
-    console.log('📤 Export Excel:', {
-      type: exportSelected ? 'sélection' : 'tous',
-      count: dataToExport.length
-    });
-
-    const formattedData = dataToExport.map((c, index) => ({
-      'N°': index + 1,
-      'N° Châssis': c.numeroChassis,
-      'Marque': c.marque,
-      'Modèle': c.modele,
-      'Type Camion': c.typeCamion || '-',
-      'Chauffeur Entrée': this.formatNomComplet(c.nomChauffeur, c.prenomChauffeur),
-      'Date Entrée': this.formatDateComplete(c.dateEntree) || '-',
-      'Date Sortie': this.formatDateComplete(c.dateSortie) || 'Non sorti',
-      'Statut': c.statut === 'ENTREE' ? 'Présent' : 'Sorti',
-      'Type Destination': c.typeDestination ? this.getDestinationLabel(c.typeDestination) : '-',
-      'Destination': c.destination || '-',
-      'Chauffeur Livraison': this.formatNomComplet(c.nomChauffeurLivraison, c.prenomChauffeurLivraison),
-      'CIN Chauffeur': c.cinChauffeurLivraison || '-',
-      'Entreprise': c.nomEntreprise || '-',
-      'Durée Présence': this.formatDureePresence(c),
-      'Export Date': new Date().toLocaleString('fr-FR')
-    }));
-
-    try {
-      const worksheet = XLSX.utils.json_to_sheet(formattedData);
-      
-      // Configuration des largeurs de colonnes optimisées
-      const columnWidths = [
-        { wch: 5 }, { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-        { wch: 25 }, { wch: 20 }, { wch: 20 }, { wch: 12 }, { wch: 20 },
-        { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 20 }
-      ];
-      worksheet['!cols'] = columnWidths;
-
-      const workbook = { 
-        Sheets: { 'Camions': worksheet }, 
-        SheetNames: ['Camions'] 
-      };
-      
-      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-      const blob = new Blob([excelBuffer], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-      });
-      
-      // Nom de fichier avec timestamp
-      const prefix = exportSelected ? 'camions_selection_responsable' : 'camions_export_responsable';
-      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-      const fileName = `${prefix}_${timestamp}.xlsx`;
-      
-      saveAs(blob, fileName);
-      
-      console.log('✅ Export Excel réussi:', fileName);
-
-    } catch (error) {
-      console.error('❌ Erreur export Excel:', error);
-      this.erreurExport = true;
-      setTimeout(() => {
-        this.erreurExport = false;
-      }, 5000);
-    }
-  }
-
-  // ✅ UTILITAIRE POUR L'EXPORT
-  private formatNomComplet(nom?: string, prenom?: string): string {
-    if (!nom && !prenom) return '-';
-    return `${nom || ''}${prenom ? ' ' + prenom : ''}`.trim();
-  }
-
-  // ✅ RÉINITIALISATION COMPLÈTE
+  // ✅ RÉINITIALISATION AMÉLIORÉE (IDENTIQUE À L'ADMIN)
   resetFiltres(): void {
     console.log('🔄 Réinitialisation des filtres...');
+    
     this.searchTerm = '';
     this.startDate = '';
     this.endDate = '';
     this.selectedCamions = [];
-    this.filtreStatut = 'TOUS';
-    this.filtreDestination = 'TOUS';
-    this.showDestinationFilter = false;
     this.camionsFiltres = [...this.camions];
     this.currentPage = 1;
     this.erreurExport = false;
     
-    this.calculerPagination();
     console.log('✅ Filtres réinitialisés');
+    this.afficherNotificationSucces('Filtres réinitialisés');
   }
 
-  // ✅ ACTUALISATION DES DONNÉES (au lieu de reset)
+  // ✅ ACTUALISATION DES DONNÉES (IDENTIQUE À L'ADMIN)
   actualiserDonnees(): void {
     console.log('🔄 Actualisation des données...');
     this.resetFiltres();
     this.chargerCamions();
   }
 
-  // ✅ PAGINATION OPTIMISÉE POUR CARTES COMPACTES
-  changeItemsPerPage(newSize: number): void {
-    console.log('📄 Changement items par page:', this.itemsPerPage, '→', newSize);
-    this.itemsPerPage = newSize;
-    this.currentPage = 1;
-    this.calculerPagination();
-  }
-
+  // ✅ PAGINATION AMÉLIORÉE (IDENTIQUE À L'ADMIN)
   get pages(): number[] {
     const total = Math.ceil(this.camionsFiltres.length / this.itemsPerPage);
     return Array.from({ length: total }, (_, i) => i + 1);
@@ -586,7 +571,7 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
   getVisiblePages(): number[] {
     const totalPages = this.pages.length;
     const current = this.currentPage;
-    const maxVisible = 7; // ✅ PLUS DE PAGES VISIBLES POUR CARTES COMPACTES
+    const maxVisible = 5;
 
     if (totalPages <= maxVisible) {
       return this.pages;
@@ -604,30 +589,26 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
 
   get camionsPage(): Camion[] {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    const pageData = this.camionsFiltres.slice(start, end);
-    
-    console.log('📄 Camions page courante:', {
-      page: this.currentPage,
-      start: start + 1,
-      end: Math.min(end, this.camionsFiltres.length),
-      count: pageData.length,
-      total: this.camionsFiltres.length
-    });
-    
-    return pageData;
+    return this.camionsFiltres.slice(start, start + this.itemsPerPage);
   }
 
   setPage(page: number): void {
     if (page >= 1 && page <= this.pages.length) {
       this.currentPage = page;
-      console.log('📄 Navigation vers page:', page, 'sur', this.pages.length);
+      console.log('📄 Changement de page :', page);
+      
+      // Scroll vers le haut du contenu
+      const mainContent = document.querySelector('.main-content');
+      if (mainContent) {
+        mainContent.scrollTop = 0;
+      }
     }
   }
 
-  // ✅ FILTRES PRÉDÉFINIS AMÉLIORÉS
+  // ✅ FILTRES PRÉDÉFINIS AMÉLIORÉS (IDENTIQUE À L'ADMIN)
   filtrerParPeriodePredefinie(periode: 'aujourdhui' | 'hier' | 'semaine' | 'mois'): void {
-    console.log('📅 Filtrage par période:', periode);
+    console.log('📅 Filtre prédéfini :', periode);
+    
     const maintenant = new Date();
     let debut: Date;
     let fin: Date = new Date(maintenant);
@@ -664,77 +645,222 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     this.startDate = debut.toISOString().split('T')[0];
     this.endDate = fin.toISOString().split('T')[0];
     this.filtrerParDate();
+    
+    const periodeLabels = {
+      'aujourdhui': 'aujourd\'hui',
+      'hier': 'hier',
+      'semaine': 'les 7 derniers jours',
+      'mois': 'les 30 derniers jours'
+    };
+    
+    this.afficherNotificationSucces(`Filtre appliqué : ${periodeLabels[periode]}`);
   }
 
-  // ✅ OPTIMISATION PERFORMANCE POUR CARTES COMPACTES
+  // ✅ OPTIMISATION PERFORMANCE (IDENTIQUE À L'ADMIN)
   trackByCamion(index: number, camion: Camion): any {
     return camion.id || camion.numeroChassis;
   }
 
-  // ✅ FILTRES AVANCÉS (optionnel)
-  filtrerParStatut(statut: 'TOUS' | 'ENTREE' | 'SORTIE'): void {
-    this.filtreStatut = statut;
-    this.currentPage = 1;
-    
-    this.showDestinationFilter = statut === 'SORTIE';
-    if (statut !== 'SORTIE') {
-      this.filtreDestination = 'TOUS';
-    }
-    
-    this.appliquerFiltresAvances();
+  /**
+   * ✅ NOUVELLES MÉTHODES UTILITAIRES POUR L'INTERFACE (IDENTIQUE À L'ADMIN)
+   */
+
+  /**
+   * Retourne une couleur d'avatar basée sur l'ID du camion (IDENTIQUE À L'ADMIN)
+   */
+  getAvatarColor(camion: Camion): string {
+    const index = (camion.id || 0) % this.avatarColors.length;
+    return this.avatarColors[index];
   }
 
-  filtrerParDestination(destination: 'TOUS' | 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE'): void {
-    this.filtreDestination = destination;
-    this.currentPage = 1;
-    this.appliquerFiltresAvances();
+  /**
+   * Retourne les initiales d'un camion (IDENTIQUE À L'ADMIN)
+   */
+  getCamionInitials(camion: Camion): string {
+    if (!camion || !camion.marque || !camion.modele) return '??';
+    return (camion.marque[0] + camion.modele[0]).toUpperCase();
   }
 
-  private appliquerFiltresAvances(): void {
-    let filtres = [...this.camions];
+  /**
+   * Retourne la couleur du badge selon le statut (IDENTIQUE À L'ADMIN)
+   */
+  getBadgeStatutClass(camion: Camion): string {
+    return camion.dateSortie 
+      ? 'bg-emerald-100 text-emerald-800' 
+      : 'bg-amber-100 text-amber-800';
+  }
 
-    if (this.filtreStatut !== 'TOUS') {
-      filtres = filtres.filter(c => c.statut === this.filtreStatut);
-    }
-
-    if (this.filtreDestination !== 'TOUS' && this.filtreStatut === 'SORTIE') {
-      filtres = filtres.filter(c => c.typeDestination === this.filtreDestination);
-    }
-
-    if (this.searchTerm) {
-      const terme = this.searchTerm.toLowerCase();
-      filtres = filtres.filter(c =>
-        c.numeroChassis.toLowerCase().includes(terme) ||
-        c.marque.toLowerCase().includes(terme) ||
-        c.modele.toLowerCase().includes(terme) ||
-        (c.nomChauffeur && c.nomChauffeur.toLowerCase().includes(terme)) ||
-        (c.prenomChauffeur && c.prenomChauffeur.toLowerCase().includes(terme)) ||
-        (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
-        (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme)) ||
-        (c.destination && c.destination.toLowerCase().includes(terme)) ||
-        (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme))
-      );
-    }
-
-    if (this.startDate || this.endDate) {
-      const start = this.startDate ? new Date(this.startDate) : new Date(0);
-      const end = this.endDate ? new Date(this.endDate) : new Date();
-      if (this.endDate) {
-        end.setHours(23, 59, 59, 999);
-      }
-
-      filtres = filtres.filter(c => {
-        if (!c.dateEntree) return false;
-        const dateEntree = new Date(c.dateEntree);
-        return dateEntree >= start && dateEntree <= end;
+  /**
+   * Formate une date pour l'affichage (IDENTIQUE À L'ADMIN)
+   */
+  formatDateDisplay(date: string | Date): string {
+    if (!date) return 'Date inconnue';
+    
+    try {
+      const dateObj = new Date(date);
+      return dateObj.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       });
+    } catch (error) {
+      console.error('❌ Erreur formatage date :', error);
+      return 'Date invalide';
     }
-
-    this.camionsFiltres = filtres;
-    this.calculerPagination();
   }
 
-  // ✅ STATISTIQUES AVANCÉES
+  /**
+   * ✅ MÉTHODES DE NOTIFICATION AMÉLIORÉES (IDENTIQUE À L'ADMIN)
+   */
+
+  /**
+   * Affiche une notification de succès
+   */
+  private afficherNotificationSucces(message: string): void {
+    console.log('✅ SUCCESS:', message);
+    this.creerNotificationToast(message, 'success');
+  }
+
+  /**
+   * Affiche une notification d'erreur
+   */
+  private afficherNotificationErreur(message: string): void {
+    console.error('❌ ERROR:', message);
+    this.creerNotificationToast(message, 'error');
+  }
+
+  /**
+   * Crée une notification toast personnalisée et moderne (IDENTIQUE À L'ADMIN)
+   */
+  private creerNotificationToast(message: string, type: 'success' | 'error'): void {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-24 right-6 z-[9999] px-6 py-4 rounded-xl shadow-2xl transform translate-x-full transition-all duration-500 max-w-md ${
+      type === 'success' 
+        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
+        : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
+    }`;
+    
+    toast.innerHTML = `
+      <div class="flex items-center gap-3">
+        <div class="flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ${type === 'success' 
+              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+              : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+            }
+          </svg>
+        </div>
+        <span class="font-medium text-sm">${message}</span>
+        <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white/80 hover:text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animation d'entrée
+    setTimeout(() => {
+      toast.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Animation de sortie et suppression automatique
+    setTimeout(() => {
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 500);
+    }, 4000);
+  }
+
+  /**
+   * ✅ MÉTHODES SUPPLÉMENTAIRES (IDENTIQUE À L'ADMIN)
+   */
+
+  /**
+   * Rafraîchit toutes les données
+   */
+  rafraichirDonnees(): void {
+    console.log('🔄 Rafraîchissement des données...');
+    this.chargerCamions();
+  }
+
+  /**
+   * Exporte les statistiques générales
+   */
+  exporterStatistiques(): void {
+    console.log('📊 Export des statistiques...');
+    
+    const stats = {
+      'Total camions': this.camions.length,
+      'Camions présents': this.getCamionsPresents(),
+      'Camions sortis': this.getCamionsSortis(),
+      'Taux de sortie': `${((this.getCamionsSortis() / this.camions.length) * 100).toFixed(1)}%`,
+      'Prestations extérieures': this.getCamionsByDestination('PRESTATION_EXTERIEURE').length,
+      'Livraisons finales': this.getCamionsByDestination('LIVRAISON_FINALE').length,
+      'Camions au park': this.getCamionsByDestination('PARK').length,
+      'Date export': new Date().toLocaleString('fr-FR'),
+      'Exporté par': 'Responsable'
+    };
+
+    const worksheet = XLSX.utils.json_to_sheet([stats]);
+    const workbook = { Sheets: { 'Statistiques': worksheet }, SheetNames: ['Statistiques'] };
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    
+    const fileName = `statistiques_camions_responsable_${new Date().toISOString().split('T')[0]}.xlsx`;
+    saveAs(blob, fileName);
+    
+    this.afficherNotificationSucces('Statistiques exportées');
+  }
+
+  /**
+   * ✅ MÉTHODES DE VALIDATION (IDENTIQUE À L'ADMIN)
+   */
+  private validerDonneesCamion(camion: any): boolean {
+    return !!(
+      camion &&
+      camion.marque &&
+      camion.modele &&
+      camion.numeroChassis &&
+      camion.numeroChassis.length >= 5
+    );
+  }
+
+  private validerDateFormat(dateStr: string): boolean {
+    if (!dateStr) return false;
+    const date = new Date(dateStr);
+    return !isNaN(date.getTime());
+  }
+
+  /**
+   * ✅ MÉTHODES DE RECHERCHE AVANCÉE (IDENTIQUE À L'ADMIN)
+   */
+  rechercherParChassis(chassis: string): Camion | undefined {
+    return this.camions.find(c => 
+      c.numeroChassis.toLowerCase().includes(chassis.toLowerCase())
+    );
+  }
+
+  rechercherParChauffeur(nom: string): Camion[] {
+    const terme = nom.toLowerCase();
+    return this.camions.filter(c =>
+      (c.nomChauffeur && c.nomChauffeur.toLowerCase().includes(terme)) ||
+      (c.prenomChauffeur && c.prenomChauffeur.toLowerCase().includes(terme)) ||
+      (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
+      (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme))
+    );
+  }
+
+  /**
+   * ✅ MÉTHODES DE STATISTIQUES AVANCÉES (IDENTIQUE À L'ADMIN)
+   */
   getTotalCamions(): number {
     return this.camions.length;
   }
@@ -763,9 +889,11 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     return `${moyenne}h`;
   }
 
-  // ✅ MÉTHODES D'AFFICHAGE COMPACTES
+  /**
+   * ✅ MÉTHODES D'AFFICHAGE (IDENTIQUE À L'ADMIN)
+   */
   formatDureePresence(camion: Camion): string {
-    if (!camion.dateEntree) return '-';
+    if (!camion.dateEntree) return 'Non définie';
     
     const entree = new Date(camion.dateEntree);
     const sortie = camion.dateSortie ? new Date(camion.dateSortie) : new Date();
@@ -790,95 +918,81 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffHours / 24);
     
-    // Format ultra-compact pour les cartes
     if (diffDays > 0) {
       return `${diffDays}j`;
     }
     return `${diffHours}h`;
   }
 
-  // ✅ MÉTHODES DE RESPONSIVE DESIGN POUR 5 CARTES PAR LIGNE
-  getCartesParLigne(): number {
-    const width = window.innerWidth;
-    
-    if (width >= 1536) return 5; // XL et plus : 5 cartes
-    if (width >= 1280) return 4; // Large : 4 cartes
-    if (width >= 1024) return 3; // Medium : 3 cartes
-    if (width >= 768) return 2;  // Small : 2 cartes
-    return 1; // Mobile : 1 carte
+  getUserInitials(camion: Camion): string {
+    if (!camion.marque || !camion.modele) return '??';
+    return (camion.marque[0] + camion.modele[0]).toUpperCase();
   }
 
-  ajusterItemsPerPageSelonEcran(): void {
-    const cartesParLigne = this.getCartesParLigne();
-    const lignesOptimales = 2; // 2 lignes par défaut pour avoir 10 cartes
-    const nouveauItemsPerPage = cartesParLigne * lignesOptimales;
-    
-    // S'assurer qu'on a au minimum 10 cartes par page
-    const itemsPerPageAjuste = Math.max(10, nouveauItemsPerPage);
-    
-    if (itemsPerPageAjuste !== this.itemsPerPage) {
-      console.log(`📱 Ajustement pour écran: ${cartesParLigne} cartes/ligne → ${itemsPerPageAjuste} items/page`);
-      this.itemsPerPage = itemsPerPageAjuste;
-      this.currentPage = 1;
-      this.calculerPagination();
+  /**
+   * ✅ MÉTHODES D'INFORMATION POUR CARTES (IDENTIQUE À L'ADMIN)
+   */
+  getStatutCouleur(statut: 'ENTREE' | 'SORTIE'): string {
+    return statut === 'ENTREE' ? 'text-green-600' : 'text-red-600';
+  }
+
+  getBadgeStatutClassComplete(statut: 'ENTREE' | 'SORTIE'): string {
+    return statut === 'ENTREE' 
+      ? 'bg-green-100 text-green-800 border-green-200' 
+      : 'bg-red-100 text-red-800 border-red-200';
+  }
+
+  /**
+   * ✅ GETTERS POUR L'INTERFACE (IDENTIQUE À L'ADMIN)
+   */
+  get isFirstPage(): boolean {
+    return this.currentPage === 1;
+  }
+
+  get isLastPage(): boolean {
+    return this.currentPage === this.pages.length || this.pages.length === 0;
+  }
+
+  get totalPages(): number {
+    return this.pages.length;
+  }
+
+  get paginationInfo(): string {
+    const start = (this.currentPage - 1) * this.itemsPerPage + 1;
+    const end = Math.min(this.currentPage * this.itemsPerPage, this.camionsFiltres.length);
+    return `${start}-${end} sur ${this.camionsFiltres.length}`;
+  }
+
+  get hasSelection(): boolean {
+    return this.selectedCamions.length > 0;
+  }
+
+  /**
+   * ✅ MÉTHODES DE NAVIGATION OPTIMISÉES (IDENTIQUE À L'ADMIN)
+   */
+  goToFirstPage(): void {
+    this.setPage(1);
+  }
+
+  goToLastPage(): void {
+    this.setPage(this.pages.length);
+  }
+
+  goToPreviousPage(): void {
+    if (!this.isFirstPage) {
+      this.setPage(this.currentPage - 1);
     }
   }
 
-  // ✅ MÉTHODES DE GESTION D'ÉVÉNEMENTS
-  onWindowResize(): void {
-    // Debounce pour éviter trop d'appels
-    clearTimeout(this.resizeTimeout);
-    this.resizeTimeout = setTimeout(() => {
-      this.ajusterItemsPerPageSelonEcran();
-    }, 250);
-  }
-
-  // ✅ MÉTHODES DE SAUVEGARDE D'ÉTAT
-  sauvegarderEtat(): void {
-    const etat = {
-      currentPage: this.currentPage,
-      itemsPerPage: this.itemsPerPage,
-      searchTerm: this.searchTerm,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      filtreStatut: this.filtreStatut,
-      filtreDestination: this.filtreDestination,
-      selectedCamions: this.selectedCamions.map(c => c.id),
-      timestamp: Date.now()
-    };
-    
-    this.cacherResultat('etat_interface_responsable', etat);
-    console.log('💾 État interface responsable sauvegardé');
-  }
-
-  restaurerEtat(): void {
-    const etat = this.obtenirCache('etat_interface_responsable');
-    if (!etat) return;
-    
-    try {
-      this.currentPage = etat.currentPage || 1;
-      this.itemsPerPage = etat.itemsPerPage || 10; // ✅ Défaut 10 cartes
-      this.searchTerm = etat.searchTerm || '';
-      this.startDate = etat.startDate || '';
-      this.endDate = etat.endDate || '';
-      this.filtreStatut = etat.filtreStatut || 'TOUS';
-      this.filtreDestination = etat.filtreDestination || 'TOUS';
-      
-      // Restaurer la sélection
-      if (etat.selectedCamions && Array.isArray(etat.selectedCamions)) {
-        this.selectedCamions = this.camions.filter(c => 
-          etat.selectedCamions.includes(c.id)
-        );
-      }
-      
-      console.log('🔄 État interface responsable restauré');
-      this.appliquerTousFiltres();
-    } catch (e) {
-      console.warn('⚠️ Erreur lors de la restauration de l\'état:', e);
+  goToNextPage(): void {
+    if (!this.isLastPage) {
+      this.setPage(this.currentPage + 1);
     }
   }
 
-  // ✅ MÉTHODES DE CACHE OPTIMISÉES
+  /**
+   * ✅ MÉTHODES DE CACHE OPTIMISÉES (IDENTIQUE À L'ADMIN)
+   */
   private cacherResultat(key: string, data: any): void {
     try {
       const cacheKey = `camion_responsable_cache_${key}`;
@@ -913,154 +1027,113 @@ export class ResponsableLivraisonComponent implements OnInit, OnDestroy, AfterVi
     }
   }
 
-  // ✅ MÉTHODES DE GESTION D'ERREURS
-  private gererErreurChargement(error: any): void {
-    console.error('❌ Erreur lors du chargement:', error);
-    
-    // Réinitialiser l'état
-    this.loading = false;
-    this.camions = [];
-    this.camionsFiltres = [];
-    
-    // Optionnel: retry automatique après délai
-    setTimeout(() => {
-      if (this.camions.length === 0) {
-        console.log('🔄 Tentative de rechargement automatique...');
-        this.chargerCamions();
-      }
-    }, 5000);
+  /**
+   * ✅ MÉTHODES DE DIAGNOSTIC SYSTÈME (IDENTIQUE À L'ADMIN)
+   */
+  diagnostiquerSysteme(): void {
+    console.log('🔧 DIAGNOSTIC SYSTÈME - RESPONSABLE LIVRAISONS');
+    console.log('================================================');
+    console.log('Camions chargés:', this.camions.length);
+    console.log('Camions filtrés:', this.camionsFiltres.length);
+    console.log('Page courante:', this.currentPage);
+    console.log('Items par page:', this.itemsPerPage);
+    console.log('Total pages:', this.pages.length);
+    console.log('Camions visibles:', this.camionsPage.length);
+    console.log('Camions sélectionnés:', this.selectedCamions.length);
+    console.log('Recherche active:', this.searchTerm || 'Aucune');
+    console.log('Filtre date:', this.startDate && this.endDate ? `${this.startDate} → ${this.endDate}` : 'Aucun');
+    console.log('Présents:', this.getCamionsPresents());
+    console.log('Sortis:', this.getCamionsSortis());
+    console.log('Prestations:', this.getCamionsByDestination('PRESTATION_EXTERIEURE').length);
+    console.log('User Role: RESPONSABLE');
+    console.log('================================================');
   }
 
-  // ✅ MÉTHODES D'OPTIMISATION FINALE
-  private optimiserAffichage(): void {
-    // Optimiser selon la taille de l'écran
-    this.ajusterItemsPerPageSelonEcran();
-    
-    // Valider l'état
-    if (!this.validerEtatInterface()) {
-      this.calculerPagination();
-    }
-    
-    // Optimiser les performances si nécessaire
-    this.optimiserPerformance();
-  }
-
-  // ✅ MÉTHODES DE VALIDATION D'INTERFACE
-  private validerEtatInterface(): boolean {
-    // Vérifier la cohérence de l'état
-    if (this.currentPage < 1) {
-      this.currentPage = 1;
-      return false;
-    }
-    
-    if (this.currentPage > this.pages.length && this.pages.length > 0) {
-      this.currentPage = this.pages.length;
-      return false;
-    }
-    
-    if (this.itemsPerPage < 10) {
-      this.itemsPerPage = 10; // ✅ Minimum 10 cartes par page
-      return false;
-    }
-    
-    if (this.itemsPerPage > 100) {
-      this.itemsPerPage = 50; // ✅ Maximum 50 cartes par page
-      return false;
-    }
-    
-    return true;
-  }
-
-  // ✅ MÉTHODES DE PERFORMANCE POUR CARTES COMPACTES
-  private optimiserPerformance(): void {
-    // Limitation du nombre d'éléments affichés pour améliorer les performances
-    if (this.camionsFiltres.length > 1000) {
-      console.warn('⚠️ Grand nombre de camions, optimisation des performances recommandée');
-      // Possibilité d'implémenter la virtualisation pour de très grandes listes
-    }
-  }
-
-  // ✅ GETTERS POUR L'INTERFACE
-  get isFirstPage(): boolean {
-    return this.currentPage === 1;
-  }
-
-  get isLastPage(): boolean {
-    return this.currentPage === this.pages.length || this.pages.length === 0;
-  }
-
-  get totalPages(): number {
-    return this.pages.length;
-  }
-
-  get paginationInfo(): string {
-    const start = (this.currentPage - 1) * this.itemsPerPage + 1;
-    const end = Math.min(this.currentPage * this.itemsPerPage, this.camionsFiltres.length);
-    return `${start}-${end} sur ${this.camionsFiltres.length}`;
-  }
-
-  get hasSelection(): boolean {
-    return this.selectedCamions.length > 0;
-  }
-
-  // ✅ MÉTHODES DE NAVIGATION OPTIMISÉES
-  goToFirstPage(): void {
-    this.setPage(1);
-  }
-
-  goToLastPage(): void {
-    this.setPage(this.pages.length);
-  }
-
-  goToPreviousPage(): void {
-    if (!this.isFirstPage) {
-      this.setPage(this.currentPage - 1);
-    }
-  }
-
-  goToNextPage(): void {
-    if (!this.isLastPage) {
-      this.setPage(this.currentPage + 1);
-    }
-  }
-
-  // ✅ MÉTHODES FINALES POUR CONFIGURATION
-  getVersionInterface(): string {
-    return 'Responsable 5 Cartes par Ligne v1.0';
-  }
-
-  getConfigurationActuelle(): any {
-    return {
-      version: this.getVersionInterface(),
-      mode: '5_cartes_par_ligne_responsable',
-      pagination: {
-        itemsPerPage: this.itemsPerPage,
-        currentPage: this.currentPage,
-        totalPages: this.pages.length
-      },
-      filtres: {
-        searchTerm: this.searchTerm,
-        dateRange: this.startDate && this.endDate ? `${this.startDate} - ${this.endDate}` : null,
-        statut: this.filtreStatut,
-        destination: this.filtreDestination
-      },
-      selection: {
-        count: this.selectedCamions.length,
-        percentage: this.camionsFiltres.length > 0 ? Math.round((this.selectedCamions.length / this.camionsFiltres.length) * 100) : 0
-      },
-      performance: {
-        totalCamions: this.camions.length,
-        camionsFiltres: this.camionsFiltres.length,
-        cartesParLigne: this.getCartesParLigne(),
-        viewport: `${window.innerWidth}x${window.innerHeight}`
-      }
+  /**
+   * ✅ MÉTHODES DE SAUVEGARDE D'ÉTAT (IDENTIQUE À L'ADMIN)
+   */
+  private sauvegarderEtat(): void {
+    const etat = {
+      currentPage: this.currentPage,
+      itemsPerPage: this.itemsPerPage,
+      searchTerm: this.searchTerm,
+      startDate: this.startDate,
+      endDate: this.endDate,
+      selectedCamions: this.selectedCamions.map(c => c.id),
+      timestamp: Date.now(),
+      userRole: 'RESPONSABLE'
     };
+    
+    this.cacherResultat('etat_interface', etat);
+    console.log('💾 État interface responsable sauvegardé');
   }
 
-  // ✅ MÉTHODE D'INFORMATION SYSTÈME FINALE
-  afficherInfoSysteme(): void {
-    const config = this.getConfigurationActuelle();
-    console.table(config);
-    console.log('📊 Configuration responsable actuelle:', config);
+  private restaurerEtat(): void {
+    const etat = this.obtenirCache('etat_interface');
+    if (!etat) return;
+    
+    try {
+      this.currentPage = etat.currentPage || 1;
+      this.itemsPerPage = etat.itemsPerPage || 16;
+      this.searchTerm = etat.searchTerm || '';
+      this.startDate = etat.startDate || '';
+      this.endDate = etat.endDate || '';
+      
+      // Restaurer la sélection
+      if (etat.selectedCamions && Array.isArray(etat.selectedCamions)) {
+        this.selectedCamions = this.camions.filter(c => 
+          etat.selectedCamions.includes(c.id)
+        );
+      }
+      
+      console.log('🔄 État interface responsable restauré');
+      this.appliquerTousFiltres();
+    } catch (e) {
+      console.warn('⚠️ Erreur lors de la restauration de l\'état:', e);
+    }
+  }
+
+  /**
+   * ✅ MÉTHODES DE NETTOYAGE (IDENTIQUE À L'ADMIN)
+   */
+  private nettoyerCache(): void {
+    try {
+      Object.keys(sessionStorage).forEach(key => {
+        if (key.startsWith('camion_responsable_') && key.includes('_cache_')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+      console.log('🧹 Cache responsable nettoyé');
+    } catch (e) {
+      console.warn('⚠️ Impossible de nettoyer le cache');
+    }
+  }
+
+  /**
+   * ✅ Cleanup lors de la destruction du composant (IDENTIQUE À L'ADMIN)
+   */
+  ngOnDestroy(): void {
+    // Sauvegarder l'état avant destruction
+    this.sauvegarderEtat();
+    
+    // Nettoyer les subscriptions
+    this.subscriptions.forEach(sub => {
+      if (sub && typeof sub.unsubscribe === 'function') {
+        sub.unsubscribe();
+      }
+    });
+    
+    // Nettoyer les notifications toast restantes
+    const toasts = document.querySelectorAll('[class*="fixed top-24 right-6"]');
+    toasts.forEach(toast => {
+      if (document.body.contains(toast)) {
+        document.body.removeChild(toast);
+      }
+    });
+    
+    // Nettoyer le cache
+    this.nettoyerCache();
+    
+    console.log('🧹 Nettoyage du composant responsable livraison');
   }
 }

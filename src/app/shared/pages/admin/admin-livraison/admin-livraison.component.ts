@@ -27,7 +27,6 @@ interface Camion {
   // Données de sortie
   dateSortie?: string;
   dateSortieFormatee?: string;
-  typeCamion?: string;
   destination?: string;
   typeDestination?: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE';
   nomChauffeurLivraison?: string;
@@ -94,11 +93,12 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   startDate: string = '';
   endDate: string = '';
+  filtreDestination: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE' | null = null;
   loading: boolean = false;
 
-  // ✅ PAGINATION (IDENTIQUE À ADMIN-VISITEUR)
+  // ✅ PAGINATION MODIFIÉE POUR 12 CARTES
   currentPage: number = 1;
-  itemsPerPage: number = 16;
+  itemsPerPage: number = 12; // ✅ CHANGÉ DE 16 À 12
 
   // ✅ GESTION DES ERREURS
   erreurExport: boolean = false;
@@ -109,7 +109,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   // ✅ SUBSCRIPTIONS
   private subscriptions: any[] = [];
 
-  // ✅ COULEURS AVATAR PRÉDÉFINIES (IDENTIQUE À ADMIN-VISITEUR)
+  // ✅ COULEURS AVATAR PRÉDÉFINIES
   private avatarColors = [
     'linear-gradient(135deg, #f59e0b 0%, #ea580c 100%)',
     'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
@@ -136,7 +136,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ Initialise les animations d'entrée (IDENTIQUE)
+   * ✅ Initialise les animations d'entrée
    */
   private initAnimations(): void {
     setTimeout(() => {
@@ -242,66 +242,52 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     this.subscriptions.push(subscription);
   }
 
-  // ✅ RECHERCHE AMÉLIORÉE (IDENTIQUE À ADMIN-VISITEUR)
+  // ✅ NOUVELLE MÉTHODE DE FILTRAGE PAR DESTINATION
+  filtrerParDestination(destination: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE'): void {
+    console.log('🎯 Filtrage par destination :', destination);
+    
+    if (this.filtreDestination === destination) {
+      // Si on clique sur le même filtre, on le désactive
+      this.filtreDestination = null;
+      console.log('❌ Filtre destination désactivé');
+    } else {
+      this.filtreDestination = destination;
+      console.log('✅ Filtre destination activé :', destination);
+    }
+    
+    this.currentPage = 1;
+    this.appliquerTousFiltres();
+    
+    const destinationLabels = {
+      'PARK': 'Park',
+      'LIVRAISON_FINALE': 'Livraison finale',
+      'PRESTATION_EXTERIEURE': 'Prestation extérieure'
+    };
+    
+    if (this.filtreDestination) {
+      this.afficherNotificationSucces(`Filtre appliqué : ${destinationLabels[this.filtreDestination]}`);
+    } else {
+      this.afficherNotificationSucces('Filtre destination supprimé');
+    }
+  }
+
+  // ✅ RECHERCHE AMÉLIORÉE
   rechercher(): void {
     this.currentPage = 1;
     const terme = this.searchTerm.toLowerCase().trim();
     
     console.log('🔍 Recherche avec terme :', terme);
-    
-    if (!terme) {
-      this.appliquerTousFiltres();
-      return;
-    }
-
-    this.camionsFiltres = this.camions.filter(c =>
-      c.numeroChassis.toLowerCase().includes(terme) ||
-      c.marque.toLowerCase().includes(terme) ||
-      c.modele.toLowerCase().includes(terme) ||
-      (c.nomChauffeur && c.nomChauffeur.toLowerCase().includes(terme)) ||
-      (c.prenomChauffeur && c.prenomChauffeur.toLowerCase().includes(terme)) ||
-      (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
-      (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme)) ||
-      (c.destination && c.destination.toLowerCase().includes(terme)) ||
-      (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme)) ||
-      (c.typeCamion && c.typeCamion.toLowerCase().includes(terme))
-    );
-
-    this.appliquerFiltresDate();
-    console.log('✅ Résultats de recherche :', this.camionsFiltres.length);
+    this.appliquerTousFiltres();
   }
 
-  // ✅ FILTRAGE PAR DATE AMÉLIORÉ (IDENTIQUE)
+  // ✅ FILTRAGE PAR DATE
   filtrerParDate(): void {
     this.currentPage = 1;
     console.log('📅 Filtrage par date :', this.startDate, '->', this.endDate);
-    this.appliquerFiltresDate();
+    this.appliquerTousFiltres();
   }
 
-  private appliquerFiltresDate(): void {
-    if (!this.startDate || !this.endDate) {
-      if (this.searchTerm) {
-        this.rechercher();
-      } else {
-        this.camionsFiltres = [...this.camions];
-      }
-      return;
-    }
-
-    const start = new Date(this.startDate);
-    const end = new Date(this.endDate);
-    end.setHours(23, 59, 59, 999);
-
-    const listeBase = this.searchTerm ? this.camionsFiltres : this.camions;
-    
-    this.camionsFiltres = listeBase.filter(c => {
-      const dateEntree = new Date(c.dateEntree || '');
-      return dateEntree >= start && dateEntree <= end;
-    });
-
-    console.log('✅ Résultats après filtrage par date :', this.camionsFiltres.length);
-  }
-
+  // ✅ MÉTHODE UNIFIÉE POUR APPLIQUER TOUS LES FILTRES
   private appliquerTousFiltres(): void {
     let resultat = [...this.camions];
 
@@ -317,8 +303,14 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
         (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
         (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme)) ||
         (c.destination && c.destination.toLowerCase().includes(terme)) ||
-        (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme)) ||
-        (c.typeCamion && c.typeCamion.toLowerCase().includes(terme))
+        (c.nomEntreprise && c.nomEntreprise.toLowerCase().includes(terme))
+      );
+    }
+
+    // Filtrage par destination
+    if (this.filtreDestination) {
+      resultat = resultat.filter(c => 
+        c.statut === 'SORTIE' && c.typeDestination === this.filtreDestination
       );
     }
 
@@ -335,9 +327,10 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     }
 
     this.camionsFiltres = resultat;
+    console.log('✅ Résultats après application de tous les filtres :', this.camionsFiltres.length);
   }
 
-  // ✅ GESTION SÉLECTION AMÉLIORÉE (IDENTIQUE)
+  // ✅ GESTION SÉLECTION
   toggleSelection(camion: Camion): void {
     if (this.isSelected(camion)) {
       this.selectedCamions = this.selectedCamions.filter(c => c.id !== camion.id);
@@ -368,26 +361,14 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ✅ STATISTIQUES AMÉLIORÉES
-  getCamionsByStatut(statut: 'ENTREE' | 'SORTIE'): Camion[] {
-    return this.camions.filter(c => c.statut === statut);
-  }
-
+  // ✅ STATISTIQUES POUR LES NOUVELLES CARTES
   getCamionsByDestination(destination: 'PARK' | 'LIVRAISON_FINALE' | 'PRESTATION_EXTERIEURE'): Camion[] {
     return this.camions.filter(c => 
       c.statut === 'SORTIE' && c.typeDestination === destination
     );
   }
 
-  getCamionsPresents(): number {
-    return this.getCamionsByStatut('ENTREE').length;
-  }
-
-  getCamionsSortis(): number {
-    return this.getCamionsByStatut('SORTIE').length;
-  }
-
-  // ✅ EXPORT EXCEL AMÉLIORÉ (IDENTIQUE STRUCTURE)
+  // ✅ EXPORT EXCEL
   exporterExcel(exportSelected: boolean): void {
     this.erreurExport = false;
     const dataToExport = exportSelected ? this.selectedCamions : this.camionsFiltres;
@@ -412,7 +393,6 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       'N° Châssis': c.numeroChassis,
       'Marque': c.marque,
       'Modèle': c.modele,
-      'Type Camion': c.typeCamion || 'Standard',
       'Chauffeur Entrée': this.formatNomComplet(c.nomChauffeur, c.prenomChauffeur),
       'Date Entrée': c.dateEntreeFormatee || 'Non définie',
       'Date Sortie': c.dateSortieFormatee || 'Non sorti',
@@ -430,9 +410,9 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       
       // Configuration des largeurs de colonnes
       const columnWidths = [
-        { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 25 },
-        { wch: 20 }, { wch: 20 }, { wch: 12 }, { wch: 20 }, { wch: 25 },
-        { wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 15 }
+        { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 25 }, { wch: 20 },
+        { wch: 20 }, { wch: 12 }, { wch: 20 }, { wch: 25 }, { wch: 25 },
+        { wch: 15 }, { wch: 25 }, { wch: 15 }
       ];
       worksheet['!cols'] = columnWidths;
 
@@ -545,13 +525,14 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ✅ RÉINITIALISATION AMÉLIORÉE (IDENTIQUE)
+  // ✅ RÉINITIALISATION AMÉLIORÉE
   resetFiltres(): void {
     console.log('🔄 Réinitialisation des filtres...');
     
     this.searchTerm = '';
     this.startDate = '';
     this.endDate = '';
+    this.filtreDestination = null; // ✅ NOUVEAU : Reset du filtre destination
     this.selectedCamions = [];
     this.camionsFiltres = [...this.camions];
     this.currentPage = 1;
@@ -568,7 +549,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     this.chargerCamions();
   }
 
-  // ✅ PAGINATION AMÉLIORÉE (IDENTIQUE)
+  // ✅ PAGINATION AMÉLIORÉE POUR 12 CARTES
   get pages(): number[] {
     const total = Math.ceil(this.camionsFiltres.length / this.itemsPerPage);
     return Array.from({ length: total }, (_, i) => i + 1);
@@ -611,7 +592,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ✅ FILTRES PRÉDÉFINIS AMÉLIORÉS (IDENTIQUE)
+  // ✅ FILTRES PRÉDÉFINIS AMÉLIORÉS
   filtrerParPeriodePredefinie(periode: 'aujourdhui' | 'hier' | 'semaine' | 'mois'): void {
     console.log('📅 Filtre prédéfini :', periode);
     
@@ -650,7 +631,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
 
     this.startDate = debut.toISOString().split('T')[0];
     this.endDate = fin.toISOString().split('T')[0];
-    this.filtrerParDate();
+    this.appliquerTousFiltres();
     
     const periodeLabels = {
       'aujourdhui': 'aujourd\'hui',
@@ -662,13 +643,13 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     this.afficherNotificationSucces(`Filtre appliqué : ${periodeLabels[periode]}`);
   }
 
-  // ✅ OPTIMISATION PERFORMANCE (IDENTIQUE)
+  // ✅ OPTIMISATION PERFORMANCE
   trackByCamion(index: number, camion: Camion): any {
     return camion.id || camion.numeroChassis;
   }
 
   /**
-   * ✅ NOUVELLES MÉTHODES UTILITAIRES POUR L'INTERFACE (IDENTIQUE STRUCTURE)
+   * ✅ MÉTHODES UTILITAIRES POUR L'INTERFACE
    */
 
   /**
@@ -718,7 +699,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ MÉTHODES DE NOTIFICATION AMÉLIORÉES (IDENTIQUE À ADMIN-VISITEUR)
+   * ✅ MÉTHODES DE NOTIFICATION AMÉLIORÉES
    */
 
   /**
@@ -738,7 +719,7 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Crée une notification toast personnalisée et moderne (IDENTIQUE)
+   * Crée une notification toast personnalisée et moderne
    */
   private creerNotificationToast(message: string, type: 'success' | 'error'): void {
     const toast = document.createElement('div');
@@ -805,9 +786,6 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     
     const stats = {
       'Total camions': this.camions.length,
-      'Camions présents': this.getCamionsPresents(),
-      'Camions sortis': this.getCamionsSortis(),
-      'Taux de sortie': `${((this.getCamionsSortis() / this.camions.length) * 100).toFixed(1)}%`,
       'Prestations extérieures': this.getCamionsByDestination('PRESTATION_EXTERIEURE').length,
       'Livraisons finales': this.getCamionsByDestination('LIVRAISON_FINALE').length,
       'Camions au park': this.getCamionsByDestination('PARK').length,
@@ -823,128 +801,6 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
     saveAs(blob, fileName);
     
     this.afficherNotificationSucces('Statistiques exportées');
-  }
-
-  /**
-   * ✅ MÉTHODES DE VALIDATION
-   */
-  private validerDonneesCamion(camion: any): boolean {
-    return !!(
-      camion &&
-      camion.marque &&
-      camion.modele &&
-      camion.numeroChassis &&
-      camion.numeroChassis.length >= 5
-    );
-  }
-
-  private validerDateFormat(dateStr: string): boolean {
-    if (!dateStr) return false;
-    const date = new Date(dateStr);
-    return !isNaN(date.getTime());
-  }
-
-  /**
-   * ✅ MÉTHODES DE RECHERCHE AVANCÉE
-   */
-  rechercherParChassis(chassis: string): Camion | undefined {
-    return this.camions.find(c => 
-      c.numeroChassis.toLowerCase().includes(chassis.toLowerCase())
-    );
-  }
-
-  rechercherParChauffeur(nom: string): Camion[] {
-    const terme = nom.toLowerCase();
-    return this.camions.filter(c =>
-      (c.nomChauffeur && c.nomChauffeur.toLowerCase().includes(terme)) ||
-      (c.prenomChauffeur && c.prenomChauffeur.toLowerCase().includes(terme)) ||
-      (c.nomChauffeurLivraison && c.nomChauffeurLivraison.toLowerCase().includes(terme)) ||
-      (c.prenomChauffeurLivraison && c.prenomChauffeurLivraison.toLowerCase().includes(terme))
-    );
-  }
-
-  /**
-   * ✅ MÉTHODES DE STATISTIQUES AVANCÉES
-   */
-  getTotalCamions(): number {
-    return this.camions.length;
-  }
-
-  getPourcentagePresents(): number {
-    if (this.camions.length === 0) return 0;
-    return Math.round((this.getCamionsByStatut('ENTREE').length / this.camions.length) * 100);
-  }
-
-  getPourcentageSortis(): number {
-    if (this.camions.length === 0) return 0;
-    return Math.round((this.getCamionsByStatut('SORTIE').length / this.camions.length) * 100);
-  }
-
-  getTempsPresenceMoyen(): string {
-    const camionsPresents = this.getCamionsByStatut('ENTREE');
-    if (camionsPresents.length === 0) return '0h';
-    
-    const totalHeures = camionsPresents.reduce((sum, camion) => {
-      if (!camion.dateEntree) return sum;
-      const diffMs = new Date().getTime() - new Date(camion.dateEntree).getTime();
-      return sum + Math.floor(diffMs / (1000 * 60 * 60));
-    }, 0);
-    
-    const moyenne = Math.floor(totalHeures / camionsPresents.length);
-    return `${moyenne}h`;
-  }
-
-  /**
-   * ✅ MÉTHODES D'AFFICHAGE
-   */
-  formatDureePresence(camion: Camion): string {
-    if (!camion.dateEntree) return 'Non définie';
-    
-    const entree = new Date(camion.dateEntree);
-    const sortie = camion.dateSortie ? new Date(camion.dateSortie) : new Date();
-    
-    const diffMs = sortie.getTime() - entree.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-    
-    if (diffDays > 0) {
-      return `${diffDays}j ${diffHours % 24}h`;
-    }
-    return `${diffHours}h`;
-  }
-
-  formatDureeCompacte(camion: Camion): string {
-    if (!camion.dateEntree) return '-';
-    
-    const entree = new Date(camion.dateEntree);
-    const sortie = camion.dateSortie ? new Date(camion.dateSortie) : new Date();
-    
-    const diffMs = sortie.getTime() - entree.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-    
-    if (diffDays > 0) {
-      return `${diffDays}j`;
-    }
-    return `${diffHours}h`;
-  }
-
-  getUserInitials(camion: Camion): string {
-    if (!camion.marque || !camion.modele) return '??';
-    return (camion.marque[0] + camion.modele[0]).toUpperCase();
-  }
-
-  /**
-   * ✅ MÉTHODES D'INFORMATION POUR CARTES
-   */
-  getStatutCouleur(statut: 'ENTREE' | 'SORTIE'): string {
-    return statut === 'ENTREE' ? 'text-green-600' : 'text-red-600';
-  }
-
-  getBadgeStatutClassComplete(statut: 'ENTREE' | 'SORTIE'): string {
-    return statut === 'ENTREE' 
-      ? 'bg-green-100 text-green-800 border-green-200' 
-      : 'bg-red-100 text-red-800 border-red-200';
   }
 
   /**
@@ -973,87 +829,6 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ MÉTHODES DE NAVIGATION OPTIMISÉES
-   */
-  goToFirstPage(): void {
-    this.setPage(1);
-  }
-
-  goToLastPage(): void {
-    this.setPage(this.pages.length);
-  }
-
-  goToPreviousPage(): void {
-    if (!this.isFirstPage) {
-      this.setPage(this.currentPage - 1);
-    }
-  }
-
-  goToNextPage(): void {
-    if (!this.isLastPage) {
-      this.setPage(this.currentPage + 1);
-    }
-  }
-
-  /**
-   * ✅ MÉTHODES DE CACHE OPTIMISÉES
-   */
-  private cacherResultat(key: string, data: any): void {
-    try {
-      const cacheKey = `camion_cache_${key}`;
-      sessionStorage.setItem(cacheKey, JSON.stringify({
-        data,
-        timestamp: Date.now(),
-        itemsPerPage: this.itemsPerPage
-      }));
-    } catch (e) {
-      console.warn('⚠️ Impossible de cacher les données');
-    }
-  }
-
-  private obtenirCache(key: string): any {
-    try {
-      const cacheKey = `camion_cache_${key}`;
-      const cached = sessionStorage.getItem(cacheKey);
-      if (!cached) return null;
-      
-      const parsed = JSON.parse(cached);
-      const age = Date.now() - parsed.timestamp;
-      
-      // Cache valide pendant 5 minutes
-      if (age > 5 * 60 * 1000) {
-        sessionStorage.removeItem(cacheKey);
-        return null;
-      }
-      
-      return parsed.data;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /**
-   * ✅ MÉTHODES DE DIAGNOSTIC SYSTÈME
-   */
-  diagnostiquerSysteme(): void {
-    console.log('🔧 DIAGNOSTIC SYSTÈME - ADMIN LIVRAISONS');
-    console.log('==========================================');
-    console.log('Camions chargés:', this.camions.length);
-    console.log('Camions filtrés:', this.camionsFiltres.length);
-    console.log('Page courante:', this.currentPage);
-    console.log('Items par page:', this.itemsPerPage);
-    console.log('Total pages:', this.pages.length);
-    console.log('Camions visibles:', this.camionsPage.length);
-    console.log('Camions sélectionnés:', this.selectedCamions.length);
-    console.log('Recherche active:', this.searchTerm || 'Aucune');
-    console.log('Filtre date:', this.startDate && this.endDate ? `${this.startDate} → ${this.endDate}` : 'Aucun');
-    console.log('Présents:', this.getCamionsPresents());
-    console.log('Sortis:', this.getCamionsSortis());
-    console.log('Prestations:', this.getCamionsByDestination('PRESTATION_EXTERIEURE').length);
-    console.log('===========================================');
-  }
-
-  /**
    * ✅ MÉTHODES DE SAUVEGARDE D'ÉTAT
    */
   private sauvegarderEtat(): void {
@@ -1063,24 +838,38 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       searchTerm: this.searchTerm,
       startDate: this.startDate,
       endDate: this.endDate,
+      filtreDestination: this.filtreDestination,
       selectedCamions: this.selectedCamions.map(c => c.id),
       timestamp: Date.now()
     };
     
-    this.cacherResultat('etat_interface', etat);
-    console.log('💾 État interface sauvegardé');
+    try {
+      sessionStorage.setItem('admin_livraison_etat', JSON.stringify(etat));
+      console.log('💾 État interface sauvegardé');
+    } catch (e) {
+      console.warn('⚠️ Impossible de sauvegarder l\'état');
+    }
   }
 
   private restaurerEtat(): void {
-    const etat = this.obtenirCache('etat_interface');
-    if (!etat) return;
-    
     try {
+      const etatStr = sessionStorage.getItem('admin_livraison_etat');
+      if (!etatStr) return;
+      
+      const etat = JSON.parse(etatStr);
+      
+      // Vérifier que l'état n'est pas trop ancien (1 heure max)
+      if (Date.now() - etat.timestamp > 60 * 60 * 1000) {
+        sessionStorage.removeItem('admin_livraison_etat');
+        return;
+      }
+      
       this.currentPage = etat.currentPage || 1;
-      this.itemsPerPage = etat.itemsPerPage || 16;
+      this.itemsPerPage = etat.itemsPerPage || 12;
       this.searchTerm = etat.searchTerm || '';
       this.startDate = etat.startDate || '';
       this.endDate = etat.endDate || '';
+      this.filtreDestination = etat.filtreDestination || null;
       
       // Restaurer la sélection
       if (etat.selectedCamions && Array.isArray(etat.selectedCamions)) {
@@ -1093,27 +882,12 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
       this.appliquerTousFiltres();
     } catch (e) {
       console.warn('⚠️ Erreur lors de la restauration de l\'état:', e);
+      sessionStorage.removeItem('admin_livraison_etat');
     }
   }
 
   /**
-   * ✅ MÉTHODES DE NETTOYAGE
-   */
-  private nettoyerCache(): void {
-    try {
-      Object.keys(sessionStorage).forEach(key => {
-        if (key.startsWith('camion_') && key.includes('_cache_')) {
-          sessionStorage.removeItem(key);
-        }
-      });
-      console.log('🧹 Cache nettoyé');
-    } catch (e) {
-      console.warn('⚠️ Impossible de nettoyer le cache');
-    }
-  }
-
-  /**
-   * ✅ Cleanup lors de la destruction du composant (IDENTIQUE)
+   * ✅ Cleanup lors de la destruction du composant
    */
   ngOnDestroy(): void {
     // Sauvegarder l'état avant destruction
@@ -1133,9 +907,6 @@ export class AdminLivraisonComponent implements OnInit, OnDestroy {
         document.body.removeChild(toast);
       }
     });
-    
-    // Nettoyer le cache
-    this.nettoyerCache();
     
     console.log('🧹 Nettoyage du composant admin livraison');
   }
