@@ -56,6 +56,38 @@
   z-index: 20;
 }
 
+/* ✅ NOUVEAU: STYLES POUR LES BOUTONS DE FILTRE PAR STATUT */
+.filter-status-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.filter-status-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-status-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Animation pour l'indicateur de statut */
+.filter-status-btn .bg-amber-500 {
+  animation: pulse-amber 2s infinite;
+}
+
+@keyframes pulse-amber {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7; 
+    transform: scale(1.1);
+  }
+}
+
 /* ✅ CONTENU PRINCIPAL AVEC Z-INDEX CONTRÔLÉ */
 .content-container {
   background: white;
@@ -542,6 +574,12 @@
   .visitors-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
+  }
+  
+  /* Responsive pour les filtres de statut */
+  .filter-status-btn {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
   }
 }
 

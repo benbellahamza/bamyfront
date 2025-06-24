@@ -64,9 +64,12 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
   endDate: string = '';
   loading: boolean = false;
 
-  // ✅ PAGINATION
+  // ✅ NOUVEAU: FILTRE PAR STATUT
+  filtreStatut: 'tous' | 'presents' | 'sortis' = 'tous';
+
+  // ✅ PAGINATION - MODIFIÉ POUR 10 ÉLÉMENTS
   currentPage: number = 1;
-  itemsPerPage: number = 16;
+  itemsPerPage: number = 12;
 
   // ✅ GESTION DES ERREURS
   erreurExport: boolean = false;
@@ -132,7 +135,7 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
         this.visiteurs = data.sort((a, b) => 
           new Date(b.dateEntree).getTime() - new Date(a.dateEntree).getTime()
         );
-        this.visiteursFiltres = [...this.visiteurs];
+        this.appliquerTousFiltres();
         this.loading = false;
         
         console.log('✅ Visiteurs chargés :', this.visiteurs.length);
@@ -148,66 +151,47 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
     this.subscriptions.push(subscription);
   }
 
+  // ✅ NOUVEAU: FILTRAGE PAR STATUT
+  filtrerParStatut(statut: 'tous' | 'presents' | 'sortis'): void {
+    console.log('👥 Filtrage par statut :', statut);
+    this.filtreStatut = statut;
+    this.currentPage = 1;
+    this.appliquerTousFiltres();
+    
+    const messages = {
+      'tous': 'Tous les visiteurs affichés',
+      'presents': 'Visiteurs présents affichés',
+      'sortis': 'Visiteurs sortis affichés'
+    };
+    this.afficherNotificationSucces(messages[statut]);
+  }
+
   // ✅ RECHERCHE AMÉLIORÉE
   rechercher(): void {
     this.currentPage = 1;
-    const terme = this.searchTerm.toLowerCase().trim();
-    
-    console.log('🔍 Recherche avec terme :', terme);
-    
-    if (!terme) {
-      this.appliquerTousFiltres();
-      return;
-    }
-
-    this.visiteursFiltres = this.visiteurs.filter(v =>
-      v.nom.toLowerCase().includes(terme) ||
-      v.prenom.toLowerCase().includes(terme) ||
-      v.cin.toLowerCase().includes(terme) ||
-      v.destination.toLowerCase().includes(terme) ||
-      (v.telephone && v.telephone.toLowerCase().includes(terme)) ||
-      (v.typeVisiteur && v.typeVisiteur.toLowerCase().includes(terme))
-    );
-
-    this.appliquerFiltresDate();
-    console.log('✅ Résultats de recherche :', this.visiteursFiltres.length);
+    console.log('🔍 Recherche avec terme :', this.searchTerm);
+    this.appliquerTousFiltres();
   }
 
   // ✅ FILTRAGE PAR DATE AMÉLIORÉ
   filtrerParDate(): void {
     this.currentPage = 1;
     console.log('📅 Filtrage par date :', this.startDate, '->', this.endDate);
-    this.appliquerFiltresDate();
+    this.appliquerTousFiltres();
   }
 
-  private appliquerFiltresDate(): void {
-    if (!this.startDate || !this.endDate) {
-      if (this.searchTerm) {
-        this.rechercher();
-      } else {
-        this.visiteursFiltres = [...this.visiteurs];
-      }
-      return;
-    }
-
-    const start = new Date(this.startDate);
-    const end = new Date(this.endDate);
-    end.setHours(23, 59, 59, 999);
-
-    const listeBase = this.searchTerm ? this.visiteursFiltres : this.visiteurs;
-    
-    this.visiteursFiltres = listeBase.filter(v => {
-      const dateEntree = new Date(v.dateEntree);
-      return dateEntree >= start && dateEntree <= end;
-    });
-
-    console.log('✅ Résultats après filtrage par date :', this.visiteursFiltres.length);
-  }
-
+  // ✅ MÉTHODE UNIFIÉE POUR APPLIQUER TOUS LES FILTRES
   private appliquerTousFiltres(): void {
     let resultat = [...this.visiteurs];
 
-    // Filtrage par terme de recherche
+    // 1. Filtrage par statut
+    if (this.filtreStatut === 'presents') {
+      resultat = resultat.filter(v => !v.dateSortie);
+    } else if (this.filtreStatut === 'sortis') {
+      resultat = resultat.filter(v => v.dateSortie);
+    }
+
+    // 2. Filtrage par terme de recherche
     if (this.searchTerm) {
       const terme = this.searchTerm.toLowerCase().trim();
       resultat = resultat.filter(v =>
@@ -220,7 +204,7 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
       );
     }
 
-    // Filtrage par date
+    // 3. Filtrage par date
     if (this.startDate && this.endDate) {
       const start = new Date(this.startDate);
       const end = new Date(this.endDate);
@@ -233,6 +217,7 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
     }
 
     this.visiteursFiltres = resultat;
+    console.log('✅ Résultats après filtrage :', this.visiteursFiltres.length);
   }
 
   // ✅ GESTION SÉLECTION AMÉLIORÉE
@@ -388,11 +373,12 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
     this.searchTerm = '';
     this.startDate = '';
     this.endDate = '';
+    this.filtreStatut = 'tous';
     this.selectedVisiteurs = [];
-    this.visiteursFiltres = [...this.visiteurs];
     this.currentPage = 1;
     this.erreurExport = false;
     
+    this.appliquerTousFiltres();
     console.log('✅ Filtres réinitialisés');
     this.afficherNotificationSucces('Filtres réinitialisés');
   }
@@ -479,7 +465,7 @@ export class AdminVisiteurComponent implements OnInit, OnDestroy {
 
     this.startDate = debut.toISOString().split('T')[0];
     this.endDate = fin.toISOString().split('T')[0];
-    this.filtrerParDate();
+    this.appliquerTousFiltres();
     
     const periodeLabels = {
       'aujourdhui': 'aujourd\'hui',
