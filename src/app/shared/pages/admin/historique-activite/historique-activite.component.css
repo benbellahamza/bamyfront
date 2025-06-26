@@ -1,33 +1,248 @@
-/* ✅ STYLES SPÉCIFIQUES À L'HISTORIQUE ACTIVITÉ - DESIGN UNIFIÉ OPTIMISÉ POUR PLUS DE LIGNES */
+/* ✅ LAYOUT PRINCIPAL - RESPECT DU FOOTER ET HEADER FIXES */
+.main-content {
+  position: fixed;
+  top: 4rem; /* Header height h-16 = 64px = 4rem */
+  left: 16rem; /* Sidebar width w-64 = 256px = 16rem */
+  right: 0;
+  bottom: 2.5rem; /* Footer height h-10 = 40px = 2.5rem */
+  z-index: 10;
+  overflow-y: auto;
+  background: linear-gradient(to bottom right, #f1f5f9, #e2e8f0);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
 
-/* Animation pour les éléments de navigation */
-.nav-item {
+/* ✅ CONTENEUR PRINCIPAL ULTRA OPTIMISÉ POUR PLUS DE CONTENU */
+.main-container-optimized {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.toolbar-compact {
+  flex-shrink: 0;
+  margin-bottom: 1rem;
+}
+
+.table-container-optimized {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f5f9;
+  overflow: hidden;
+}
+
+/* ✅ STYLES POUR LE TABLEAU ULTRA OPTIMISÉ POUR PLUS DE LIGNES */
+.table-modern {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.table-header-compact {
+  flex-shrink: 0;
+  padding: 0.75rem 1rem;
+  min-height: 3rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table-body-optimized {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.table-header-modern {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  padding: 0.75rem 1rem;
+  flex-shrink: 0;
+}
+
+.table-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+/* ✅ PAGINATION ULTRA COMPACTE */
+.pagination-container-compact {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  min-height: 3rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-top: 1px solid #e2e8f0;
+}
+
+/* ✅ OPTIMISATION MAJEURE POUR AFFICHER BEAUCOUP PLUS DE LIGNES */
+.data-row-compact {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.data-row-compact:hover {
+  background-color: #f8fafc;
+  border-left: 3px solid #3b82f6;
+  transform: translateX(2px);
+}
+
+.data-row-compact:last-child {
+  border-bottom: none;
+}
+
+/* ✅ BOUTON DÉTAILS ULTRA MODERNE */
+.details-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  z-index: 10;
 }
 
-.nav-item:hover {
-  transform: translateX(4px);
+.data-row-compact:hover .details-btn {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.05);
 }
 
-/* ✅ OPTIMISATION MAJEURE POUR AFFICHER BEAUCOUP PLUS DE LIGNES - ESPACES ULTRA COMPACTS */
-.table-row {
-  transition: all 0.2s ease-in-out;
-  min-height: 2.5rem; /* Hauteur réduite de 3rem à 2.5rem pour plus de lignes */
-  padding: 0.5rem 0.75rem; /* Padding ultra-optimisé */
+.details-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  transform: translateY(-50%) scale(1.1);
 }
 
-.table-row:hover {
-  background-color: rgba(248, 250, 252, 0.8);
-  transform: scale(1.001);
+/* ✅ MODALE DÉTAILS ULTRA MODERNE */
+.details-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* ✅ RÉDUCTION MAXIMALE DES ESPACES POUR PLUS DE CONTENU */
-.table-modern th,
-.table-modern td {
-  padding: 0.5rem 0.75rem; /* Padding ultra-réduit mais lisible */
-  vertical-align: middle;
-  font-size: 0.8125rem; /* Texte plus compact */
-  line-height: 1.2; /* Ligne encore plus serrée */
+.details-modal-content {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.details-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.details-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.details-modal-close:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.details-item {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.details-item:hover {
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+  border-color: #0ea5e9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.details-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.details-value {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.875rem;
+}
+
+.details-description {
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 2px solid #93c5fd;
+  grid-column: 1 / -1;
 }
 
 /* ✅ AVATARS ULTRA COMPACTS MAIS PROFESSIONNELS */
@@ -38,60 +253,46 @@
   justify-content: center;
   border-radius: 50%;
   font-weight: 700;
-  font-size: 0.6875rem; /* Taille ultra-réduite */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 0.6875rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
-  width: 2.25rem; /* Réduit de 2.5rem à 2.25rem */
+  width: 2.25rem;
   height: 2.25rem;
 }
 
 .user-avatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
-/* ✅ PAGINATION ULTRA COMPACTE */
-.pagination-modern {
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
-  position: relative;
-  z-index: 1;
-  padding: 0.5rem !important; /* Padding réduit */
+/* ✅ INDICATEUR DE STATUT SUR L'AVATAR */
+.status-indicator {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.pagination-btn {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.375rem;
-  font-weight: 600;
-  font-size: 0.8125rem; /* Texte plus petit */
-  padding: 0.375rem 0.625rem; /* Padding réduit */
+.status-indicator.actif {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  animation: pulse-green 2s infinite;
 }
 
-.pagination-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination-btn.active {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+.status-indicator.inactif {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
 /* ✅ STYLES POUR LES BADGES ULTRA COMPACTS */
 .badge-action {
-  font-size: 0.6875rem; /* Plus petit */
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.025em;
   border-radius: 0.5rem;
-  padding: 0.1875rem 0.375rem; /* Padding ultra-réduit */
+  padding: 0.1875rem 0.375rem;
   display: inline-flex;
   align-items: center;
   gap: 0.1875rem;
@@ -102,55 +303,25 @@
   transform: scale(1.05);
 }
 
-.badge-status {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  border-radius: 0.75rem;
-  padding: 0.25rem 0.5rem; /* Padding réduit */
-  display: inline-flex;
+/* ✅ TEXTE ULTRA COMPACT POUR PLUS D'INFOS */
+.text-compact {
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  max-height: 2.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ✅ GRILLE LAYOUT ULTRA OPTIMISÉ POUR LE TABLEAU */
+.grid-cols-6 {
+  display: grid;
+  grid-template-columns: 50px 180px 120px 1fr 140px 80px;
+  gap: 0.75rem;
   align-items: center;
-  gap: 0.25rem;
-}
-
-/* ✅ ANIMATIONS POUR LES BOUTONS D'ACTION ULTRA COMPACTS */
-.action-btn {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.5rem;
-  padding: 0.25rem; /* Padding ultra-réduit */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem; /* Plus petit */
-  height: 1.5rem;
-}
-
-.action-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.action-btn:active {
-  transform: scale(0.95);
-}
-
-/* ✅ INDICATEUR DE STATUT SUR L'AVATAR ULTRA COMPACT */
-.status-indicator {
-  position: absolute;
-  bottom: -1px;
-  right: -1px;
-  width: 0.75rem; /* Plus petit */
-  height: 0.75rem;
-  border-radius: 50%;
-  border: 1.5px solid white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.status-indicator.actif {
-  background-color: #22c55e;
-}
-
-.status-indicator.inactif {
-  background-color: #ef4444;
 }
 
 /* ✅ TOOLBAR ULTRA COMPACTE */
@@ -160,81 +331,71 @@
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   border-radius: 1rem;
-  padding: 0.75rem !important; /* Padding réduit */
+  padding: 0.75rem;
 }
 
-.toolbar-modern:hover {
-  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.1);
-}
-
-/* ✅ STYLES POUR LE TABLEAU ULTRA OPTIMISÉ POUR PLUS DE LIGNES */
-.table-modern {
-  background: white;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+/* ✅ PAGINATION ULTRA COMPACTE ET STYLÉE */
+.pagination-btn-compact {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.75rem;
+  padding: 0;
   display: flex;
-  flex-direction: column;
-  height: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.table-modern:hover {
-  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+.pagination-btn-compact:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.table-modern table {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+/* ✅ ANIMATIONS */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.table-modern thead {
-  flex-shrink: 0;
-  display: block;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-.table-modern thead tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
+@keyframes pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0);
+  }
 }
 
-.table-modern tbody {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: block;
-  min-height: 0;
-}
-
-.table-modern tbody tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-/* ✅ OPTIMISATION POUR LE SCROLL DU TABLEAU ULTRA COMPACTE */
-.table-scroll-container {
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 #f1f5f9;
-}
-
+/* ✅ SCROLLBAR PERSONNALISÉE */
 .table-scroll-container::-webkit-scrollbar {
-  width: 4px; /* Scrollbar plus fine */
+  width: 6px;
 }
 
 .table-scroll-container::-webkit-scrollbar-track {
   background: #f1f5f9;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .table-scroll-container::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-  border-radius: 2px;
+  border-radius: 3px;
   transition: background 0.3s ease;
 }
 
@@ -242,187 +403,31 @@
   background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
 }
 
-.table-header-modern {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  color: white;
-  position: relative;
-  overflow: hidden;
-  padding: 0.75rem 1rem; /* Padding du header réduit */
-}
-
-.table-header-modern::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transform: translateX(-100%);
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  100% {
-    transform: translateX(100%);
+/* ✅ RESPONSIVE DESIGN */
+@media (max-width: 1024px) {
+  .main-content {
+    left: 0;
+    padding: 1rem;
+  }
+  
+  .grid-cols-6 {
+    grid-template-columns: 40px 120px 100px 1fr 100px 60px;
+    gap: 0.5rem;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
   }
 }
 
-/* ✅ GRID LAYOUT ULTRA OPTIMISÉ POUR LE TABLEAU */
-.grid-cols-5 {
-  display: grid;
-  grid-template-columns: 70px 1fr 180px 2fr 130px; /* Colonnes plus compactes */
-  gap: 0.75rem; /* Gap réduit */
-  align-items: center;
-}
-
-/* ✅ STYLES POUR LES LIGNES DE DONNÉES ULTRA COMPACTES */
-.data-row-compact {
-  border-bottom: 1px solid #f1f5f9;
-  transition: all 0.2s ease;
-  min-height: 2.5rem; /* Hauteur réduite */
-  padding: 0.5rem 0.75rem; /* Padding ultra-réduit */
-}
-
-.data-row-compact:hover {
-  background-color: #f8fafc;
-  border-left: 3px solid #3b82f6;
-}
-
-.data-row-compact:last-child {
-  border-bottom: none;
-}
-
-/* ✅ TEXTE ULTRA COMPACT POUR PLUS D'INFOS */
-.text-compact {
-  font-size: 0.8125rem; /* Plus petit */
-  line-height: 1.2; /* Plus serré */
-  max-height: 2.25rem; /* Hauteur réduite */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-/* ✅ STYLES POUR LES BOUTONS ULTRA COMPACTS */
-.btn-modern {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.75rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem; /* Gap réduit */
-  padding: 0.5rem 1rem; /* Padding réduit */
-  font-size: 0.8125rem; /* Texte plus petit */
-}
-
-.btn-modern::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s;
-}
-
-.btn-modern:hover::before {
-  left: 100%;
-}
-
-.btn-modern:hover {
-  transform: translateY(-1px); /* Effet hover réduit */
-  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.1);
-}
-
-.btn-modern:active {
-  transform: translateY(0);
-}
-
-/* ✅ CONTENEUR PRINCIPAL ULTRA OPTIMISÉ POUR PLUS DE CONTENU */
-.main-container-optimized {
-  height: calc(100vh - 6.5rem); /* Hauteur optimisée pour plus d'espace */
-  display: flex;
-  flex-direction: column;
-}
-
-.toolbar-compact {
-  flex-shrink: 0;
-  height: auto;
-  min-height: 6rem; /* Toolbar plus compacte */
-}
-
-.table-container-optimized {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ✅ HEADER DU TABLEAU ULTRA COMPACT */
-.table-header-compact {
-  flex-shrink: 0;
-  padding: 0.75rem 1rem; /* Padding réduit */
-  min-height: 3rem; /* Hauteur fixe réduite */
-}
-
-/* ✅ CORPS DU TABLEAU OPTIMISÉ */
-.table-body-optimized {
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-}
-
-/* ✅ PAGINATION ULTRA COMPACTE */
-.pagination-container-compact {
-  flex-shrink: 0;
-  padding: 0.5rem 1rem; /* Padding ultra-réduit */
-  min-height: 3rem; /* Hauteur fixe réduite */
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-}
-
-/* ✅ BOUTONS DE PAGINATION ULTRA COMPACTS */
-.pagination-btn-compact {
-  width: 2rem; /* Plus petit */
-  height: 2rem;
-  font-size: 0.75rem; /* Texte plus petit */
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ✅ OPTIMISATIONS RESPONSIVE ULTRA COMPACTES */
 @media (max-width: 768px) {
-  .nav-item {
-    font-size: 0.75rem;
-    padding: 0.375rem 0.5rem;
+  .main-content {
+    padding: 0.75rem;
   }
   
-  .table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .action-btn {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  .btn-modern {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
-  }
-
-  .grid-cols-5 {
-    grid-template-columns: 50px 1fr 100px 1.5fr 80px;
-    gap: 0.375rem;
+  .grid-cols-6 {
+    grid-template-columns: 30px 100px 80px 1fr 80px 50px;
+    gap: 0.25rem;
   }
   
   .user-avatar {
@@ -436,173 +441,60 @@
     -webkit-line-clamp: 1;
     line-clamp: 1;
   }
-
+  
   .data-row-compact {
     min-height: 2.25rem;
     padding: 0.375rem 0.5rem;
   }
-
-  .table-modern th,
-  .table-modern td {
-    padding: 0.375rem 0.5rem;
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .flex-wrap > * {
-    width: 100% !important;
-  }
   
-  .toolbar-modern .flex {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .grid-cols-5 {
-    grid-template-columns: 40px 1fr 80px 1.5fr 60px;
-    gap: 0.25rem;
-  }
-
-  .main-container-optimized {
-    height: calc(100vh - 5.5rem);
+  .details-btn {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }
 
-/* ✅ VARIABLES CSS POUR LA COHÉRENCE ULTRA COMPACTE */
-:root {
-  --admin-primary: #2563eb;
-  --admin-primary-dark: #1d4ed8;
-  --admin-success: #22c55e;
-  --admin-warning: #f59e0b;
-  --admin-danger: #ef4444;
-  --admin-info: #06b6d4;
-  --admin-sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  --admin-border-radius: 0.75rem;
-  --admin-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --admin-shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  --admin-shadow-lg: 0 4px 8px -2px rgba(0, 0, 0, 0.1);
-  --admin-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* ✅ VARIABLES ULTRA OPTIMISÉES POUR L'AFFICHAGE */
-  --table-row-height: 2.5rem; /* Réduit de 3rem à 2.5rem */
-  --compact-padding: 0.5rem; /* Réduit de 0.75rem à 0.5rem */
-  --compact-gap: 0.5rem; /* Réduit de 0.75rem à 0.5rem */
-  --header-height: 4rem;
-  --footer-height: 2.5rem;
-  --toolbar-height: 6rem; /* Réduit de 8rem à 6rem */
-  --pagination-height: 3rem; /* Réduit de 4rem à 3rem */
-  --available-height: calc(100vh - var(--header-height) - var(--footer-height) - var(--toolbar-height) - var(--pagination-height) - 1rem);
-}
-
-/* ✅ AMÉLIORATION SPÉCIALE POUR L'AFFICHAGE DE 15+ LIGNES */
-.ultra-compact-mode {
-  --table-row-height: 2.25rem;
-  --compact-padding: 0.375rem;
-  --compact-gap: 0.375rem;
-  --toolbar-height: 5.5rem;
-  --pagination-height: 2.75rem;
-}
-
-.ultra-compact-mode .table-modern th,
-.ultra-compact-mode .table-modern td {
-  padding: 0.375rem 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1.1;
-}
-
-.ultra-compact-mode .user-avatar {
-  width: 2rem;
-  height: 2rem;
-  font-size: 0.625rem;
-}
-
-.ultra-compact-mode .badge-action {
-  font-size: 0.625rem;
-  padding: 0.125rem 0.25rem;
-}
-
-.ultra-compact-mode .data-row-compact {
-  min-height: 2.25rem;
-  padding: 0.375rem 0.5rem;
-}
-
-/* ✅ CLASSES POUR L'ADAPTATION DYNAMIQUE DE LA HAUTEUR */
-.dynamic-height-container {
-  height: var(--available-height);
-  max-height: var(--available-height);
-  min-height: 400px;
-}
-
-/* ✅ OPTIMISATION POUR L'AFFICHAGE DE 20 LIGNES SI POSSIBLE */
-.max-density-mode {
-  --table-row-height: 2rem;
-  --compact-padding: 0.25rem;
-  --compact-gap: 0.25rem;
-  --toolbar-height: 5rem;
-  --pagination-height: 2.5rem;
-}
-
-.max-density-mode .table-modern th,
-.max-density-mode .table-modern td {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.6875rem;
-  line-height: 1.1;
-}
-
-.max-density-mode .data-row-compact {
-  min-height: 2rem;
-  padding: 0.25rem 0.5rem;
-}
-
-.max-density-mode .user-avatar {
-  width: 1.75rem;
-  height: 1.75rem;
-  font-size: 0.5625rem;
-}
-
-/* ✅ STYLES POUR L'ÉTAT VIDE COMPACT */
+/* ✅ ÉTAT VIDE MODERNISÉ */
 .empty-state-compact {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border: 2px dashed #cbd5e1;
   border-radius: 1rem;
   transition: all 0.3s ease;
-  padding: 2rem; /* Padding réduit */
-  min-height: 200px; /* Hauteur réduite */
+  padding: 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 
-/* ✅ FOCUS STATES OPTIMISÉS */
-.focus\:ring-2:focus,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 1px solid transparent;
-  outline-offset: 1px;
-  box-shadow: 0 0 0 1px #2563eb;
+/* ✅ BOUTONS MODERNISÉS */
+.btn-modern {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+}
+
+.btn-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* ✅ LOADING SPINNER COMPACT */
 .loading-spinner {
-  width: 2rem; /* Plus petit */
+  width: 2rem;
   height: 2rem;
   border: 3px solid transparent;
   border-top: 3px solid #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  position: relative;
-}
-
-.loading-spinner::before {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  right: -3px;
-  bottom: -3px;
-  border: 3px solid transparent;
-  border-top: 3px solid #60a5fa;
-  border-radius: 50%;
-  animation: spin 1.5s linear infinite reverse;
 }
 
 @keyframes spin {
@@ -610,71 +502,39 @@ select:focus-visible {
   100% { transform: rotate(360deg); }
 }
 
-/* ✅ CLASSES UTILITAIRES POUR L'OPTIMISATION */
-.h-table-optimized {
-  height: calc(100vh - 15rem); /* Hauteur optimisée pour le tableau */
+/* ✅ VARIABLES CSS POUR LA COHÉRENCE */
+:root {
+  --header-height: 4rem;
+  --footer-height: 2.5rem;
+  --sidebar-width: 16rem;
+  --table-row-height: 2.5rem;
+  --compact-padding: 0.5rem;
+  --compact-gap: 0.5rem;
+  --toolbar-height: 6rem;
+  --pagination-height: 3rem;
 }
 
-.min-h-table-row {
-  min-height: var(--table-row-height);
-}
-
-.p-compact {
-  padding: var(--compact-padding);
-}
-
-.gap-compact {
-  gap: var(--compact-gap);
-}
-
-/* ✅ SCROLLBAR ULTRA FINE */
-::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 1.5px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-  border-radius: 1.5px;
-  transition: background 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+/* ✅ FOCUS STATES POUR L'ACCESSIBILITÉ */
+.focus\:ring-2:focus,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 /* ✅ AMÉLIORATION POUR LES DISPOSITIFS TACTILES */
 @media (hover: none) and (pointer: coarse) {
-  .action-btn:hover,
-  .table-row:hover,
-  .btn-modern:hover {
+  .details-btn {
+    opacity: 1;
+  }
+  
+  .data-row-compact:hover {
     transform: none;
   }
   
-  /* Augmenter légèrement la taille des éléments tactiles */
-  .action-btn {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-  
   button, .btn {
-    min-height: 2.5rem;
+    min-height: 2.75rem;
   }
-}
-
-/* ✅ STYLES POUR LA PERFORMANCE */
-.gpu-accelerated {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* ✅ DÉSACTIVER LES ANIMATIONS PENDANT LE REDIMENSIONNEMENT */
-.disable-animations * {
-  animation-duration: 0s !important;
-  transition-duration: 0s !important;
 }

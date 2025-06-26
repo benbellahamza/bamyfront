@@ -65,11 +65,11 @@
     </nav>
   </div>
 
-  <!-- ✅ CONTENU PRINCIPAL ULTRA OPTIMISÉ POUR PLUS DE LIGNES -->
-  <main class="flex-1 mt-16 px-4 pb-12 pt-2 ml-64 bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen main-container-optimized">
+  <!-- ✅ CONTENU PRINCIPAL AVEC LAYOUT CORRIGÉ -->
+  <main class="main-content">
     
     <!-- ✅ TOOLBAR ULTRA COMPACTE AVEC RECHERCHE OPTIMISÉE -->
-    <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 overflow-hidden toolbar-modern mb-3 toolbar-compact">
+    <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 overflow-hidden toolbar-modern toolbar-compact">
       <div class="p-3">
         <!-- Première ligne: Barre de recherche ultra compacte -->
         <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
@@ -243,46 +243,48 @@
       </div>
 
       <!-- ✅ TABLEAU ULTRA OPTIMISÉ POUR AFFICHER PLUS DE LIGNES -->
-      <div *ngIf="!isLoading && historiqueFiltre().length > 0" class="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col border border-slate-100 h-table-optimized">
+      <div *ngIf="!isLoading && historiqueFiltre().length > 0" class="table-modern">
         
         <!-- ✅ EN-TÊTE ULTRA COMPACT AVEC TITRE ET COMPTEURS -->
-        <div class="bg-gradient-to-r from-slate-50 to-slate-100 p-3 flex justify-between items-center border-b border-slate-200 table-header-compact">
-          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-            </div>
-            Historique des Actions
-          </h3>
-          <div class="flex items-center gap-3">
-            <!-- Compteur de sélection compact -->
-            <div *ngIf="lignesSelectionnees.size > 0" class="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold shadow-sm">
-              <span class="flex items-center gap-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="table-header-compact">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                {{ lignesSelectionnees.size }} sélectionné{{ lignesSelectionnees.size > 1 ? 's' : '' }}
-              </span>
-            </div>
-            <!-- Compteur d'affichage compact -->
-            <div class="bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 px-2 py-1 rounded-full text-xs font-semibold shadow-sm">
-              <span class="flex items-center gap-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                {{ getPaginationInfo().start }}-{{ getPaginationInfo().end }} sur {{ getPaginationInfo().total }}
-              </span>
+              </div>
+              Historique des Actions
+            </h3>
+            <div class="flex items-center gap-3">
+              <!-- Compteur de sélection compact -->
+              <div *ngIf="lignesSelectionnees.size > 0" class="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold shadow-sm">
+                <span class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  {{ lignesSelectionnees.size }} sélectionné{{ lignesSelectionnees.size > 1 ? 's' : '' }}
+                </span>
+              </div>
+              <!-- Compteur d'affichage compact -->
+              <div class="bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 px-2 py-1 rounded-full text-xs font-semibold shadow-sm">
+                <span class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  </svg>
+                  {{ getPaginationInfo().start }}-{{ getPaginationInfo().end }} sur {{ getPaginationInfo().total }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- ✅ CORPS DU TABLEAU ULTRA OPTIMISÉ AVEC FLEX-1 POUR UTILISER TOUT L'ESPACE -->
-        <div class="flex-1 overflow-hidden flex flex-col table-body-optimized">
+        <!-- ✅ CORPS DU TABLEAU ULTRA OPTIMISÉ -->
+        <div class="table-body-optimized">
           
           <!-- ✅ EN-TÊTE FIXE DU TABLEAU ULTRA COMPACT -->
-          <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white flex-shrink-0 table-header-modern">
-            <div class="grid grid-cols-5 gap-3 p-2">
+          <div class="table-header-modern">
+            <div class="grid grid-cols-6 gap-3 p-2">
               <div class="flex items-center">
                 <label class="flex items-center cursor-pointer">
                   <input type="checkbox" [(ngModel)]="toutSelectionner" (change)="toggleSelectionTout()" 
@@ -346,14 +348,17 @@
                   </svg>
                 </div>
               </div>
+              <div class="flex items-center justify-center">
+                <span class="font-bold text-white text-xs">Détails</span>
+              </div>
             </div>
           </div>
 
-          <!-- ✅ CORPS DU TABLEAU AVEC SCROLL ET AFFICHAGE ULTRA OPTIMISÉ POUR 15+ LIGNES -->
-          <div class="flex-1 overflow-y-auto bg-white table-scroll-container">
+          <!-- ✅ CORPS DU TABLEAU AVEC SCROLL ET BOUTON DÉTAILS -->
+          <div class="table-scroll-container">
             <div *ngFor="let action of historiqueFiltre() | slice:(pageActuelle-1)*nombreElementsAffichage:(pageActuelle)*nombreElementsAffichage; let i = index; trackBy: trackByActionId"
                  [ngClass]="getRowClass(action)"
-                 class="grid grid-cols-5 gap-3 p-2 border-b border-slate-100 hover:bg-slate-50 transition-all duration-200 group data-row-compact min-h-table-row">
+                 class="grid grid-cols-6 gap-3 p-2 border-b border-slate-100 hover:bg-slate-50 transition-all duration-200 group data-row-compact min-h-table-row">
               
               <!-- Colonne Sélection ultra compacte -->
               <div class="flex items-center">
@@ -369,7 +374,7 @@
                     {{ getAgentInitials(action.agent) }}
                   </div>
                   <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white status-indicator"
-                       [ngClass]="getAgentStatus(action.agent) === 'actif' ? 'bg-green-500' : 'bg-red-500'"></div>
+                       [ngClass]="getAgentStatus(action.agent) === 'actif' ? 'actif' : 'inactif'"></div>
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="font-semibold text-slate-800 text-xs truncate">{{ getAgentFullName(action.agent) }}</div>
@@ -403,12 +408,25 @@
                   </span>
                 </div>
               </div>
+
+              <!-- ✅ COLONNE BOUTON DÉTAILS -->
+              <div class="flex items-center justify-center">
+                <button 
+                  (click)="ouvrirDetailsAction(action); $event.stopPropagation()"
+                  class="details-btn"
+                  title="Voir les détails de cette action">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- ✅ PAGINATION ULTRA COMPACTE ET STYLÉE INTÉGRÉE AU TABLEAU -->
-        <div *ngIf="totalPages() > 1" class="bg-gradient-to-r from-slate-50 to-slate-100 border-t border-slate-200 flex-shrink-0 pagination-container-compact">
+        <!-- ✅ PAGINATION ULTRA COMPACTE ET STYLÉE -->
+        <div *ngIf="totalPages() > 1" class="pagination-container-compact">
           <div class="flex items-center justify-between">
             <!-- Informations de pagination ultra compactes -->
             <div class="flex items-center gap-3">
@@ -420,13 +438,13 @@
               </div>
             </div>
             
-            <!-- ✅ CONTRÔLES DE PAGINATION ULTRA COMPACTS ET STYLÉS -->
+            <!-- ✅ CONTRÔLES DE PAGINATION ULTRA COMPACTS -->
             <div class="flex items-center gap-1">
               <!-- Première page -->
               <button 
                 (click)="premierePage()"
                 [disabled]="!hasPreviousPage()"
-                class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs flex items-center justify-center"
+                class="pagination-btn-compact"
                 [ngClass]="!hasPreviousPage() ? 
                   'text-slate-400 bg-slate-100 cursor-not-allowed' : 
                   'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
@@ -439,7 +457,7 @@
               <button 
                 (click)="pagePrecedente()"
                 [disabled]="!hasPreviousPage()"
-                class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs flex items-center justify-center"
+                class="pagination-btn-compact"
                 [ngClass]="!hasPreviousPage() ? 
                   'text-slate-400 bg-slate-100 cursor-not-allowed' : 
                   'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
@@ -453,7 +471,7 @@
                 <button 
                   *ngFor="let page of getPagesArray()"
                   (click)="changerPage(page)"
-                  class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs"
+                  class="pagination-btn-compact"
                   [ngClass]="page === pageActuelle ? 
                     'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md transform scale-110' : 
                     'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
@@ -465,7 +483,7 @@
               <button 
                 (click)="pageSuivante()"
                 [disabled]="!hasNextPage()"
-                class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs flex items-center justify-center"
+                class="pagination-btn-compact"
                 [ngClass]="!hasNextPage() ? 
                   'text-slate-400 bg-slate-100 cursor-not-allowed' : 
                   'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
@@ -478,7 +496,7 @@
               <button 
                 (click)="dernierePage()"
                 [disabled]="!hasNextPage()"
-                class="pagination-btn-compact rounded-lg font-bold transition-all duration-300 text-xs flex items-center justify-center"
+                class="pagination-btn-compact"
                 [ngClass]="!hasNextPage() ? 
                   'text-slate-400 bg-slate-100 cursor-not-allowed' : 
                   'text-slate-700 bg-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white shadow-sm hover:shadow-md hover:scale-105'">
@@ -492,8 +510,8 @@
       </div>
 
       <!-- ✅ ÉTAT VIDE ULTRA COMPACT -->
-      <div *ngIf="!isLoading && historiqueFiltre().length === 0" class="bg-white shadow-xl rounded-2xl overflow-hidden flex items-center justify-center h-table-optimized border border-slate-100">
-        <div class="text-center empty-state-compact">
+      <div *ngIf="!isLoading && historiqueFiltre().length === 0" class="flex items-center justify-center h-full">
+        <div class="empty-state-compact">
           <div class="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -519,5 +537,133 @@
     </div>
     
   </main>
+
+  <!-- ✅ MODALE DÉTAILS ULTRA MODERNE -->
+  <div *ngIf="actionSelectionnee" class="details-modal" (click)="fermerDetailsAction()">
+    <div class="details-modal-content" (click)="$event.stopPropagation()">
+      
+      <!-- ✅ BOUTON FERMER -->
+      <button 
+        (click)="fermerDetailsAction()"
+        class="details-modal-close">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <!-- ✅ HEADER DE LA MODALE -->
+      <div class="details-modal-header">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800">Détails de l'Action</h2>
+            <p class="text-slate-600 text-sm">Informations complètes sur cette action</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ CORPS DE LA MODALE -->
+      <div class="details-grid">
+        
+        <!-- Agent -->
+        <div class="details-item">
+          <div class="details-label">Agent</div>
+          <div class="details-value flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs">
+              {{ getActionAgent(actionSelectionnee) }}
+            </div>
+            {{ getActionAgentFullName(actionSelectionnee) }}
+          </div>
+        </div>
+
+        <!-- Rôle -->
+        <div class="details-item">
+          <div class="details-label">Rôle</div>
+          <div class="details-value">{{ getActionAgentRole(actionSelectionnee) }}</div>
+        </div>
+
+        <!-- Type d'action -->
+        <div class="details-item">
+          <div class="details-label">Type d'action</div>
+          <div class="details-value">
+            <span [ngClass]="getActionBadgeClass(actionSelectionnee)" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold">
+              <span [ngClass]="getActionDotClass(actionSelectionnee)"></span>
+              {{ getActionCategorie(actionSelectionnee) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Statut Agent -->
+        <div class="details-item">
+          <div class="details-label">Statut Agent</div>
+          <div class="details-value flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full"
+                 [ngClass]="getActionAgentStatus(actionSelectionnee) === 'actif' ? 'bg-green-500' : 'bg-red-500'"></div>
+            {{ getActionAgentStatus(actionSelectionnee) === 'actif' ? 'Actif' : 'Inactif' }}
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="details-item">
+          <div class="details-label">Date</div>
+          <div class="details-value">{{ getActionDate(actionSelectionnee) }}</div>
+        </div>
+
+        <!-- Heure -->
+        <div class="details-item">
+          <div class="details-label">Heure</div>
+          <div class="details-value">{{ getActionTime(actionSelectionnee) }}</div>
+        </div>
+
+        <!-- ID Action -->
+        <div class="details-item">
+          <div class="details-label">ID Action</div>
+          <div class="details-value font-mono">#{{ getActionId(actionSelectionnee) }}</div>
+        </div>
+
+        <!-- Durée -->
+        <div class="details-item" *ngIf="getActionDuration(actionSelectionnee)">
+          <div class="details-label">Durée</div>
+          <div class="details-value">{{ getActionDuration(actionSelectionnee) }}ms</div>
+        </div>
+
+        <!-- Adresse IP -->
+        <div class="details-item" *ngIf="getActionIP(actionSelectionnee)">
+          <div class="details-label">Adresse IP</div>
+          <div class="details-value font-mono">{{ getActionIP(actionSelectionnee) }}</div>
+        </div>
+
+        <!-- User Agent -->
+        <div class="details-item" *ngIf="getActionUserAgent(actionSelectionnee)">
+          <div class="details-label">Navigateur</div>
+          <div class="details-value text-xs">{{ getActionBrowser(actionSelectionnee) }}</div>
+        </div>
+
+        <!-- Description complète -->
+        <div class="details-description">
+          <div class="details-label">Description complète de l'action</div>
+          <div class="details-value text-sm leading-relaxed">
+            {{ getActionDescription(actionSelectionnee) }}
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ FOOTER DE LA MODALE -->
+      <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+        <div class="text-xs text-slate-500">
+          Action enregistrée le {{ getActionDateTime(actionSelectionnee) }}
+        </div>
+        <button 
+          (click)="fermerDetailsAction()"
+          class="px-4 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105 btn-modern">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
 
 </app-unified-layout>

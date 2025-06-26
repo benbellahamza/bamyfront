@@ -331,6 +331,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
           event.preventDefault();
           this.dernierePage();
           break;
+        case 'Escape':
+          event.preventDefault();
+          this.fermerDetailsAction();
+          break;
       }
     }
   }
@@ -382,7 +386,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return data.map(action => ({
       ...action,
       metadata: {
-        userAgent: 'Mozilla/5.0 (simulated)',
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         ipAddress: this.generateRandomIP(),
         duration: Math.floor(Math.random() * 5000) + 100,
         ...action.metadata
@@ -797,6 +801,108 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.toutSelectionner = toutesSelectionnees;
   }
 
+  // ✅ NOUVELLES MÉTHODES POUR LA GESTION DES DÉTAILS
+  ouvrirDetailsAction(action: HistoriqueAction): void {
+    this.actionSelectionnee = action;
+    console.log('🔍 Ouverture des détails pour l\'action :', action.id);
+    this.showNotification(`Détails de l'action #${action.id} affichés`, 'info');
+  }
+
+  fermerDetailsAction(): void {
+    this.actionSelectionnee = null;
+    console.log('❌ Fermeture des détails de l\'action');
+  }
+
+  // ✅ MÉTHODES HELPER POUR LA MODALE (TYPE-SAFE)
+  getActionAgent(action: HistoriqueAction | null): string {
+    if (!action?.agent) return '?';
+    return this.getAgentInitials(action.agent);
+  }
+
+  getActionAgentFullName(action: HistoriqueAction | null): string {
+    if (!action?.agent) return 'Agent inconnu';
+    return this.getAgentFullName(action.agent);
+  }
+
+  getActionAgentRole(action: HistoriqueAction | null): string {
+    if (!action?.agent) return 'Rôle inconnu';
+    return this.getAgentRole(action.agent);
+  }
+
+  getActionAgentStatus(action: HistoriqueAction | null): 'actif' | 'inactif' {
+    if (!action?.agent) return 'inactif';
+    return this.getAgentStatus(action.agent);
+  }
+
+  getActionCategorie(action: HistoriqueAction | null): string {
+    if (!action) return 'Type inconnu';
+    return this.getCategorieAction(action);
+  }
+
+  getActionBadgeClass(action: HistoriqueAction | null): string {
+    if (!action) return 'bg-slate-100 text-slate-800';
+    return this.getBadgeClass(this.getCategorieAction(action));
+  }
+
+  getActionDotClass(action: HistoriqueAction | null): string {
+    if (!action) return 'w-1.5 h-1.5 rounded-full mr-1.5 bg-slate-500';
+    return this.getDotClass(this.getCategorieAction(action));
+  }
+
+  getActionDate(action: HistoriqueAction | null): string {
+    if (!action?.dateAction) return 'Date inconnue';
+    return new Date(action.dateAction).toLocaleDateString('fr-FR');
+  }
+
+  getActionTime(action: HistoriqueAction | null): string {
+    if (!action?.dateAction) return 'Heure inconnue';
+    return new Date(action.dateAction).toLocaleTimeString('fr-FR');
+  }
+
+  getActionDateTime(action: HistoriqueAction | null): string {
+    if (!action?.dateAction) return 'Date inconnue';
+    return new Date(action.dateAction).toLocaleString('fr-FR');
+  }
+
+  getActionId(action: HistoriqueAction | null): string {
+    return action?.id?.toString() || 'N/A';
+  }
+
+  getActionDuration(action: HistoriqueAction | null): number | null {
+    return action?.metadata?.duration || null;
+  }
+
+  getActionIP(action: HistoriqueAction | null): string | null {
+    return action?.metadata?.ipAddress || null;
+  }
+
+  getActionUserAgent(action: HistoriqueAction | null): string | null {
+    return action?.metadata?.userAgent || null;
+  }
+
+  getActionBrowser(action: HistoriqueAction | null): string {
+    const userAgent = action?.metadata?.userAgent;
+    return this.getBrowserFromUserAgent(userAgent);
+  }
+
+  getActionDescription(action: HistoriqueAction | null): string {
+    if (!action?.action) return 'Description indisponible';
+    return this.getCleanActionText(action.action);
+  }
+
+  // ✅ MÉTHODE POUR EXTRAIRE LE NAVIGATEUR DU USER AGENT
+  getBrowserFromUserAgent(userAgent: string | undefined): string {
+    if (!userAgent) return 'Navigateur inconnu';
+    
+    if (userAgent.includes('Chrome')) return 'Google Chrome';
+    if (userAgent.includes('Firefox')) return 'Mozilla Firefox';
+    if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
+    if (userAgent.includes('Edge')) return 'Microsoft Edge';
+    if (userAgent.includes('Opera')) return 'Opera';
+    
+    return 'Autre navigateur';
+  }
+
   // 📊 STATISTIQUES OPTIMISÉES
   nombreCreations(): number {
     return this.historiqueFiltered.filter(a => 
@@ -854,6 +960,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
         'Heure': item.dateAction ? new Date(item.dateAction).toLocaleTimeString('fr-FR') : 'N/A',
         'Durée (ms)': item.metadata?.duration || 'N/A',
         'Adresse IP': item.metadata?.ipAddress || 'N/A',
+        'Navigateur': item.metadata?.userAgent ? this.getBrowserFromUserAgent(item.metadata.userAgent) : 'N/A',
         'ID': item.id
       }));
 
@@ -861,7 +968,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       
       const columnWidths = [
         { wch: 5 }, { wch: 25 }, { wch: 18 }, { wch: 12 }, { wch: 20 },
-        { wch: 50 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 10 }
+        { wch: 50 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 20 }, { wch: 10 }
       ];
       worksheet['!cols'] = columnWidths;
 
@@ -970,27 +1077,44 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
         info: 'ℹ️'
       };
       
+      const colorMap = {
+        success: 'from-green-500 to-green-600',
+        error: 'from-red-500 to-red-600',
+        warning: 'from-orange-500 to-orange-600',
+        info: 'from-blue-500 to-blue-600'
+      };
+      
       const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
+      notification.className = `fixed top-20 right-6 z-[9999] px-4 py-3 rounded-xl shadow-2xl transform translate-x-full transition-all duration-500 max-w-md bg-gradient-to-r ${colorMap[type]} text-white`;
+      
       notification.innerHTML = `
-        <div class="flex items-center gap-2">
-          <span class="text-sm">${iconMap[type]}</span>
-          <span class="font-semibold text-sm">${message}</span>
+        <div class="flex items-center gap-3">
+          <div class="flex-shrink-0 text-lg">${iconMap[type]}</div>
+          <span class="font-medium text-sm">${message}</span>
+          <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white/80 hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
         </div>
       `;
       
       document.body.appendChild(notification);
       
-      setTimeout(() => notification.classList.add('show'), 100);
-      
+      // Animation d'entrée
       setTimeout(() => {
-        notification.classList.remove('show');
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+      
+      // Animation de sortie et suppression automatique
+      setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
         setTimeout(() => {
-          if (notification.parentNode) {
-            notification.remove();
+          if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
           }
-        }, 300);
-      }, 2500); // Réduit de 3000 à 2500 pour une interface plus fluide
+        }, 500);
+      }, 3000);
     }
   }
 
@@ -1075,73 +1199,4 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   isTabletView(): boolean {
     return window.innerWidth >= 768 && window.innerWidth < 1024;
   }
-
-  // ✅ MÉTHODES POUR ADAPTER L'AFFICHAGE SELON L'ÉCRAN
-  getOptimalItemsPerPage(): number {
-    const screenHeight = window.innerHeight;
-    const rowHeight = 40; // 2.5rem
-    const availableHeight = screenHeight - 300; // Espace pour header, toolbar, pagination
-    return Math.max(15, Math.min(25, Math.floor(availableHeight / rowHeight)));
-  }
-
-  // 🔧 MÉTHODES DE DÉBOGAGE OPTIMISÉES
-  debugFilterState(): void {
-    console.log('🔍 État actuel des filtres :', this.filterState);
-    console.log('📄 État de la pagination :', this.paginationState);
-    console.log('🔄 État du tri :', this.sortState);
-    console.log('✅ Sélections :', Array.from(this.lignesSelectionnees));
-    console.log(`📊 Affichage optimisé : ${this.paginationState.itemsPerPage} éléments par page`);
-  }
-
-  // ✅ MÉTHODE POUR TESTER LA RECHERCHE AVEC DES EXEMPLES
-  testSearch(term: string): void {
-    this.filtreTexte = term;
-    this.appliquerFiltres();
-    this.showNotification(`🔍 Recherche optimisée pour : "${term}"`, 'info');
-  }
-
-  // ✅ MÉTHODES POUR OBTENIR DES STATISTIQUES DE RECHERCHE OPTIMISÉES
-  getSearchStats(): { totalResults: number; filteredResults: number; pageResults: number; itemsPerPage: number } {
-    return {
-      totalResults: this.historique.length,
-      filteredResults: this.historiqueFiltered.length,
-      pageResults: this.getVisibleItemsCount(),
-      itemsPerPage: this.paginationState.itemsPerPage
-    };
-  }
-
-  // ✅ MÉTHODES D'OPTIMISATION AVANCÉES
-  optimizeForScreen(): void {
-    const newItemsPerPage = this.getOptimalItemsPerPage();
-    if (newItemsPerPage !== this.paginationState.itemsPerPage) {
-      this.paginationState.itemsPerPage = newItemsPerPage;
-      this.appliquerFiltres();
-      console.log(`📊 Optimisation écran : ${newItemsPerPage} éléments par page`);
-    }
-  }
-
-  // ✅ MÉTHODE POUR ACTIVER LE MODE ULTRA COMPACT
-  activerModeUltraCompact(): void {
-    this.paginationState.itemsPerPage = 20;
-    document.body.classList.add('ultra-compact-mode');
-    this.appliquerFiltres();
-    this.showNotification('🔥 Mode ultra-compact activé : 20 lignes par page', 'success');
-  }
-
-  // ✅ MÉTHODE POUR ACTIVER LE MODE DENSITÉ MAXIMALE
-  activerModeDensiteMaximale(): void {
-    this.paginationState.itemsPerPage = 25;
-    document.body.classList.add('max-density-mode');
-    this.appliquerFiltres();
-    this.showNotification('⚡ Mode densité maximale activé : 25 lignes par page', 'success');
-  }
-
-  // ✅ MÉTHODE POUR REVENIR AU MODE NORMAL
-  activerModeNormal(): void {
-    this.paginationState.itemsPerPage = 15;
-    document.body.classList.remove('ultra-compact-mode', 'max-density-mode');
-    this.appliquerFiltres();
-    this.showNotification('📱 Mode normal activé : 15 lignes par page', 'info');
-  }
-
 }

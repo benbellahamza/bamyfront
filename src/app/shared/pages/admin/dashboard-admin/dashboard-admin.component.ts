@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
 import { AdminService } from 'app/core/services/admin/admin.service';
 import { HistoriqueService } from 'app/core/services/historique/historique.service';
 import { HttpClient } from '@angular/common/http';
@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './dashboard-admin.component.html',
   styleUrls: ['./dashboard-admin.component.css']
 })
-export class DashboardAdminComponent implements OnInit {
+export class DashboardAdminComponent implements OnInit, OnDestroy {
   // ✅ Configuration pour le layout unifié
   navigationItems = [
     {
@@ -50,6 +50,10 @@ export class DashboardAdminComponent implements OnInit {
   formulaireActif: boolean = false;
   modeForm: 'modifier' | 'reset' | null = null;
 
+  // ✅ Gestion de la visibilité des mots de passe
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
+
   // ✅ Statistiques
   totalUtilisateurs: number = 0;
   totalActifs: number = 0;
@@ -68,6 +72,26 @@ export class DashboardAdminComponent implements OnInit {
   }
 
   /**
+   * ✅ Validateur personnalisé pour vérifier la correspondance des mots de passe
+   */
+  private passwordMatchValidator(): ValidatorFn {
+    return (formGroup: AbstractControl): { [key: string]: any } | null => {
+      const password = formGroup.get('newPassword');
+      const confirmPassword = formGroup.get('confirmPassword');
+
+      if (!password || !confirmPassword) {
+        return null;
+      }
+
+      if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
+        return { passwordMismatch: true };
+      }
+
+      return null;
+    };
+  }
+
+  /**
    * ✅ Initialise les formulaires réactifs
    */
   private initFormulaires(): void {
@@ -79,7 +103,15 @@ export class DashboardAdminComponent implements OnInit {
     });
 
     this.formReset = this.fb.group({
-      newPassword: ['', [Validators.required, Validators.minLength(6)]]
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { 
+      validators: this.passwordMatchValidator()
+    });
+
+    // ✅ Écouter les changements pour mettre à jour les erreurs de validation
+    this.formReset.get('newPassword')?.valueChanges.subscribe(() => {
+      this.formReset.get('confirmPassword')?.updateValueAndValidity();
     });
   }
 
@@ -98,6 +130,37 @@ export class DashboardAdminComponent implements OnInit {
     console.log('✅ Mot de passe utilisateur changé depuis le layout unifié');
     // Ici vous pouvez ajouter une logique spécifique si nécessaire
     // Par exemple, recharger certaines données ou afficher une notification
+  }
+
+  /**
+   * ✅ Toggle la visibilité du mot de passe
+   */
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  /**
+   * ✅ Toggle la visibilité de la confirmation du mot de passe
+   */
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  /**
+   * ✅ Vérifie si les mots de passe correspondent
+   */
+  get passwordsMatch(): boolean {
+    const password = this.formReset.get('newPassword')?.value;
+    const confirmPassword = this.formReset.get('confirmPassword')?.value;
+    return password === confirmPassword;
+  }
+
+  /**
+   * ✅ Vérifie si le formulaire de reset a des erreurs de correspondance
+   */
+  get hasPasswordMismatchError(): boolean {
+    return this.formReset.hasError('passwordMismatch') && 
+           this.formReset.get('confirmPassword')?.touched === true;
   }
 
   /**
@@ -197,8 +260,10 @@ export class DashboardAdminComponent implements OnInit {
     this.modeForm = 'reset';
     this.formulaireActif = true;
     
-    // Réinitialiser le formulaire
+    // Réinitialiser le formulaire et les états de visibilité
     this.formReset.reset();
+    this.showPassword = false;
+    this.showConfirmPassword = false;
 
     console.log('✅ Ouverture formulaire reset pour :', user.nom, user.prenom);
   }
@@ -211,9 +276,11 @@ export class DashboardAdminComponent implements OnInit {
     this.modeForm = null;
     this.utilisateurSelectionne = null;
     
-    // Réinitialiser les formulaires
+    // Réinitialiser les formulaires et les états de visibilité
     this.formModif.reset();
     this.formReset.reset();
+    this.showPassword = false;
+    this.showConfirmPassword = false;
 
     console.log('✅ Formulaires fermés');
   }
@@ -275,12 +342,18 @@ export class DashboardAdminComponent implements OnInit {
       return;
     }
 
+    // Vérification supplémentaire de la correspondance des mots de passe
+    if (!this.passwordsMatch) {
+      this.afficherNotificationErreur('Les mots de passe ne correspondent pas');
+      return;
+    }
+
     const id = this.utilisateurSelectionne.id;
     const nouveauMotDePasse = this.formReset.value.newPassword;
+    const nomComplet = `${this.utilisateurSelectionne.nom} ${this.utilisateurSelectionne.prenom}`;
 
-    if (!this.confirmerAction(
-      `Êtes-vous sûr de vouloir réinitialiser le mot de passe de ${this.utilisateurSelectionne.nom} ${this.utilisateurSelectionne.prenom} ?`
-    )) {
+    // Utiliser la nouvelle fonction de confirmation personnalisée
+    if (!this.confirmerResetMotDePasse(nomComplet)) {
       return;
     }
 
@@ -298,7 +371,7 @@ export class DashboardAdminComponent implements OnInit {
         
         // Afficher notification de succès
         this.afficherNotificationSucces(
-          `Mot de passe réinitialisé pour ${this.utilisateurSelectionne.nom} ${this.utilisateurSelectionne.prenom}`
+          `🔑 Mot de passe réinitialisé avec succès pour ${nomComplet}`
         );
       },
       error: (err) => {
@@ -321,14 +394,15 @@ export class DashboardAdminComponent implements OnInit {
 
     // Empêcher la désactivation des admins
     if (user.role === 'ADMIN') {
-      this.afficherNotificationErreur('Impossible de modifier le statut d\'un administrateur');
+      this.afficherNotificationErreur('🚫 Impossible de modifier le statut d\'un administrateur');
       return;
     }
 
     const action = user.actif ? 'désactiver' : 'réactiver';
-    const message = `Êtes-vous sûr de vouloir ${action} ${user.nom} ${user.prenom} ?`;
+    const nomComplet = `${user.nom} ${user.prenom}`;
 
-    if (!this.confirmerAction(message)) {
+    // Utiliser la nouvelle fonction de confirmation personnalisée
+    if (!this.confirmerToggleActivation(nomComplet, action)) {
       return;
     }
 
@@ -341,9 +415,11 @@ export class DashboardAdminComponent implements OnInit {
         // Recharger les données
         this.chargerDonnees();
         
-        // Afficher notification
+        // Afficher notification avec emoji approprié
+        const emoji = user.actif ? '🔒' : '✅';
+        const actionText = user.actif ? 'désactivé' : 'réactivé';
         this.afficherNotificationSucces(
-          `${user.nom} ${user.prenom} a été ${user.actif ? 'désactivé' : 'réactivé'} avec succès`
+          `${emoji} ${nomComplet} a été ${actionText} avec succès`
         );
       },
       error: (err) => {
@@ -372,10 +448,32 @@ export class DashboardAdminComponent implements OnInit {
   }
 
   /**
-   * Affiche une confirmation avant action
+   * Affiche une confirmation avant action avec des messages personnalisés
    */
   private confirmerAction(message: string): boolean {
     return confirm(message);
+  }
+
+  /**
+   * ✅ Confirmation personnalisée pour la réinitialisation de mot de passe
+   */
+  private confirmerResetMotDePasse(nomUtilisateur: string): boolean {
+    return confirm(`⚠️ ATTENTION ⚠️\n\nVoulez-vous vraiment réinitialiser le mot de passe de ${nomUtilisateur} ?\n\n• Cette action est irréversible\n• L'utilisateur devra utiliser le nouveau mot de passe\n• Une notification sera envoyée automatiquement\n\nConfirmer la réinitialisation ?`);
+  }
+
+  /**
+   * ✅ Confirmation personnalisée pour l'activation/désactivation
+   */
+  private confirmerToggleActivation(nomUtilisateur: string, action: string): boolean {
+    const actionText = action === 'désactiver' ? 
+      '🔒 DÉSACTIVATION' : 
+      '✅ RÉACTIVATION';
+    
+    const warningText = action === 'désactiver' ? 
+      '• L\'utilisateur ne pourra plus se connecter\n• Ses sessions actives seront fermées\n• Ses permissions seront suspendues' :
+      '• L\'utilisateur pourra à nouveau se connecter\n• Ses permissions seront restaurées\n• Il recevra une notification de réactivation';
+
+    return confirm(`${actionText}\n\nUtilisateur : ${nomUtilisateur}\n\n${warningText}\n\nConfirmer cette action ?`);
   }
 
   /**
