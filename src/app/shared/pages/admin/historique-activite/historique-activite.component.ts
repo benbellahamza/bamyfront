@@ -4,7 +4,7 @@ import { AdminService } from 'app/core/services/admin/admin.service';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import * as XLSX from 'xlsx';
 
-// 🔧 INTERFACES POUR LE TYPAGE
+// 🔧 INTERFACES PROFESSIONNELLES
 interface HistoriqueAction {
   id: number;
   agent: string;
@@ -16,6 +16,13 @@ interface HistoriqueAction {
     ipAddress?: string;
     duration?: number;
   };
+  modifications?: ModificationDetail[];
+}
+
+interface ModificationDetail {
+  champ: string;
+  ancienneValeur: string;
+  nouvelleValeur: string;
 }
 
 interface Utilisateur {
@@ -98,77 +105,87 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     dateFin: ''
   };
 
-  // 📄 ÉTAT DE LA PAGINATION - ✅ OPTIMISÉ POUR AFFICHER PLUS DE LIGNES
+  // 📄 ÉTAT DE LA PAGINATION PROFESSIONNEL
   private paginationState: PaginationState = {
     currentPage: 1,
-    itemsPerPage: 15, // ✅ AUGMENTÉ DE 10 À 15 POUR PLUS D'AFFICHAGE
+    itemsPerPage: 12, // Optimisé pour l'affichage en timeline
     totalItems: 0
   };
 
-  // 🔄 ÉTAT DU TRI - ✅ PUBLIC POUR ACCÈS DEPUIS LE TEMPLATE
+  // 🔄 ÉTAT DU TRI
   sortState: SortState = {
     column: 'dateAction',
     direction: 'desc'
   };
   
-  // ✅ SÉLECTION
+  // ✅ SÉLECTION ET UTILITAIRES
   lignesSelectionnees = new Set<number>();
-  toutSelectionner = false;
-  
-  // 🛠️ UTILITAIRES
-  Math = Math;
   actionSelectionnee: HistoriqueAction | null = null;
   isLoading = false;
   
-  // 👥 BASE DE DONNÉES DES AGENTS - ✅ ENRICHIE POUR MEILLEURE RECHERCHE
+  // 👥 BASE DE DONNÉES ENRICHIE DES AGENTS
   private agents: Utilisateur[] = [
     { 
       nom: 'Dupont', 
       prenom: 'Jean', 
       email: 'jean.dupont@bamytrucks.com', 
-      role: 'Administrateur',
+      role: 'Administrateur Système',
       isActive: true
     },
     { 
       nom: 'Martin', 
       prenom: 'Marie', 
       email: 'marie.martin@bamytrucks.com', 
-      role: 'Agent sécurité',
+      role: 'Agent de Sécurité Senior',
       isActive: true
     },
     { 
       nom: 'Bernard', 
       prenom: 'Pierre', 
       email: 'pierre.bernard@bamytrucks.com', 
-      role: 'Superviseur',
+      role: 'Superviseur Opérations',
       isActive: true
     },
     { 
       nom: 'Durand', 
       prenom: 'Sophie', 
       email: 'sophie.durand@bamytrucks.com', 
-      role: 'Agent accueil',
+      role: 'Agent d\'Accueil',
       isActive: true
     },
     { 
       nom: 'Moreau', 
       prenom: 'Paul', 
       email: 'paul.moreau@bamytrucks.com', 
-      role: 'Agent sécurité',
+      role: 'Agent de Sécurité',
       isActive: false
     },
     { 
       nom: 'Leroy', 
       prenom: 'Emma', 
       email: 'emma.leroy@bamytrucks.com', 
-      role: 'Responsable',
+      role: 'Responsable Logistique',
       isActive: true
     },
     { 
       nom: 'Roux', 
       prenom: 'Thomas', 
       email: 'thomas.roux@bamytrucks.com', 
-      role: 'Agent sécurité',
+      role: 'Agent de Sécurité',
+      isActive: true
+    },
+    {
+      nom: 'Garcia',
+      prenom: 'Carlos',
+      email: 'carlos.garcia@bamytrucks.com',
+      role: 'Coordinateur Sécurité',
+      isActive: true
+    },
+    {
+      nom: 'Lambert',
+      prenom: 'Julie',
+      email: 'julie.lambert@bamytrucks.com',
+      role: 'Agent de Maintenance',
       isActive: true
     }
   ];
@@ -217,10 +234,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeComponent();
     this.setupSearchDebounce();
-    this.optimizeDisplayForMaxLines();
-    
-    console.log(`🎯 Affichage ultra-optimisé : ${this.paginationState.itemsPerPage} éléments par page`);
-    console.log(`📊 Optimisations activées pour plus de lignes visibles`);
+    console.log('🎯 Interface professionnelle initialisée avec succès');
   }
 
   ngOnDestroy(): void {
@@ -228,55 +242,16 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // 🚀 INITIALISATION
+  // 🚀 INITIALISATION PROFESSIONNELLE
   private initializeComponent(): void {
     this.chargerHistorique();
     this.setupKeyboardShortcuts();
   }
 
-  // ✅ OPTIMISATION POUR AFFICHER PLUS DE LIGNES
-  private optimizeDisplayForMaxLines(): void {
-    // Calcul dynamique de la hauteur disponible
-    const calculateAvailableHeight = () => {
-      const viewport = window.innerHeight;
-      const headerHeight = 64; // 4rem
-      const footerHeight = 40; // 2.5rem
-      const toolbarHeight = 96; // 6rem (réduit de 8rem)
-      const paginationHeight = 48; // 3rem (réduit de 4rem)
-      const margins = 32; // 2rem de marges
-      
-      return viewport - headerHeight - footerHeight - toolbarHeight - paginationHeight - margins;
-    };
-
-    // Calcul du nombre optimal de lignes affichables
-    const calculateOptimalItemsPerPage = () => {
-      const availableHeight = calculateAvailableHeight();
-      const rowHeight = 40; // 2.5rem par ligne (réduit de 3rem)
-      const headerTableHeight = 48; // 3rem pour l'en-tête
-      const effectiveHeight = availableHeight - headerTableHeight;
-      
-      const maxItems = Math.floor(effectiveHeight / rowHeight);
-      
-      // Retourner entre 15 et 25 éléments selon l'espace disponible
-      return Math.max(15, Math.min(25, maxItems));
-    };
-
-    // Ajuster dynamiquement selon la taille de l'écran
-    this.paginationState.itemsPerPage = calculateOptimalItemsPerPage();
-    
-    // Réajuster lors du redimensionnement
-    window.addEventListener('resize', () => {
-      this.paginationState.itemsPerPage = calculateOptimalItemsPerPage();
-      this.appliquerFiltres();
-    });
-
-    console.log(`✅ Optimisation : ${this.paginationState.itemsPerPage} lignes calculées pour votre écran`);
-  }
-
-  // 🔍 CONFIGURATION DE LA RECHERCHE AVEC DEBOUNCE - ✅ AMÉLIORÉE
+  // 🔍 CONFIGURATION DE LA RECHERCHE PROFESSIONNELLE
   private setupSearchDebounce(): void {
     this.searchSubject.pipe(
-      debounceTime(200), // Réduit pour une recherche plus réactive
+      debounceTime(300),
       distinctUntilChanged(),
       takeUntil(this.destroy$)
     ).subscribe(() => {
@@ -284,7 +259,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ⌨️ RACCOURCIS CLAVIER
+  // ⌨️ RACCOURCIS CLAVIER PROFESSIONNELS
   @HostListener('window:keydown', ['$event'])
   handleKeyboardShortcut(event: KeyboardEvent): void {
     if (event.ctrlKey || event.metaKey) {
@@ -295,56 +270,27 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
           break;
         case 'r':
           event.preventDefault();
-          this.reinitialiserFiltres();
+          this.rafraichirDonnees();
           break;
         case 'e':
           event.preventDefault();
           this.exporterExcelFiltre();
           break;
-        case 'arrowup':
-          event.preventDefault();
-          this.pagePrecedente();
-          break;
-        case 'arrowdown':
-          event.preventDefault();
-          this.pageSuivante();
-          break;
       }
     }
     
-    // ✅ NAVIGATION RAPIDE AVEC LES FLÈCHES
-    if (!event.ctrlKey && !event.metaKey && !event.shiftKey) {
-      switch (event.key) {
-        case 'PageUp':
-          event.preventDefault();
-          this.pagePrecedente();
-          break;
-        case 'PageDown':
-          event.preventDefault();
-          this.pageSuivante();
-          break;
-        case 'Home':
-          event.preventDefault();
-          this.premierePage();
-          break;
-        case 'End':
-          event.preventDefault();
-          this.dernierePage();
-          break;
-        case 'Escape':
-          event.preventDefault();
-          this.fermerDetailsAction();
-          break;
-      }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.fermerDetailsAction();
     }
   }
 
   private setupKeyboardShortcuts(): void {
-    setTimeout(() => this.focusSearchInput(), 300);
+    setTimeout(() => this.focusSearchInput(), 500);
   }
 
   private focusSearchInput(): void {
-    const searchInput = document.querySelector('input[placeholder*="Rechercher"]') as HTMLInputElement;
+    const searchInput = document.querySelector('.search-input') as HTMLInputElement;
     if (searchInput) {
       searchInput.focus();
       searchInput.select();
@@ -359,7 +305,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.showNotification('Mot de passe mis à jour avec succès', 'success');
   }
 
-  // 📊 CHARGEMENT DES DONNÉES
+  // 📊 CHARGEMENT DES DONNÉES PROFESSIONNEL
   chargerHistorique(): void {
     this.isLoading = true;
     this.historiqueService.getHistorique()
@@ -369,7 +315,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
           this.historique = this.enrichirDonneesHistorique(res || []);
           this.appliquerFiltres();
           this.isLoading = false;
-          this.showNotification(`${this.historique.length} actions chargées - Affichage optimisé`, 'info');
+          this.showNotification(`${this.historique.length} activités chargées`, 'success');
         },
         error: (err) => {
           console.error('❌ Erreur chargement historique :', err);
@@ -386,9 +332,9 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return data.map(action => ({
       ...action,
       metadata: {
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent: this.generateRandomUserAgent(),
         ipAddress: this.generateRandomIP(),
-        duration: Math.floor(Math.random() * 5000) + 100,
+        duration: Math.floor(Math.random() * 3000) + 200,
         ...action.metadata
       }
     }));
@@ -398,7 +344,144 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
   }
 
-  // 👤 GESTION DES INFORMATIONS AGENT
+  private generateRandomUserAgent(): string {
+    const userAgents = [
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15'
+    ];
+    return userAgents[Math.floor(Math.random() * userAgents.length)];
+  }
+
+  // 🔍 NOUVELLES MÉTHODES POUR LA GESTION DES MODIFICATIONS
+  
+  // Vérifie si l'action est une modification
+  isModificationAction(action: HistoriqueAction | null): boolean {
+    if (!action) return false;
+    return action.action?.toLowerCase().includes('modification') || 
+           action.typeAction === 'Modification Visiteur' ||
+           action.action?.toLowerCase().includes('modifié') ||
+           action.action?.toLowerCase().includes('modifier');
+  }
+
+  // Extrait les modifications de l'action
+  getModifications(action: HistoriqueAction | null): ModificationDetail[] {
+    if (!action || !this.isModificationAction(action)) {
+      return [];
+    }
+
+    // Si vous avez déjà un champ modifications dans vos données
+    if (action.modifications && Array.isArray(action.modifications)) {
+      return action.modifications;
+    }
+
+    // Sinon, parser la description de l'action
+    return this.parseModificationsFromDescription(action.action || '');
+  }
+
+  // Parse les modifications depuis la description de l'action
+  private parseModificationsFromDescription(description: string): ModificationDetail[] {
+    const modifications: ModificationDetail[] = [];
+    
+    if (!description) return modifications;
+
+    // Format 1: "Nom modifié de 'Hamza' à 'Hamzaaaa'"
+    const regexFormat1 = /(\w+)\s+modifié\s+de\s+['"](.*?)['"]?\s+à\s+['"](.*?)['"]?/gi;
+    let match;
+    
+    while ((match = regexFormat1.exec(description)) !== null) {
+      modifications.push({
+        champ: this.formatFieldName(match[1]),
+        ancienneValeur: match[2],
+        nouvelleValeur: match[3]
+      });
+    }
+
+    // Format 2: "Modification visiteur: nom: Hamza -> Hamzaaaa, téléphone: 123 -> 456"
+    if (modifications.length === 0) {
+      const pairs = description.split(',');
+      pairs.forEach(pair => {
+        const changeMatch = pair.match(/(\w+):\s*(.*?)\s*->\s*(.*?)(?:,|$)/i);
+        if (changeMatch) {
+          modifications.push({
+            champ: this.formatFieldName(changeMatch[1].trim()),
+            ancienneValeur: changeMatch[2].trim(),
+            nouvelleValeur: changeMatch[3].trim()
+          });
+        }
+      });
+    }
+
+    // Format 3: "Modification: [nom: ancien -> nouveau] [email: ancien -> nouveau]"
+    if (modifications.length === 0) {
+      const bracketMatches = description.match(/\[([^\]]+)\]/g);
+      if (bracketMatches) {
+        bracketMatches.forEach(bracket => {
+          const content = bracket.slice(1, -1); // Enlever les crochets
+          const changeMatch = content.match(/(\w+):\s*(.*?)\s*->\s*(.*?)$/i);
+          if (changeMatch) {
+            modifications.push({
+              champ: this.formatFieldName(changeMatch[1].trim()),
+              ancienneValeur: changeMatch[2].trim(),
+              nouvelleValeur: changeMatch[3].trim()
+            });
+          }
+        });
+      }
+    }
+
+    // Format 4: Extraction basique avec mots-clés
+    if (modifications.length === 0 && description.toLowerCase().includes('modification')) {
+      // Rechercher des patterns comme "nom de X à Y" ou "email de X vers Y"
+      const patterns = [
+        /(\w+)\s+de\s+['"](.*?)['"]?\s+(?:à|vers)\s+['"](.*?)['"]?/gi,
+        /(\w+):\s*['"](.*?)['"]?\s*(?:->|→|=>)\s*['"](.*?)['"]?/gi,
+        /Ancien\s+(\w+):\s*['"](.*?)['"]?,?\s*Nouveau\s+\w+:\s*['"](.*?)['"]?/gi
+      ];
+
+      patterns.forEach(pattern => {
+        let match;
+        while ((match = pattern.exec(description)) !== null) {
+          modifications.push({
+            champ: this.formatFieldName(match[1]),
+            ancienneValeur: match[2],
+            nouvelleValeur: match[3]
+          });
+        }
+      });
+    }
+
+    return modifications;
+  }
+
+  // Formate le nom du champ pour l'affichage
+  private formatFieldName(field: string): string {
+    const fieldMappings: { [key: string]: string } = {
+      'nom': 'Nom',
+      'prenom': 'Prénom', 
+      'telephone': 'Téléphone',
+      'email': 'Email',
+      'entreprise': 'Entreprise',
+      'motif': 'Motif de visite',
+      'badge': 'Numéro de badge',
+      'dateVisite': 'Date de visite',
+      'heureEntree': 'Heure d\'entrée',
+      'heureSortie': 'Heure de sortie',
+      'statut': 'Statut',
+      'commentaire': 'Commentaire',
+      'vehicule': 'Véhicule',
+      'accompagnant': 'Accompagnant'
+    };
+    
+    return fieldMappings[field.toLowerCase()] || this.capitalizeFirstLetter(field);
+  }
+
+  private capitalizeFirstLetter(text: string): string {
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  }
+
+  // 👤 GESTION DES INFORMATIONS AGENT PROFESSIONNELLES
   getAgentFullName(agentString: string): string {
     if (!agentString) return 'Agent inconnu';
     
@@ -444,24 +527,26 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     );
   }
 
-  // ✨ NETTOYAGE DU TEXTE D'ACTION
+  // ✨ NETTOYAGE DU TEXTE D'ACTION PROFESSIONNEL
   getCleanActionText(actionText: string): string {
     if (!actionText) return 'Action non définie';
     
     let cleanText = actionText.trim();
     
+    // Supprimer les préfixes courants
     const prefixRegex = /^(Validation Sortie|Ajout Visiteur|Modification Visiteur|Modification)\s*:\s*/i;
     cleanText = cleanText.replace(prefixRegex, '');
     
+    // Nettoyer et formater
     cleanText = cleanText
       .replace(/\s+/g, ' ')
-      .replace(/[^\w\s\u00C0-\u017F]/g, ' ')
+      .replace(/[^\w\s\u00C0-\u017F\-\.]/g, ' ')
       .trim();
     
     return cleanText || 'Action non définie';
   }
 
-  // 🏷️ GESTION DES CATÉGORIES
+  // 🏷️ GESTION DES CATÉGORIES PROFESSIONNELLES
   getCategorieAction(action: HistoriqueAction): string {
     if (!action?.action) return 'Autre';
     
@@ -473,7 +558,9 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       ['connexion', 'Connexion'],
       ['déconnexion', 'Déconnexion'],
       ['export', 'Export'],
-      ['import', 'Import']
+      ['import', 'Import'],
+      ['suppression', 'Suppression'],
+      ['archivage', 'Archivage']
     ]);
 
     for (const [keyword, category] of categorieMap) {
@@ -485,34 +572,24 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return 'Autre';
   }
 
-  // 🔍 FILTRAGE ULTRA OPTIMISÉ - ✅ AMÉLIORÉ POUR LA RECHERCHE PAR NOM/PRÉNOM
+  // 🔍 FILTRAGE PROFESSIONNEL ULTRA OPTIMISÉ
   appliquerFiltres(): void {
     let resultats = [...this.historique];
 
-    // ✅ FILTRE PAR TEXTE ULTRA OPTIMISÉ - FOCUS SUR NOM/PRÉNOM AGENT
+    // Filtre par texte
     if (this.filterState.text) {
       const searchTerm = this.filterState.text.toLowerCase().trim();
       
       resultats = resultats.filter(action => {
-        // ✅ RECHERCHE PRIORITAIRE PAR NOM/PRÉNOM D'AGENT
         const agentFullName = this.getAgentFullName(action.agent).toLowerCase();
-        const agentFirstName = this.getAgentFirstName(action.agent).toLowerCase();
-        const agentLastName = this.getAgentLastName(action.agent).toLowerCase();
+        const actionText = this.getCleanActionText(action.action).toLowerCase();
+        const categorie = this.getCategorieAction(action).toLowerCase();
+        const role = this.getAgentRole(action.agent).toLowerCase();
         
-        // Recherche exacte ou partielle dans nom/prénom
-        const agentMatch = agentFullName.includes(searchTerm) ||
-                          agentFirstName.includes(searchTerm) ||
-                          agentLastName.includes(searchTerm) ||
-                          agentFirstName.startsWith(searchTerm) ||
-                          agentLastName.startsWith(searchTerm);
-        
-        // ✅ RECHERCHE SECONDAIRE DANS LES AUTRES CHAMPS
-        const otherFieldsMatch = this.getCleanActionText(action.action).toLowerCase().includes(searchTerm) ||
-                                this.getCategorieAction(action).toLowerCase().includes(searchTerm) ||
-                                this.getAgentRole(action.agent).toLowerCase().includes(searchTerm);
-        
-        // Priorité à la recherche d'agent, puis aux autres champs
-        return agentMatch || otherFieldsMatch;
+        return agentFullName.includes(searchTerm) ||
+               actionText.includes(searchTerm) ||
+               categorie.includes(searchTerm) ||
+               role.includes(searchTerm);
       });
     }
 
@@ -540,55 +617,8 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.historiqueFiltered = resultats;
     this.paginationState.totalItems = resultats.length;
     
-    // ✅ PAGINATION INTELLIGENTE ULTRA OPTIMISÉE
-    this.smartPagination();
-    
-    this.mettreAJourSelectionTout();
-  }
-
-  // ✅ NOUVELLES MÉTHODES POUR EXTRAIRE NOM/PRÉNOM
-  private getAgentFirstName(agentString: string): string {
-    const agent = this.findAgentByString(agentString);
-    if (agent) return agent.prenom;
-    
-    const fullName = this.getAgentFullName(agentString);
-    const parts = fullName.split(' ');
-    return parts[0] || '';
-  }
-
-  private getAgentLastName(agentString: string): string {
-    const agent = this.findAgentByString(agentString);
-    if (agent) return agent.nom;
-    
-    const fullName = this.getAgentFullName(agentString);
-    const parts = fullName.split(' ');
-    return parts[1] || '';
-  }
-
-  // ✅ PAGINATION INTELLIGENTE ULTRA OPTIMISÉE
-  private smartPagination(): void {
-    const totalItems = this.historiqueFiltered.length;
-    const currentItemsPerPage = this.paginationState.itemsPerPage;
-    
-    // Si on a moins d'éléments que ce qu'on peut afficher, ajuster
-    if (totalItems <= currentItemsPerPage && totalItems > 0) {
-      this.paginationState.currentPage = 1;
-    }
-    
-    // Si on est sur une page qui n'existe plus après filtrage
-    const maxPage = this.totalPages();
-    if (this.paginationState.currentPage > maxPage && maxPage > 0) {
-      this.paginationState.currentPage = maxPage;
-    }
-    
-    // ✅ OPTIMISATION : Ajuster le nombre d'éléments par page selon les résultats
-    if (totalItems > 0 && totalItems < this.paginationState.itemsPerPage) {
-      // Si on a moins de résultats que la capacité, on peut en afficher plus sur d'autres pages
-      const optimalItemsPerPage = Math.min(25, Math.max(15, totalItems));
-      if (optimalItemsPerPage !== this.paginationState.itemsPerPage) {
-        console.log(`📊 Ajustement dynamique : ${optimalItemsPerPage} éléments par page`);
-      }
-    }
+    // Pagination intelligente
+    this.adjustPagination();
   }
 
   private filtrerParPeriode(data: HistoriqueAction[]): HistoriqueAction[] {
@@ -646,7 +676,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return startOfWeek;
   }
 
-  // 🔄 TRI OPTIMISÉ
+  // 🔄 TRI PROFESSIONNEL
   private trierResultats(data: HistoriqueAction[]): HistoriqueAction[] {
     return data.sort((a, b) => {
       let valA: any, valB: any;
@@ -685,9 +715,24 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.appliquerFiltres();
   }
 
-  // 📄 PAGINATION ULTRA OPTIMISÉE - ✅ MÉTHODES AMÉLIORÉES
+  // 📄 PAGINATION PROFESSIONNELLE
+  private adjustPagination(): void {
+    const totalItems = this.historiqueFiltered.length;
+    const maxPage = this.totalPages();
+    
+    if (this.paginationState.currentPage > maxPage && maxPage > 0) {
+      this.paginationState.currentPage = maxPage;
+    }
+  }
+
   historiqueFiltre(): HistoriqueAction[] {
     return this.historiqueFiltered;
+  }
+
+  getPaginatedData(): HistoriqueAction[] {
+    const startIndex = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage;
+    const endIndex = startIndex + this.paginationState.itemsPerPage;
+    return this.historiqueFiltered.slice(startIndex, endIndex);
   }
 
   totalPages(): number {
@@ -698,28 +743,26 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   changerPage(page: number): void {
     if (page >= 1 && page <= this.totalPages()) {
       this.paginationState.currentPage = page;
-      // ✅ SCROLL VERS LE HAUT APRÈS CHANGEMENT DE PAGE
       this.scrollToTop();
     }
   }
 
-  // ✅ PAGINATION ULTRA COMPACTE ET STYLÉE
   getPagesArray(): number[] {
     const total = this.totalPages();
-    const maxPagesToShow = 5; // ✅ COMPACT POUR STYLE OPTIMISÉ
+    const maxPagesToShow = 7;
     const currentPage = this.paginationState.currentPage;
     
     if (total <= maxPagesToShow) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
     
-    const start = Math.max(1, currentPage - 2);
+    const start = Math.max(1, currentPage - 3);
     const end = Math.min(total, start + maxPagesToShow - 1);
     
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
-  // ✅ MÉTHODES DE NAVIGATION PAGINATION OPTIMISÉES
+  // ✅ MÉTHODES DE NAVIGATION PAGINATION
   pagePrecedente(): void {
     if (this.pageActuelle > 1) {
       this.changerPage(this.pageActuelle - 1);
@@ -741,462 +784,664 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   }
 
   private scrollToTop(): void {
-    const tableContainer = document.querySelector('.table-scroll-container');
-    if (tableContainer) {
-      tableContainer.scrollTop = 0;
-    }
-    
-    // ✅ SCROLL FLUIDE VERS LE HAUT DU TABLEAU
-    const mainContainer = document.querySelector('.table-container-optimized');
-    if (mainContainer) {
-      mainContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const timelineContainer = document.querySelector('.activities-timeline');
+    if (timelineContainer) {
+      timelineContainer.scrollTop = 0;
     }
   }
 
-  // ✅ GESTION DE LA SÉLECTION OPTIMISÉE
+  // ✅ GESTION DE LA SÉLECTION PROFESSIONNELLE
   toggleSelection(id: number): void {
     if (this.lignesSelectionnees.has(id)) {
       this.lignesSelectionnees.delete(id);
     } else {
       this.lignesSelectionnees.add(id);
     }
-    this.mettreAJourSelectionTout();
   }
 
-  toggleSelectionTout(): void {
-    const donneesPage = this.getDonneesPageActuelle();
-    
-    if (this.toutSelectionner) {
-      donneesPage.forEach(item => this.lignesSelectionnees.add(item.id));
-    } else {
-      donneesPage.forEach(item => this.lignesSelectionnees.delete(item.id));
-    }
-    
-    this.mettreAJourSelectionTout();
-  }
-
-  selectionnerTous(): void {
-    const donneesPage = this.getDonneesPageActuelle();
-    donneesPage.forEach(item => this.lignesSelectionnees.add(item.id));
-    this.mettreAJourSelectionTout();
-    this.showNotification(`${donneesPage.length} éléments sélectionnés`, 'success');
-  }
-
-  deselectionnerTous(): void {
-    this.lignesSelectionnees.clear();
-    this.toutSelectionner = false;
-    this.showNotification('Sélection effacée', 'info');
-  }
-
-  private getDonneesPageActuelle(): HistoriqueAction[] {
-    const debut = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage;
-    const fin = debut + this.paginationState.itemsPerPage;
-    return this.historiqueFiltered.slice(debut, fin);
-  }
-
-  private mettreAJourSelectionTout(): void {
-    const donneesPage = this.getDonneesPageActuelle();
-    const toutesSelectionnees = donneesPage.length > 0 && 
-      donneesPage.every(item => this.lignesSelectionnees.has(item.id));
-    this.toutSelectionner = toutesSelectionnees;
-  }
-
-  // ✅ NOUVELLES MÉTHODES POUR LA GESTION DES DÉTAILS
+  // 🔍 DÉTAILS DE L'ACTION
   ouvrirDetailsAction(action: HistoriqueAction): void {
     this.actionSelectionnee = action;
     console.log('🔍 Ouverture des détails pour l\'action :', action.id);
-    this.showNotification(`Détails de l'action #${action.id} affichés`, 'info');
   }
 
   fermerDetailsAction(): void {
-    this.actionSelectionnee = null;
-    console.log('❌ Fermeture des détails de l\'action');
-  }
+   this.actionSelectionnee = null;
+ }
 
-  // ✅ MÉTHODES HELPER POUR LA MODALE (TYPE-SAFE)
-  getActionAgent(action: HistoriqueAction | null): string {
-    if (!action?.agent) return '?';
-    return this.getAgentInitials(action.agent);
-  }
+ // ✅ MÉTHODES HELPER POUR LA MODALE PROFESSIONNELLE
+ getActionAgent(action: HistoriqueAction | null): string {
+   if (!action?.agent) return '?';
+   return this.getAgentInitials(action.agent);
+ }
 
-  getActionAgentFullName(action: HistoriqueAction | null): string {
-    if (!action?.agent) return 'Agent inconnu';
-    return this.getAgentFullName(action.agent);
-  }
+ getActionAgentFullName(action: HistoriqueAction | null): string {
+   if (!action?.agent) return 'Agent inconnu';
+   return this.getAgentFullName(action.agent);
+ }
 
-  getActionAgentRole(action: HistoriqueAction | null): string {
-    if (!action?.agent) return 'Rôle inconnu';
-    return this.getAgentRole(action.agent);
-  }
+ getActionAgentRole(action: HistoriqueAction | null): string {
+   if (!action?.agent) return 'Rôle inconnu';
+   return this.getAgentRole(action.agent);
+ }
 
-  getActionAgentStatus(action: HistoriqueAction | null): 'actif' | 'inactif' {
-    if (!action?.agent) return 'inactif';
-    return this.getAgentStatus(action.agent);
-  }
+ getActionAgentStatus(action: HistoriqueAction | null): 'actif' | 'inactif' {
+   if (!action?.agent) return 'inactif';
+   return this.getAgentStatus(action.agent);
+ }
 
-  getActionCategorie(action: HistoriqueAction | null): string {
-    if (!action) return 'Type inconnu';
-    return this.getCategorieAction(action);
-  }
+ getActionCategorie(action: HistoriqueAction | null): string {
+   if (!action) return 'Type inconnu';
+   return this.getCategorieAction(action);
+ }
 
-  getActionBadgeClass(action: HistoriqueAction | null): string {
-    if (!action) return 'bg-slate-100 text-slate-800';
-    return this.getBadgeClass(this.getCategorieAction(action));
-  }
+ getActionDate(action: HistoriqueAction | null): string {
+   if (!action?.dateAction) return 'Date inconnue';
+   return new Date(action.dateAction).toLocaleDateString('fr-FR', {
+     weekday: 'long',
+     year: 'numeric',
+     month: 'long',
+     day: 'numeric'
+   });
+ }
 
-  getActionDotClass(action: HistoriqueAction | null): string {
-    if (!action) return 'w-1.5 h-1.5 rounded-full mr-1.5 bg-slate-500';
-    return this.getDotClass(this.getCategorieAction(action));
-  }
+ getActionTime(action: HistoriqueAction | null): string {
+   if (!action?.dateAction) return 'Heure inconnue';
+   return new Date(action.dateAction).toLocaleTimeString('fr-FR');
+ }
 
-  getActionDate(action: HistoriqueAction | null): string {
-    if (!action?.dateAction) return 'Date inconnue';
-    return new Date(action.dateAction).toLocaleDateString('fr-FR');
-  }
+ getActionDateTime(action: HistoriqueAction | null): string {
+   if (!action?.dateAction) return 'Date inconnue';
+   return new Date(action.dateAction).toLocaleString('fr-FR');
+ }
 
-  getActionTime(action: HistoriqueAction | null): string {
-    if (!action?.dateAction) return 'Heure inconnue';
-    return new Date(action.dateAction).toLocaleTimeString('fr-FR');
-  }
+ getActionId(action: HistoriqueAction | null): string {
+   return action?.id?.toString() || 'N/A';
+ }
 
-  getActionDateTime(action: HistoriqueAction | null): string {
-    if (!action?.dateAction) return 'Date inconnue';
-    return new Date(action.dateAction).toLocaleString('fr-FR');
-  }
+ getActionDuration(action: HistoriqueAction | null): number | null {
+   return action?.metadata?.duration || null;
+ }
 
-  getActionId(action: HistoriqueAction | null): string {
-    return action?.id?.toString() || 'N/A';
-  }
+ getActionIP(action: HistoriqueAction | null): string | null {
+   return action?.metadata?.ipAddress || null;
+ }
 
-  getActionDuration(action: HistoriqueAction | null): number | null {
-    return action?.metadata?.duration || null;
-  }
+ getActionBrowser(action: HistoriqueAction | null): string {
+   const userAgent = action?.metadata?.userAgent;
+   return this.getBrowserFromUserAgent(userAgent);
+ }
 
-  getActionIP(action: HistoriqueAction | null): string | null {
-    return action?.metadata?.ipAddress || null;
-  }
+ getActionDescription(action: HistoriqueAction | null): string {
+   if (!action?.action) return 'Description indisponible';
+   return this.getCleanActionText(action.action);
+ }
 
-  getActionUserAgent(action: HistoriqueAction | null): string | null {
-    return action?.metadata?.userAgent || null;
-  }
+ getBrowserFromUserAgent(userAgent: string | undefined): string {
+   if (!userAgent) return 'Navigateur inconnu';
+   
+   if (userAgent.includes('Chrome')) return 'Google Chrome';
+   if (userAgent.includes('Firefox')) return 'Mozilla Firefox';
+   if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
+   if (userAgent.includes('Edge')) return 'Microsoft Edge';
+   if (userAgent.includes('Opera')) return 'Opera';
+   
+   return 'Autre navigateur';
+ }
 
-  getActionBrowser(action: HistoriqueAction | null): string {
-    const userAgent = action?.metadata?.userAgent;
-    return this.getBrowserFromUserAgent(userAgent);
-  }
+ // 📊 STATISTIQUES PROFESSIONNELLES
+ getStatsByType(type: string): number {
+   return this.historique.filter(action => 
+     this.getCategorieAction(action) === type
+   ).length;
+ }
 
-  getActionDescription(action: HistoriqueAction | null): string {
-    if (!action?.action) return 'Description indisponible';
-    return this.getCleanActionText(action.action);
-  }
+ getActiveAgentsCount(): number {
+   const activeAgents = new Set(
+     this.historique
+       .map(action => action.agent)
+       .filter(agent => this.getAgentStatus(agent) === 'actif')
+   );
+   return activeAgents.size;
+ }
 
-  // ✅ MÉTHODE POUR EXTRAIRE LE NAVIGATEUR DU USER AGENT
-  getBrowserFromUserAgent(userAgent: string | undefined): string {
-    if (!userAgent) return 'Navigateur inconnu';
-    
-    if (userAgent.includes('Chrome')) return 'Google Chrome';
-    if (userAgent.includes('Firefox')) return 'Mozilla Firefox';
-    if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
-    if (userAgent.includes('Edge')) return 'Microsoft Edge';
-    if (userAgent.includes('Opera')) return 'Opera';
-    
-    return 'Autre navigateur';
-  }
+ // 🎨 MÉTHODES POUR LES STYLES PROFESSIONNELS
+ getTimelineColor(action: HistoriqueAction): string {
+   const colorMap = new Map([
+     ['Ajout Visiteur', '#10b981'],
+     ['Modification Visiteur', '#f59e0b'],
+     ['Validation Sortie', '#3b82f6'],
+     ['Connexion', '#8b5cf6'],
+     ['Déconnexion', '#6b7280'],
+     ['Export', '#ec4899'],
+     ['Import', '#06b6d4']
+   ]);
 
-  // 📊 STATISTIQUES OPTIMISÉES
-  nombreCreations(): number {
-    return this.historiqueFiltered.filter(a => 
-      this.getCategorieAction(a) === 'Ajout Visiteur'
-    ).length;
-  }
+   return colorMap.get(this.getCategorieAction(action)) || '#64748b';
+ }
 
-  nombreModifications(): number {
-    return this.historiqueFiltered.filter(a => 
-      this.getCategorieAction(a) === 'Modification Visiteur'
-    ).length;
-  }
+ getActionBadgeClass(action: HistoriqueAction): string {
+   const baseClasses = 'action-badge';
+   const badgeMap = new Map([
+     ['Ajout Visiteur', `${baseClasses} badge-create`],
+     ['Modification Visiteur', `${baseClasses} badge-update`],
+     ['Validation Sortie', `${baseClasses} badge-validate`],
+     ['Connexion', `${baseClasses} badge-other`],
+     ['Déconnexion', `${baseClasses} badge-other`],
+     ['Export', `${baseClasses} badge-other`],
+     ['Import', `${baseClasses} badge-other`]
+   ]);
 
-  // 📤 EXPORT EXCEL ULTRA OPTIMISÉ
-  exporterExcelTout(): void {
-    if (this.historique.length === 0) {
-      this.showNotification('Aucune donnée à exporter', 'warning');
-      return;
-    }
-    this.exporterExcel(this.historique, `historique_complet_${new Date().toISOString().split('T')[0]}.xlsx`);
-  }
+   return badgeMap.get(this.getCategorieAction(action)) || `${baseClasses} badge-other`;
+ }
 
-  exporterExcelFiltre(): void {
-    if (this.historiqueFiltered.length === 0) {
-      this.showNotification('Aucune donnée filtrée à exporter', 'warning');
-      return;
-    }
-    this.exporterExcel(this.historiqueFiltered, `historique_filtre_${new Date().toISOString().split('T')[0]}.xlsx`);
-  }
+ getBadgeIndicatorClass(action: HistoriqueAction): string {
+   const indicatorMap = new Map([
+     ['Ajout Visiteur', 'bg-emerald-500'],
+     ['Modification Visiteur', 'bg-amber-500'],
+     ['Validation Sortie', 'bg-blue-500'],
+     ['Connexion', 'bg-purple-500'],
+     ['Déconnexion', 'bg-gray-500'],
+     ['Export', 'bg-pink-500'],
+     ['Import', 'bg-cyan-500']
+   ]);
 
-  exporterExcelSelection(): void {
-    if (this.lignesSelectionnees.size === 0) {
-      this.showNotification('Aucune ligne sélectionnée pour l\'export', 'warning');
-      return;
-    }
-    
-    const selection = this.historique.filter(item => 
-      this.lignesSelectionnees.has(item.id)
-    );
-    this.exporterExcel(selection, `historique_selection_${new Date().toISOString().split('T')[0]}.xlsx`);
-  }
+   return indicatorMap.get(this.getCategorieAction(action)) || 'bg-slate-500';
+ }
 
-  exporterExcel(data: HistoriqueAction[], fileName: string): void {
-    try {
-      this.showNotification('📊 Préparation de l\'export optimisé...', 'info');
-      
-      const dataToExport = data.map((item, index) => ({
-        'N°': index + 1,
-        'Agent': this.getAgentFullName(item.agent),
-        'Rôle': this.getAgentRole(item.agent),
-        'Statut Agent': this.getAgentStatus(item.agent) === 'actif' ? 'Actif' : 'Inactif',
-        'Type d\'action': this.getCategorieAction(item),
-        'Description': this.getCleanActionText(item.action),
-        'Date': item.dateAction ? new Date(item.dateAction).toLocaleDateString('fr-FR') : 'N/A',
-        'Heure': item.dateAction ? new Date(item.dateAction).toLocaleTimeString('fr-FR') : 'N/A',
-        'Durée (ms)': item.metadata?.duration || 'N/A',
-        'Adresse IP': item.metadata?.ipAddress || 'N/A',
-        'Navigateur': item.metadata?.userAgent ? this.getBrowserFromUserAgent(item.metadata.userAgent) : 'N/A',
-        'ID': item.id
-      }));
+ // ⏰ GESTION DU TEMPS RELATIF
+ getRelativeTime(dateString: string): string {
+   if (!dateString) return 'Date inconnue';
+   
+   const date = new Date(dateString);
+   const now = new Date();
+   const diffMs = now.getTime() - date.getTime();
+   const diffMinutes = Math.floor(diffMs / (1000 * 60));
+   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-      
-      const columnWidths = [
-        { wch: 5 }, { wch: 25 }, { wch: 18 }, { wch: 12 }, { wch: 20 },
-        { wch: 50 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 20 }, { wch: 10 }
-      ];
-      worksheet['!cols'] = columnWidths;
+   if (diffMinutes < 1) return 'À l\'instant';
+   if (diffMinutes < 60) return `Il y a ${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+   if (diffHours < 24) return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
+   if (diffDays < 7) return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+   
+   return date.toLocaleDateString('fr-FR');
+ }
 
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
-      
-      workbook.Props = {
-        Title: 'Historique des Actions - BAMY TRUCKS (Optimisé)',
-        Subject: `Export optimisé de ${data.length} actions d'historique`,
-        Author: 'BAMY TRUCKS System',
-        CreatedDate: new Date(),
-        Comments: `Généré le ${new Date().toLocaleString('fr-FR')} - ${data.length} enregistrements - Affichage optimisé pour plus de lignes`
-      };
-      
-      XLSX.writeFile(workbook, fileName);
-      
-      this.showNotification(
-        `✅ Export Excel réussi : ${fileName} (${data.length} enregistrements)`, 
-        'success'
-      );
-      
-    } catch (error) {
-      console.error('❌ Erreur lors de l\'export Excel :', error);
-      this.showNotification('❌ Erreur lors de l\'export Excel', 'error');
-    }
-  }
+ // 📤 EXPORT EXCEL PROFESSIONNEL
+ exporterExcelTout(): void {
+   if (this.historique.length === 0) {
+     this.showNotification('Aucune donnée à exporter', 'warning');
+     return;
+   }
+   this.exporterExcel(this.historique, `historique_complet_${this.getFormattedDate()}.xlsx`);
+ }
 
-  // 🔄 RÉINITIALISATION OPTIMISÉE
-  reinitialiserFiltres(): void {
-    this.filterState = {
-      text: '',
-      typeAction: '',
-      periode: '',
-      dateDebut: '',
-      dateFin: ''
-    };
-    
-    this.paginationState.currentPage = 1;
-    this.lignesSelectionnees.clear();
-    this.toutSelectionner = false;
-    
-    this.sortState = {
-      column: 'dateAction',
-      direction: 'desc'
-    };
-    
-    this.appliquerFiltres();
-    this.showNotification('🔄 Données actualisées - Affichage optimisé', 'info');
-  }
+ exporterExcelFiltre(): void {
+   if (this.historiqueFiltered.length === 0) {
+     this.showNotification('Aucune donnée filtrée à exporter', 'warning');
+     return;
+   }
+   this.exporterExcel(this.historiqueFiltered, `historique_filtre_${this.getFormattedDate()}.xlsx`);
+ }
 
-  // 🎨 MÉTHODES POUR LES CLASSES CSS DYNAMIQUES OPTIMISÉES
-  getRowClass(action: HistoriqueAction): string {
-    const classes = ['hover:bg-slate-50', 'transition-all', 'duration-200'];
-    
-    if (this.lignesSelectionnees.has(action.id)) {
-      classes.push('bg-blue-50', 'border-l-4', 'border-blue-400');
-    }
-    
-    const status = this.getAgentStatus(action.agent);
-    if (status === 'inactif') {
-      classes.push('opacity-75');
-    }
-    
-    return classes.join(' ');
-  }
+ private exporterExcel(data: HistoriqueAction[], fileName: string): void {
+   try {
+     this.showNotification('📊 Préparation de l\'export Excel...', 'info');
+     
+     const dataToExport = data.map((item, index) => ({
+       'N°': index + 1,
+       'Agent': this.getAgentFullName(item.agent),
+       'Rôle': this.getAgentRole(item.agent),
+       'Statut Agent': this.getAgentStatus(item.agent) === 'actif' ? 'Actif' : 'Inactif',
+       'Type d\'action': this.getCategorieAction(item),
+       'Description': this.getCleanActionText(item.action),
+       'Date': item.dateAction ? new Date(item.dateAction).toLocaleDateString('fr-FR') : 'N/A',
+       'Heure': item.dateAction ? new Date(item.dateAction).toLocaleTimeString('fr-FR') : 'N/A',
+       'Durée (ms)': item.metadata?.duration || 'N/A',
+       'Adresse IP': item.metadata?.ipAddress || 'N/A',
+       'Navigateur': this.getBrowserFromUserAgent(item.metadata?.userAgent) || 'N/A',
+       'ID': item.id
+     }));
 
-  getBadgeClass(categorie: string): string {
-    const baseClasses = 'inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold transition-all duration-300 hover:scale-105';
-    const badgeMap = new Map([
-      ['Ajout Visiteur', `${baseClasses} bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-200`],
-      ['Modification Visiteur', `${baseClasses} bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200`],
-      ['Validation Sortie', `${baseClasses} bg-blue-100 text-blue-800 hover:bg-blue-200 border border-blue-200`],
-      ['Connexion', `${baseClasses} bg-indigo-100 text-indigo-800 hover:bg-indigo-200 border border-indigo-200`],
-      ['Déconnexion', `${baseClasses} bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200`],
-      ['Export', `${baseClasses} bg-purple-100 text-purple-800 hover:bg-purple-200 border border-purple-200`],
-      ['Import', `${baseClasses} bg-cyan-100 text-cyan-800 hover:bg-cyan-200 border border-cyan-200`]
-    ]);
+     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+     
+     const columnWidths = [
+       { wch: 5 }, { wch: 25 }, { wch: 20 }, { wch: 12 }, { wch: 20 },
+       { wch: 50 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 20 }, { wch: 10 }
+     ];
+     worksheet['!cols'] = columnWidths;
 
-    return badgeMap.get(categorie) || `${baseClasses} bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-200`;
-  }
+     const workbook = XLSX.utils.book_new();
+     XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
+     
+     workbook.Props = {
+       Title: 'Historique des Actions - BAMY TRUCKS',
+       Subject: `Export professionnel de ${data.length} actions d'historique`,
+       Author: 'BAMY TRUCKS System',
+       CreatedDate: new Date(),
+       Comments: `Généré le ${new Date().toLocaleString('fr-FR')} - Interface professionnelle`
+     };
+     
+     XLSX.writeFile(workbook, fileName);
+     
+     this.showNotification(
+       `✅ Export Excel réussi : ${data.length} enregistrements exportés`, 
+       'success'
+     );
+     
+   } catch (error) {
+     console.error('❌ Erreur lors de l\'export Excel :', error);
+     this.showNotification('❌ Erreur lors de l\'export Excel', 'error');
+   }
+ }
 
-  getDotClass(categorie: string): string {
-    const baseClasses = 'w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0';
-    const dotMap = new Map([
-      ['Ajout Visiteur', `${baseClasses} bg-emerald-500`],
-      ['Modification Visiteur', `${baseClasses} bg-amber-500`],
-      ['Validation Sortie', `${baseClasses} bg-blue-500`],
-      ['Connexion', `${baseClasses} bg-indigo-500`],
-      ['Déconnexion', `${baseClasses} bg-gray-500`],
-      ['Export', `${baseClasses} bg-purple-500`],
-      ['Import', `${baseClasses} bg-cyan-500`]
-    ]);
+ private getFormattedDate(): string {
+   return new Date().toISOString().split('T')[0];
+ }
 
-    return dotMap.get(categorie) || `${baseClasses} bg-slate-500`;
-  }
+ // 🔄 UTILITAIRES PROFESSIONNELS
+ rafraichirDonnees(): void {
+   this.chargerHistorique();
+ }
 
-  // 🔔 SYSTÈME DE NOTIFICATIONS OPTIMISÉ
-  private showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info'): void {
-    console.log(`[${type.toUpperCase()}] ${message}`);
-    
-    if (typeof window !== 'undefined') {
-      const iconMap = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️'
-      };
-      
-      const colorMap = {
-        success: 'from-green-500 to-green-600',
-        error: 'from-red-500 to-red-600',
-        warning: 'from-orange-500 to-orange-600',
-        info: 'from-blue-500 to-blue-600'
-      };
-      
-      const notification = document.createElement('div');
-      notification.className = `fixed top-20 right-6 z-[9999] px-4 py-3 rounded-xl shadow-2xl transform translate-x-full transition-all duration-500 max-w-md bg-gradient-to-r ${colorMap[type]} text-white`;
-      
-      notification.innerHTML = `
-        <div class="flex items-center gap-3">
-          <div class="flex-shrink-0 text-lg">${iconMap[type]}</div>
-          <span class="font-medium text-sm">${message}</span>
-          <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white/80 hover:text-white transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-      `;
-      
-      document.body.appendChild(notification);
-      
-      // Animation d'entrée
-      setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-      }, 100);
-      
-      // Animation de sortie et suppression automatique
-      setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-          if (document.body.contains(notification)) {
-            document.body.removeChild(notification);
-          }
-        }, 500);
-      }, 3000);
-    }
-  }
+ clearAllFilters(): void {
+   this.filterState = {
+     text: '',
+     typeAction: '',
+     periode: '',
+     dateDebut: '',
+     dateFin: ''
+   };
+   
+   this.paginationState.currentPage = 1;
+   this.lignesSelectionnees.clear();
+   
+   this.sortState = {
+     column: 'dateAction',
+     direction: 'desc'
+   };
+   
+   this.appliquerFiltres();
+   this.showNotification('🔄 Filtres réinitialisés', 'info');
+ }
 
-  // 🎯 MÉTHODES D'OPTIMISATION DE PERFORMANCE
-  trackByActionId(index: number, action: HistoriqueAction): number {
-    return action.id;
-  }
+ hasActiveFilters(): boolean {
+   return !!(
+     this.filterState.text ||
+     this.filterState.typeAction ||
+     this.filterState.periode ||
+     this.filterState.dateDebut ||
+     this.filterState.dateFin
+   );
+ }
 
-  // ✅ MÉTHODES ULTRA OPTIMISÉES POUR L'AFFICHAGE ET LES STATISTIQUES
-  getVisibleItemsCount(): number {
-    const startIndex = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage;
-    const endIndex = Math.min(startIndex + this.paginationState.itemsPerPage, this.historiqueFiltered.length);
-    return endIndex - startIndex;
-  }
+ // 📊 INFORMATIONS DE PAGINATION PROFESSIONNELLES
+ getPaginationInfo(): { start: number; end: number; total: number } {
+   const total = this.historiqueFiltered.length;
+   if (total === 0) {
+     return { start: 0, end: 0, total: 0 };
+   }
+   
+   const start = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage + 1;
+   const end = Math.min(this.paginationState.currentPage * this.paginationState.itemsPerPage, total);
+   
+   return { start, end, total };
+ }
 
-  getCurrentPageData(): HistoriqueAction[] {
-    const startIndex = (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage;
-    const endIndex = startIndex + this.paginationState.itemsPerPage;
-    return this.historiqueFiltered.slice(startIndex, endIndex);
-  }
+ getSearchResultsInfo(): string {
+   const total = this.historiqueFiltered.length;
+   const hasFilter = this.hasActiveFilters();
+   
+   if (!hasFilter) {
+     return `${total} activité${total > 1 ? 's' : ''} au total`;
+   }
+   
+   const originalTotal = this.historique.length;
+   return `${total} résultat${total > 1 ? 's' : ''} sur ${originalTotal}`;
+ }
 
-  // ✅ INFORMATIONS DE PAGINATION ULTRA OPTIMISÉES POUR L'AFFICHAGE
-  getPaginationInfo(): { start: number; end: number; total: number } {
-    const start = Math.max(1, (this.paginationState.currentPage - 1) * this.paginationState.itemsPerPage + 1);
-    const end = Math.min(this.paginationState.currentPage * this.paginationState.itemsPerPage, this.historiqueFiltered.length);
-    const total = this.historiqueFiltered.length;
-    
-    return { start, end, total };
-  }
+ // ✅ VÉRIFICATIONS POUR LA PAGINATION
+ hasPreviousPage(): boolean {
+   return this.paginationState.currentPage > 1;
+ }
 
-  // ✅ VÉRIFICATIONS POUR LA PAGINATION OPTIMISÉE
-  hasPreviousPage(): boolean {
-    return this.paginationState.currentPage > 1;
-  }
+ hasNextPage(): boolean {
+   return this.paginationState.currentPage < this.totalPages();
+ }
 
-  hasNextPage(): boolean {
-    return this.paginationState.currentPage < this.totalPages();
-  }
+ // 🎯 MÉTHODES D'OPTIMISATION DE PERFORMANCE
+ trackByActionId(index: number, action: HistoriqueAction): number {
+   return action.id;
+ }
 
-  // ✅ MÉTHODES UTILITAIRES ULTRA OPTIMISÉES POUR LA RECHERCHE
-  clearSearch(): void {
-    this.filtreTexte = '';
-    this.appliquerFiltres();
-    this.focusSearchInput();
-  }
+ // 🔔 SYSTÈME DE NOTIFICATIONS PROFESSIONNEL
+ private showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info'): void {
+   console.log(`[${type.toUpperCase()}] ${message}`);
+   
+   if (typeof window !== 'undefined') {
+     const iconMap = {
+       success: '✅',
+       error: '❌',
+       warning: '⚠️',
+       info: 'ℹ️'
+     };
+     
+     const colorMap = {
+       success: 'from-emerald-500 to-emerald-600',
+       error: 'from-red-500 to-red-600',
+       warning: 'from-amber-500 to-amber-600',
+       info: 'from-blue-500 to-blue-600'
+     };
+     
+     const notification = document.createElement('div');
+     notification.className = `fixed top-20 right-6 z-[9999] px-6 py-4 rounded-xl shadow-2xl transform translate-x-full transition-all duration-500 max-w-md bg-gradient-to-r ${colorMap[type]} text-white backdrop-blur-lg`;
+     
+     notification.innerHTML = `
+       <div class="flex items-center gap-3">
+         <div class="flex-shrink-0 text-xl">${iconMap[type]}</div>
+         <div class="flex-1">
+           <div class="font-semibold text-sm">${message}</div>
+           <div class="text-xs opacity-90 mt-1">BAMY TRUCKS - Interface Professionnelle</div>
+         </div>
+         <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white/80 hover:text-white transition-colors">
+           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+           </svg>
+         </button>
+       </div>
+     `;
+     
+     document.body.appendChild(notification);
+     
+     // Animation d'entrée
+     setTimeout(() => {
+       notification.style.transform = 'translateX(0)';
+     }, 100);
+     
+     // Animation de sortie et suppression automatique
+     setTimeout(() => {
+       notification.style.transform = 'translateX(100%)';
+       setTimeout(() => {
+         if (document.body.contains(notification)) {
+           document.body.removeChild(notification);
+         }
+       }, 500);
+     }, 4000);
+   }
+ }
 
-  getSearchResultsInfo(): string {
-    const total = this.historiqueFiltered.length;
-    const hasFilter = this.filterState.text || this.filterState.typeAction || this.filterState.periode;
-    
-    if (!hasFilter) {
-      return `${total} action${total > 1 ? 's' : ''} au total`;
-    }
-    
-    const originalTotal = this.historique.length;
-    return `${total} résultat${total > 1 ? 's' : ''} sur ${originalTotal}`;
-  }
+ // 📱 DÉTECTION RESPONSIVE
+ isMobileView(): boolean {
+   return window.innerWidth < 768;
+ }
 
-  // ✅ MÉTHODES POUR LES AGENTS (suggestions de recherche optimisées)
-  getAgentSuggestions(): string[] {
-    const suggestions = new Set<string>();
-    
-    // Ajouter les noms complets
-    this.agents.forEach(agent => {
-      suggestions.add(`${agent.prenom} ${agent.nom}`);
-      suggestions.add(agent.prenom);
-      suggestions.add(agent.nom);
-    });
-    
-    return Array.from(suggestions).sort();
-  }
+ isTabletView(): boolean {
+   return window.innerWidth >= 768 && window.innerWidth < 1024;
+ }
 
-  // 📊 MÉTHODES UTILITAIRES SUPPLÉMENTAIRES OPTIMISÉES
-  rafraichirDonnees(): void {
-    this.chargerHistorique();
-  }
+ isDesktopView(): boolean {
+   return window.innerWidth >= 1024;
+ }
 
-  isMobileView(): boolean {
-    return window.innerWidth < 768;
-  }
+ // 🎨 MÉTHODES UTILITAIRES POUR L'INTERFACE
+ getAgentAvatarColor(agentString: string): string {
+   const colors = [
+     'from-blue-500 to-purple-600',
+     'from-emerald-500 to-teal-600',
+     'from-orange-500 to-red-600',
+     'from-pink-500 to-rose-600',
+     'from-indigo-500 to-blue-600',
+     'from-green-500 to-emerald-600',
+     'from-purple-500 to-pink-600',
+     'from-yellow-500 to-orange-600'
+   ];
+   
+   // Générer un index basé sur le nom de l'agent
+   const agent = this.getAgentFullName(agentString);
+   let hash = 0;
+   for (let i = 0; i < agent.length; i++) {
+     hash = agent.charCodeAt(i) + ((hash << 5) - hash);
+   }
+   
+   return colors[Math.abs(hash) % colors.length];
+ }
 
-  isTabletView(): boolean {
-    return window.innerWidth >= 768 && window.innerWidth < 1024;
-  }
+ // 📈 MÉTHODES D'ANALYSE PROFESSIONNELLES
+ getTopAgentsByActivity(): Array<{agent: string, count: number, fullName: string}> {
+   const agentCounts = new Map<string, number>();
+   
+   this.historique.forEach(action => {
+     const count = agentCounts.get(action.agent) || 0;
+     agentCounts.set(action.agent, count + 1);
+   });
+   
+   return Array.from(agentCounts.entries())
+     .map(([agent, count]) => ({
+       agent,
+       count,
+       fullName: this.getAgentFullName(agent)
+     }))
+     .sort((a, b) => b.count - a.count)
+     .slice(0, 5);
+ }
+
+ getActivityTrend(): Array<{date: string, count: number}> {
+   const last7Days = Array.from({length: 7}, (_, i) => {
+     const date = new Date();
+     date.setDate(date.getDate() - i);
+     return date.toISOString().split('T')[0];
+   }).reverse();
+   
+   return last7Days.map(dateStr => {
+     const count = this.historique.filter(action => {
+       if (!action.dateAction) return false;
+       const actionDate = new Date(action.dateAction).toISOString().split('T')[0];
+       return actionDate === dateStr;
+     }).length;
+     
+     return { date: dateStr, count };
+   });
+ }
+
+ // 🔍 MÉTHODES DE RECHERCHE AVANCÉE
+ searchInActionDetails(searchTerm: string): HistoriqueAction[] {
+   if (!searchTerm) return [];
+   
+   const term = searchTerm.toLowerCase();
+   return this.historique.filter(action => {
+     // Recherche dans les métadonnées
+     const metadata = action.metadata;
+     const metadataMatch = metadata && (
+       (metadata.ipAddress && metadata.ipAddress.includes(term)) ||
+       (metadata.userAgent && metadata.userAgent.toLowerCase().includes(term))
+     );
+     
+     // Recherche par ID
+     const idMatch = action.id.toString().includes(term);
+     
+     // Recherche par date formatée
+     const dateMatch = action.dateAction && 
+       new Date(action.dateAction).toLocaleString('fr-FR').toLowerCase().includes(term);
+     
+     return metadataMatch || idMatch || dateMatch;
+   });
+ }
+
+ // 📊 MÉTHODES DE STATISTIQUES AVANCÉES
+ getHourlyDistribution(): Array<{hour: number, count: number}> {
+   const hourCounts = new Array(24).fill(0);
+   
+   this.historique.forEach(action => {
+     if (action.dateAction) {
+       const hour = new Date(action.dateAction).getHours();
+       hourCounts[hour]++;
+     }
+   });
+   
+   return hourCounts.map((count, hour) => ({ hour, count }));
+ }
+
+ getDayOfWeekDistribution(): Array<{day: string, count: number}> {
+   const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+   const dayCounts = new Array(7).fill(0);
+   
+   this.historique.forEach(action => {
+     if (action.dateAction) {
+       const dayOfWeek = new Date(action.dateAction).getDay();
+       dayCounts[dayOfWeek]++;
+     }
+   });
+   
+   return dayCounts.map((count, index) => ({
+     day: dayNames[index],
+     count
+   }));
+ }
+
+ // 🎯 MÉTHODES D'EXPORT AVANCÉES
+ exportStatistiques(): void {
+   try {
+     const stats = {
+       resume: {
+         totalActions: this.historique.length,
+         agentsActifs: this.getActiveAgentsCount(),
+         periodeAnalysee: {
+           debut: this.historique.length > 0 ? 
+             new Date(Math.min(...this.historique.map(a => new Date(a.dateAction).getTime()))).toLocaleDateString('fr-FR') : 'N/A',
+           fin: this.historique.length > 0 ? 
+             new Date(Math.max(...this.historique.map(a => new Date(a.dateAction).getTime()))).toLocaleDateString('fr-FR') : 'N/A'
+         }
+       },
+       parType: [
+         { type: 'Ajout Visiteur', count: this.getStatsByType('Ajout Visiteur') },
+         { type: 'Modification Visiteur', count: this.getStatsByType('Modification Visiteur') },
+         { type: 'Validation Sortie', count: this.getStatsByType('Validation Sortie') }
+       ],
+       topAgents: this.getTopAgentsByActivity(),
+       tendance7Jours: this.getActivityTrend(),
+       repartitionHoraire: this.getHourlyDistribution(),
+       repartitionJourSemaine: this.getDayOfWeekDistribution()
+     };
+
+     const worksheet = XLSX.utils.json_to_sheet([
+       { Métrique: 'Total Actions', Valeur: stats.resume.totalActions },
+       { Métrique: 'Agents Actifs', Valeur: stats.resume.agentsActifs },
+       { Métrique: 'Période Début', Valeur: stats.resume.periodeAnalysee.debut },
+       { Métrique: 'Période Fin', Valeur: stats.resume.periodeAnalysee.fin },
+       ...stats.parType.map(item => ({ 
+         Métrique: `Actions - ${item.type}`, 
+         Valeur: item.count 
+       }))
+     ]);
+
+     const workbook = XLSX.utils.book_new();
+     XLSX.utils.book_append_sheet(workbook, worksheet, 'Statistiques');
+     
+     XLSX.writeFile(workbook, `statistiques_historique_${this.getFormattedDate()}.xlsx`);
+     
+     this.showNotification('📊 Statistiques exportées avec succès', 'success');
+   } catch (error) {
+     console.error('Erreur export statistiques:', error);
+     this.showNotification('❌ Erreur lors de l\'export des statistiques', 'error');
+   }
+ }
+
+ // 🔄 MÉTHODES DE MISE À JOUR EN TEMPS RÉEL
+ private setupRealTimeUpdates(): void {
+   // Simulation de mises à jour en temps réel
+   setInterval(() => {
+     // Vérifier s'il y a de nouvelles données
+     this.checkForUpdates();
+   }, 30000); // Vérification toutes les 30 secondes
+ }
+
+ private checkForUpdates(): void {
+   // Cette méthode pourrait être connectée à un WebSocket ou un service de polling
+   console.log('🔄 Vérification des mises à jour...');
+ }
+
+ // 🎨 MÉTHODES D'AMÉLIORATION UX
+ highlightSearchTerm(text: string, searchTerm: string): string {
+   if (!searchTerm || !text) return text;
+   
+   const regex = new RegExp(`(${searchTerm})`, 'gi');
+   return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
+ }
+
+ // 📱 MÉTHODES D'ADAPTATION MOBILE
+ adaptForMobile(): void {
+   if (this.isMobileView()) {
+     this.paginationState.itemsPerPage = 8; // Moins d'éléments sur mobile
+   } else if (this.isTabletView()) {
+     this.paginationState.itemsPerPage = 10;
+   } else {
+     this.paginationState.itemsPerPage = 12;
+   }
+   this.appliquerFiltres();
+ }
+
+ // 🎯 MÉTHODES D'ACCESSIBILITÉ
+ announceToScreenReader(message: string): void {
+   const announcement = document.createElement('div');
+   announcement.setAttribute('aria-live', 'polite');
+   announcement.setAttribute('aria-atomic', 'true');
+   announcement.className = 'sr-only';
+   announcement.textContent = message;
+   
+   document.body.appendChild(announcement);
+   
+   setTimeout(() => {
+     document.body.removeChild(announcement);
+   }, 1000);
+ }
+
+ // 🔧 MÉTHODES DE DÉBOGAGE ET MAINTENANCE
+ exportDebugInfo(): void {
+   const debugInfo = {
+     timestamp: new Date().toISOString(),
+     filterState: this.filterState,
+     paginationState: this.paginationState,
+     sortState: this.sortState,
+     totalHistorique: this.historique.length,
+     totalFiltered: this.historiqueFiltered.length,
+     selectedItems: Array.from(this.lignesSelectionnees),
+     browserInfo: {
+       userAgent: navigator.userAgent,
+       language: navigator.language,
+       platform: navigator.platform
+     }
+   };
+
+   console.log('🔧 Informations de débogage:', debugInfo);
+   
+   // Optionnel: télécharger en tant que fichier JSON
+   const blob = new Blob([JSON.stringify(debugInfo, null, 2)], { type: 'application/json' });
+   const url = URL.createObjectURL(blob);
+   const a = document.createElement('a');
+   a.href = url;
+   a.download = `debug_historique_${this.getFormattedDate()}.json`;
+   a.click();
+   URL.revokeObjectURL(url);
+   
+   this.showNotification('🔧 Informations de débogage exportées', 'info');
+ }
+
+ // 🚀 MÉTHODES D'OPTIMISATION FINALE
+ optimizePerformance(): void {
+   // Nettoyer les listeners inutiles
+   if (this.searchSubject) {
+     this.searchSubject.unsubscribe();
+     this.setupSearchDebounce();
+   }
+   
+   // Forcer le garbage collection des objets inutiles
+   this.lignesSelectionnees.clear();
+   
+   // Réinitialiser les filtres si trop de données
+   if (this.historique.length > 1000 && this.hasActiveFilters()) {
+     this.clearAllFilters();
+     this.showNotification('🚀 Performance optimisée - Filtres réinitialisés', 'info');
+   }
+ }
 }
