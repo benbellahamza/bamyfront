@@ -44,7 +44,8 @@ export class LoginComponent {
           if (role === 'ADMIN') {
             this.router.navigate(['/admin/dashboard']);
           } else if (role === 'AGENT') {
-            this.router.navigate(['/agent/dashboard']);
+            // ✅ MODIFICATION: Redirection vers ajouterVisiteur au lieu de agent/dashboard
+            this.router.navigate(['/ajouterVisiteur']);
           } else if (role === 'RESPONSABLE') {
             this.router.navigate(['/responsable/dashboard']);
           } else {

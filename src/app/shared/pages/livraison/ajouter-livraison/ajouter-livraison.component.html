@@ -7,7 +7,17 @@
   <!-- ✅ CONTENU PRINCIPAL -->
   <main class="fixed inset-0 pt-20 pb-12 overflow-hidden">
     <div class="h-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
-      
+
+      <!-- ✅ BOUTON BAMYGUEST EN HAUT À DROITE -->
+      <div class="absolute top-4 right-6 z-10">
+        <button 
+          (click)="navigateToBamyGuest()"
+          class="bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 hover:from-green-600 hover:via-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all transform hover:scale-105 flex items-center gap-3 border border-white/20 backdrop-blur-sm">
+          <span class="text-lg">👤</span>
+          <span>GUEST</span>
+        </button>
+      </div>
+
       <!-- Container principal -->
       <div class="w-full px-6 h-full overflow-hidden">
         
@@ -84,71 +94,49 @@
 
 <!-- ✅ STYLES INTÉGRÉS POUR LES ANIMATIONS -->
 <style>
-/* Amélioration des cartes de contenu */
 .bg-white {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .bg-white:hover {
   transform: translateY(-2px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
-
-/* Scrollbar personnalisée */
 .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: rgba(165, 180, 252, 0.5) transparent;
 }
-
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
-
 .overflow-y-auto::-webkit-scrollbar-track {
   background: transparent;
   border-radius: 3px;
 }
-
 .overflow-y-auto::-webkit-scrollbar-thumb {
   background: rgba(165, 180, 252, 0.5);
   border-radius: 3px;
   transition: all 0.2s ease;
 }
-
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: rgba(165, 180, 252, 0.8);
 }
-
-/* Animation d'entrée */
 @keyframes slideInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
-
 .grid > div {
   animation: slideInUp 0.6s ease-out;
 }
-
 .grid > div:nth-child(1) {
   animation-delay: 0.1s;
 }
-
 .grid > div:nth-child(2) {
   animation-delay: 0.2s;
 }
-
-/* Amélioration des dégradés */
 .bg-gradient-to-r {
   position: relative;
   overflow: hidden;
 }
-
 .bg-gradient-to-r::before {
   content: '';
   position: absolute;
@@ -160,35 +148,18 @@
     radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
 }
-
-/* Responsive design */
 @media (max-width: 1280px) {
   .grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 }
-
 @media (max-width: 768px) {
-  .px-6 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .py-6 {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-  }
+  .px-6 { padding-left: 1rem; padding-right: 1rem; }
+  .py-6 { padding-top: 1rem; padding-bottom: 1rem; }
 }
-
-/* Optimisation pour les animations réduites */
 @media (prefers-reduced-motion: reduce) {
-  .grid > div {
-    animation: none;
-  }
-  
-  .bg-white:hover {
-    transform: none;
-  }
+  .grid > div { animation: none; }
+  .bg-white:hover { transform: none; }
 }
 </style>

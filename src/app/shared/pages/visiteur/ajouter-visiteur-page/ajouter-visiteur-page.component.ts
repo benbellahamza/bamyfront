@@ -39,6 +39,12 @@ export class AjouterVisiteurPageComponent implements OnInit, OnDestroy {
     this.showNotification('Mot de passe mis à jour avec succès !');
   }
 
+  // 🚀 NOUVELLE MÉTHODE: Navigation vers BamyDelivery
+  navigateToBamyDelivery(): void {
+    console.log('🚚 Navigation vers BamyDelivery');
+    this.router.navigate(['/ajouterLivraison']);
+  }
+
   // 🚀 Configuration des écouteurs d'événements
   private setupEventListeners(): void {
     // Écouteur pour fermer avec Escape
@@ -149,6 +155,12 @@ export class AjouterVisiteurPageComponent implements OnInit, OnDestroy {
     if (event.ctrlKey && event.key === 'r') {
       event.preventDefault();
       this.refreshVisitorList();
+    }
+
+    // Ctrl+D pour aller vers BamyDelivery
+    if (event.ctrlKey && event.key === 'd') {
+      event.preventDefault();
+      this.navigateToBamyDelivery();
     }
   }
 

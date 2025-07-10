@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { LivraisonService } from 'app/core/services/livraison/livraison.service';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from 'app/core/services/auth/auth.service';
@@ -46,13 +46,20 @@ export class AjouterLivraisonComponent implements OnInit {
     // Initialisation du composant
   }
 
-  // ✅ Callback appelé après changement de mot de passe via le composant unifié
+  // 🔐 Callback après changement de mot de passe
   onPasswordChanged(): void {
     console.log('🔐 Mot de passe changé avec succès depuis ajouter livraison');
     this.showNotification('Mot de passe mis à jour avec succès !');
   }
 
-  // 🚛 Enregistrement d'une entrée de camion
+  // 🚀 NOUVELLE MÉTHODE : Navigation vers BamyGuest (ajouterVisiteur)
+  navigateToBamyGuest(): void {
+    console.log('👤 Navigation vers BamyGuest');
+    this.router.navigate(['/ajouterVisiteur']);
+  }
+
+  // 🖱️ =======  FONCTIONNALITÉS EXISTANTES  =======
+
   enregistrerEntree(): void {
     if (!this.validateEntreeForm()) {
       this.showErrorNotification('Veuillez remplir tous les champs obligatoires');
@@ -73,7 +80,6 @@ export class AjouterLivraisonComponent implements OnInit {
     });
   }
 
-  // 🔍 Recherche d'un camion
   rechercherCamion(): void {
     if (!this.numeroRecherche.trim()) {
       this.showErrorNotification('Veuillez saisir un numéro de chassis');
@@ -94,7 +100,6 @@ export class AjouterLivraisonComponent implements OnInit {
     });
   }
 
-  // 🚚 Enregistrement d'une sortie de camion
   enregistrerSortie(): void {
     if (!this.validateSortieForm()) {
       this.showErrorNotification('Veuillez remplir tous les champs obligatoires');
@@ -115,7 +120,8 @@ export class AjouterLivraisonComponent implements OnInit {
     });
   }
 
-  // ✅ Validation du formulaire d'entrée
+  // ========  VALIDATIONS & UTILITAIRES  ========
+
   private validateEntreeForm(): boolean {
     return !!(
       this.entreeCamion.numeroChassis?.trim() &&
@@ -126,7 +132,6 @@ export class AjouterLivraisonComponent implements OnInit {
     );
   }
 
-  // ✅ Validation du formulaire de sortie
   private validateSortieForm(): boolean {
     return !!(
       this.numeroRecherche?.trim() &&
@@ -138,7 +143,6 @@ export class AjouterLivraisonComponent implements OnInit {
     );
   }
 
-  // 🧹 Réinitialisation du formulaire d'entrée
   private resetEntreeForm(): void {
     this.entreeCamion = {
       numeroChassis: '',
@@ -149,7 +153,6 @@ export class AjouterLivraisonComponent implements OnInit {
     };
   }
 
-  // 🧹 Réinitialisation du formulaire de sortie
   private resetSortieForm(): void {
     this.numeroRecherche = '';
     this.camionTrouve = null;
@@ -162,40 +165,26 @@ export class AjouterLivraisonComponent implements OnInit {
     };
   }
 
-  // 🔄 Rafraîchissement de la liste des livraisons
   refreshLivraisonList(): void {
-    // Émission d'un événement pour rafraîchir la liste
-    // Vous pouvez utiliser un service partagé ou un EventEmitter
     console.log('🔄 Rafraîchissement de la liste des livraisons');
   }
 
-  // 💬 Affichage des notifications de succès
   private showNotification(message: string): void {
     const notification = document.createElement('div');
     notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fadeIn';
     notification.textContent = message;
-    
     document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
+    setTimeout(() => notification.remove(), 3000);
   }
 
-  // 💬 Affichage des notifications d'erreur
   private showErrorNotification(message: string): void {
     const notification = document.createElement('div');
     notification.className = 'fixed top-20 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fadeIn';
     notification.textContent = message;
-    
     document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
+    setTimeout(() => notification.remove(), 3000);
   }
 
-  // 🎯 Navigation vers d'autres pages
   goToLivraisonList(): void {
     this.router.navigate(['/livraisons']);
   }
@@ -204,18 +193,15 @@ export class AjouterLivraisonComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
-  // 🔄 Rafraîchissement de la page
   refresh(): void {
     window.location.reload();
   }
 
-  // 📊 Gestion des erreurs globales
   handleError(error: any): void {
     console.error('❌ Erreur dans ajouter-livraison:', error);
     this.showErrorNotification('Une erreur est survenue');
   }
 
-  // 🚛 Méthodes utilitaires spécifiques aux livraisons
   getCamionDetails(): any {
     return this.camionTrouve;
   }
@@ -229,30 +215,32 @@ export class AjouterLivraisonComponent implements OnInit {
     this.camionTrouve = null;
   }
 
-  // 📈 Statistiques (si nécessaire)
   getStatistiques(): any {
     return {
-      entreesToday: 0, // À implémenter selon vos besoins
+      entreesToday: 0,
       sortesToday: 0,
       camionsPresents: 0
     };
   }
 
-  // 🎨 Méthodes d'affichage
   formatCamionInfo(camion: any): string {
-    if (!camion) return '';
-    return `${camion.marque} ${camion.modele} - ${camion.numeroChassis}`;
+    return camion ? `${camion.marque} ${camion.modele} - ${camion.numeroChassis}` : '';
   }
 
-  // 💾 Sauvegarde rapide
   quickSave(): void {
     console.log('💾 Sauvegarde rapide des données de livraison');
-    // Logique de sauvegarde automatique si nécessaire
   }
 
-  // 🔍 Recherche avancée
   advancedSearch(criteria: any): void {
     console.log('🔍 Recherche avancée:', criteria);
-    // Logique de recherche avancée
+  }
+
+  // 🎯 RACCOURCI CLAVIER : Ctrl + G → /ajouterVisiteur
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.ctrlKey && event.key.toLowerCase() === 'g') {
+      event.preventDefault();
+      this.navigateToBamyGuest();
+    }
   }
 }
