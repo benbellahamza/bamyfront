@@ -108,7 +108,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   // 📄 ÉTAT DE LA PAGINATION PROFESSIONNEL
   private paginationState: PaginationState = {
     currentPage: 1,
-    itemsPerPage: 12, // Optimisé pour l'affichage en timeline
+    itemsPerPage: 12,
     totalItems: 0
   };
 
@@ -123,72 +123,8 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
   actionSelectionnee: HistoriqueAction | null = null;
   isLoading = false;
   
-  // 👥 BASE DE DONNÉES ENRICHIE DES AGENTS
-  private agents: Utilisateur[] = [
-    { 
-      nom: 'Dupont', 
-      prenom: 'Jean', 
-      email: 'jean.dupont@bamytrucks.com', 
-      role: 'Administrateur Système',
-      isActive: true
-    },
-    { 
-      nom: 'Martin', 
-      prenom: 'Marie', 
-      email: 'marie.martin@bamytrucks.com', 
-      role: 'Agent de Sécurité Senior',
-      isActive: true
-    },
-    { 
-      nom: 'Bernard', 
-      prenom: 'Pierre', 
-      email: 'pierre.bernard@bamytrucks.com', 
-      role: 'Superviseur Opérations',
-      isActive: true
-    },
-    { 
-      nom: 'Durand', 
-      prenom: 'Sophie', 
-      email: 'sophie.durand@bamytrucks.com', 
-      role: 'Agent d\'Accueil',
-      isActive: true
-    },
-    { 
-      nom: 'Moreau', 
-      prenom: 'Paul', 
-      email: 'paul.moreau@bamytrucks.com', 
-      role: 'Agent de Sécurité',
-      isActive: false
-    },
-    { 
-      nom: 'Leroy', 
-      prenom: 'Emma', 
-      email: 'emma.leroy@bamytrucks.com', 
-      role: 'Responsable Logistique',
-      isActive: true
-    },
-    { 
-      nom: 'Roux', 
-      prenom: 'Thomas', 
-      email: 'thomas.roux@bamytrucks.com', 
-      role: 'Agent de Sécurité',
-      isActive: true
-    },
-    {
-      nom: 'Garcia',
-      prenom: 'Carlos',
-      email: 'carlos.garcia@bamytrucks.com',
-      role: 'Coordinateur Sécurité',
-      isActive: true
-    },
-    {
-      nom: 'Lambert',
-      prenom: 'Julie',
-      email: 'julie.lambert@bamytrucks.com',
-      role: 'Agent de Maintenance',
-      isActive: true
-    }
-  ];
+  // 👥 AGENTS - À remplir avec vos vraies données
+  private agents: Utilisateur[] = [];
 
   // 🎯 GETTERS ET SETTERS POUR L'ÉTAT
   get filtreTexte(): string { return this.filterState.text; }
@@ -354,9 +290,8 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return userAgents[Math.floor(Math.random() * userAgents.length)];
   }
 
-  // 🔍 NOUVELLES MÉTHODES POUR LA GESTION DES MODIFICATIONS
+  // 🔍 MÉTHODES POUR LA GESTION DES MODIFICATIONS
   
-  // Vérifie si l'action est une modification
   isModificationAction(action: HistoriqueAction | null): boolean {
     if (!action) return false;
     return action.action?.toLowerCase().includes('modification') || 
@@ -365,22 +300,18 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
            action.action?.toLowerCase().includes('modifier');
   }
 
-  // Extrait les modifications de l'action
   getModifications(action: HistoriqueAction | null): ModificationDetail[] {
     if (!action || !this.isModificationAction(action)) {
       return [];
     }
 
-    // Si vous avez déjà un champ modifications dans vos données
     if (action.modifications && Array.isArray(action.modifications)) {
       return action.modifications;
     }
 
-    // Sinon, parser la description de l'action
     return this.parseModificationsFromDescription(action.action || '');
   }
 
-  // Parse les modifications depuis la description de l'action
   private parseModificationsFromDescription(description: string): ModificationDetail[] {
     const modifications: ModificationDetail[] = [];
     
@@ -413,49 +344,9 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Format 3: "Modification: [nom: ancien -> nouveau] [email: ancien -> nouveau]"
-    if (modifications.length === 0) {
-      const bracketMatches = description.match(/\[([^\]]+)\]/g);
-      if (bracketMatches) {
-        bracketMatches.forEach(bracket => {
-          const content = bracket.slice(1, -1); // Enlever les crochets
-          const changeMatch = content.match(/(\w+):\s*(.*?)\s*->\s*(.*?)$/i);
-          if (changeMatch) {
-            modifications.push({
-              champ: this.formatFieldName(changeMatch[1].trim()),
-              ancienneValeur: changeMatch[2].trim(),
-              nouvelleValeur: changeMatch[3].trim()
-            });
-          }
-        });
-      }
-    }
-
-    // Format 4: Extraction basique avec mots-clés
-    if (modifications.length === 0 && description.toLowerCase().includes('modification')) {
-      // Rechercher des patterns comme "nom de X à Y" ou "email de X vers Y"
-      const patterns = [
-        /(\w+)\s+de\s+['"](.*?)['"]?\s+(?:à|vers)\s+['"](.*?)['"]?/gi,
-        /(\w+):\s*['"](.*?)['"]?\s*(?:->|→|=>)\s*['"](.*?)['"]?/gi,
-        /Ancien\s+(\w+):\s*['"](.*?)['"]?,?\s*Nouveau\s+\w+:\s*['"](.*?)['"]?/gi
-      ];
-
-      patterns.forEach(pattern => {
-        let match;
-        while ((match = pattern.exec(description)) !== null) {
-          modifications.push({
-            champ: this.formatFieldName(match[1]),
-            ancienneValeur: match[2],
-            nouvelleValeur: match[3]
-          });
-        }
-      });
-    }
-
     return modifications;
   }
 
-  // Formate le nom du champ pour l'affichage
   private formatFieldName(field: string): string {
     const fieldMappings: { [key: string]: string } = {
       'nom': 'Nom',
@@ -481,7 +372,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   }
 
-  // 👤 GESTION DES INFORMATIONS AGENT PROFESSIONNELLES
+  // 👤 GESTION DES INFORMATIONS AGENT
   getAgentFullName(agentString: string): string {
     if (!agentString) return 'Agent inconnu';
     
@@ -527,17 +418,15 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     );
   }
 
-  // ✨ NETTOYAGE DU TEXTE D'ACTION PROFESSIONNEL
+  // ✨ NETTOYAGE DU TEXTE D'ACTION
   getCleanActionText(actionText: string): string {
     if (!actionText) return 'Action non définie';
     
     let cleanText = actionText.trim();
     
-    // Supprimer les préfixes courants
     const prefixRegex = /^(Validation Sortie|Ajout Visiteur|Modification Visiteur|Modification)\s*:\s*/i;
     cleanText = cleanText.replace(prefixRegex, '');
     
-    // Nettoyer et formater
     cleanText = cleanText
       .replace(/\s+/g, ' ')
       .replace(/[^\w\s\u00C0-\u017F\-\.]/g, ' ')
@@ -546,7 +435,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return cleanText || 'Action non définie';
   }
 
-  // 🏷️ GESTION DES CATÉGORIES PROFESSIONNELLES
+  // 🏷️ GESTION DES CATÉGORIES
   getCategorieAction(action: HistoriqueAction): string {
     if (!action?.action) return 'Autre';
     
@@ -572,7 +461,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return 'Autre';
   }
 
-  // 🔍 FILTRAGE PROFESSIONNEL ULTRA OPTIMISÉ
+  // 🔍 FILTRAGE PROFESSIONNEL
   appliquerFiltres(): void {
     let resultats = [...this.historique];
 
@@ -676,7 +565,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return startOfWeek;
   }
 
-  // 🔄 TRI PROFESSIONNEL
+  // 🔄 TRI
   private trierResultats(data: HistoriqueAction[]): HistoriqueAction[] {
     return data.sort((a, b) => {
       let valA: any, valB: any;
@@ -715,7 +604,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     this.appliquerFiltres();
   }
 
-  // 📄 PAGINATION PROFESSIONNELLE
+  // 📄 PAGINATION
   private adjustPagination(): void {
     const totalItems = this.historiqueFiltered.length;
     const maxPage = this.totalPages();
@@ -762,7 +651,6 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }
 
-  // ✅ MÉTHODES DE NAVIGATION PAGINATION
   pagePrecedente(): void {
     if (this.pageActuelle > 1) {
       this.changerPage(this.pageActuelle - 1);
@@ -790,7 +678,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ✅ GESTION DE LA SÉLECTION PROFESSIONNELLE
+  // ✅ GESTION DE LA SÉLECTION
   toggleSelection(id: number): void {
     if (this.lignesSelectionnees.has(id)) {
       this.lignesSelectionnees.delete(id);
@@ -809,7 +697,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    this.actionSelectionnee = null;
  }
 
- // ✅ MÉTHODES HELPER POUR LA MODALE PROFESSIONNELLE
+ // ✅ MÉTHODES HELPER POUR LA MODALE
  getActionAgent(action: HistoriqueAction | null): string {
    if (!action?.agent) return '?';
    return this.getAgentInitials(action.agent);
@@ -889,7 +777,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    return 'Autre navigateur';
  }
 
- // 📊 STATISTIQUES PROFESSIONNELLES
+ // 📊 STATISTIQUES
  getStatsByType(type: string): number {
    return this.historique.filter(action => 
      this.getCategorieAction(action) === type
@@ -905,7 +793,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    return activeAgents.size;
  }
 
- // 🎨 MÉTHODES POUR LES STYLES PROFESSIONNELS
+ // 🎨 MÉTHODES POUR LES STYLES
  getTimelineColor(action: HistoriqueAction): string {
    const colorMap = new Map([
      ['Ajout Visiteur', '#10b981'],
@@ -968,7 +856,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    return date.toLocaleDateString('fr-FR');
  }
 
- // 📤 EXPORT EXCEL PROFESSIONNEL
+ // 📤 EXPORT EXCEL
  exporterExcelTout(): void {
    if (this.historique.length === 0) {
      this.showNotification('Aucune donnée à exporter', 'warning');
@@ -1016,11 +904,11 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
      XLSX.utils.book_append_sheet(workbook, worksheet, 'Historique');
      
      workbook.Props = {
-       Title: 'Historique des Actions - BAMY TRUCKS',
-       Subject: `Export professionnel de ${data.length} actions d'historique`,
-       Author: 'BAMY TRUCKS System',
+       Title: 'Historique des Actions',
+       Subject: `Export de ${data.length} actions d'historique`,
+       Author: 'Système',
        CreatedDate: new Date(),
-       Comments: `Généré le ${new Date().toLocaleString('fr-FR')} - Interface professionnelle`
+       Comments: `Généré le ${new Date().toLocaleString('fr-FR')}`
      };
      
      XLSX.writeFile(workbook, fileName);
@@ -1040,7 +928,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    return new Date().toISOString().split('T')[0];
  }
 
- // 🔄 UTILITAIRES PROFESSIONNELS
+ // 🔄 UTILITAIRES
  rafraichirDonnees(): void {
    this.chargerHistorique();
  }
@@ -1076,7 +964,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    );
  }
 
- // 📊 INFORMATIONS DE PAGINATION PROFESSIONNELLES
+ // 📊 INFORMATIONS DE PAGINATION
  getPaginationInfo(): { start: number; end: number; total: number } {
    const total = this.historiqueFiltered.length;
    if (total === 0) {
@@ -1110,12 +998,12 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    return this.paginationState.currentPage < this.totalPages();
  }
 
- // 🎯 MÉTHODES D'OPTIMISATION DE PERFORMANCE
+ // 🎯 OPTIMISATION DE PERFORMANCE
  trackByActionId(index: number, action: HistoriqueAction): number {
    return action.id;
  }
 
- // 🔔 SYSTÈME DE NOTIFICATIONS PROFESSIONNEL
+ // 🔔 SYSTÈME DE NOTIFICATIONS
  private showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info'): void {
    console.log(`[${type.toUpperCase()}] ${message}`);
    
@@ -1142,7 +1030,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
          <div class="flex-shrink-0 text-xl">${iconMap[type]}</div>
          <div class="flex-1">
            <div class="font-semibold text-sm">${message}</div>
-           <div class="text-xs opacity-90 mt-1">BAMY TRUCKS - Interface Professionnelle</div>
+           <div class="text-xs opacity-90 mt-1">Interface Professionnelle</div>
          </div>
          <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white/80 hover:text-white transition-colors">
            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1207,7 +1095,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    return colors[Math.abs(hash) % colors.length];
  }
 
- // 📈 MÉTHODES D'ANALYSE PROFESSIONNELLES
+ // 📈 MÉTHODES D'ANALYSE
  getTopAgentsByActivity(): Array<{agent: string, count: number, fullName: string}> {
    const agentCounts = new Map<string, number>();
    
@@ -1244,23 +1132,19 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    });
  }
 
- // 🔍 MÉTHODES DE RECHERCHE AVANCÉE
+ // 🔍 RECHERCHE AVANCÉE
  searchInActionDetails(searchTerm: string): HistoriqueAction[] {
    if (!searchTerm) return [];
    
    const term = searchTerm.toLowerCase();
    return this.historique.filter(action => {
-     // Recherche dans les métadonnées
      const metadata = action.metadata;
      const metadataMatch = metadata && (
        (metadata.ipAddress && metadata.ipAddress.includes(term)) ||
        (metadata.userAgent && metadata.userAgent.toLowerCase().includes(term))
      );
      
-     // Recherche par ID
      const idMatch = action.id.toString().includes(term);
-     
-     // Recherche par date formatée
      const dateMatch = action.dateAction && 
        new Date(action.dateAction).toLocaleString('fr-FR').toLowerCase().includes(term);
      
@@ -1268,7 +1152,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    });
  }
 
- // 📊 MÉTHODES DE STATISTIQUES AVANCÉES
+ // 📊 STATISTIQUES AVANCÉES
  getHourlyDistribution(): Array<{hour: number, count: number}> {
    const hourCounts = new Array(24).fill(0);
    
@@ -1299,7 +1183,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    }));
  }
 
- // 🎯 MÉTHODES D'EXPORT AVANCÉES
+ // 🎯 EXPORT STATISTIQUES
  exportStatistiques(): void {
    try {
      const stats = {
@@ -1347,21 +1231,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    }
  }
 
- // 🔄 MÉTHODES DE MISE À JOUR EN TEMPS RÉEL
- private setupRealTimeUpdates(): void {
-   // Simulation de mises à jour en temps réel
-   setInterval(() => {
-     // Vérifier s'il y a de nouvelles données
-     this.checkForUpdates();
-   }, 30000); // Vérification toutes les 30 secondes
- }
-
- private checkForUpdates(): void {
-   // Cette méthode pourrait être connectée à un WebSocket ou un service de polling
-   console.log('🔄 Vérification des mises à jour...');
- }
-
- // 🎨 MÉTHODES D'AMÉLIORATION UX
+ // 🎨 AMÉLIORATION UX
  highlightSearchTerm(text: string, searchTerm: string): string {
    if (!searchTerm || !text) return text;
    
@@ -1369,10 +1239,10 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
  }
 
- // 📱 MÉTHODES D'ADAPTATION MOBILE
+ // 📱 ADAPTATION MOBILE
  adaptForMobile(): void {
    if (this.isMobileView()) {
-     this.paginationState.itemsPerPage = 8; // Moins d'éléments sur mobile
+     this.paginationState.itemsPerPage = 8;
    } else if (this.isTabletView()) {
      this.paginationState.itemsPerPage = 10;
    } else {
@@ -1381,7 +1251,7 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    this.appliquerFiltres();
  }
 
- // 🎯 MÉTHODES D'ACCESSIBILITÉ
+ // 🎯 ACCESSIBILITÉ
  announceToScreenReader(message: string): void {
    const announcement = document.createElement('div');
    announcement.setAttribute('aria-live', 'polite');
@@ -1394,54 +1264,5 @@ export class HistoriqueActiviteComponent implements OnInit, OnDestroy {
    setTimeout(() => {
      document.body.removeChild(announcement);
    }, 1000);
- }
-
- // 🔧 MÉTHODES DE DÉBOGAGE ET MAINTENANCE
- exportDebugInfo(): void {
-   const debugInfo = {
-     timestamp: new Date().toISOString(),
-     filterState: this.filterState,
-     paginationState: this.paginationState,
-     sortState: this.sortState,
-     totalHistorique: this.historique.length,
-     totalFiltered: this.historiqueFiltered.length,
-     selectedItems: Array.from(this.lignesSelectionnees),
-     browserInfo: {
-       userAgent: navigator.userAgent,
-       language: navigator.language,
-       platform: navigator.platform
-     }
-   };
-
-   console.log('🔧 Informations de débogage:', debugInfo);
-   
-   // Optionnel: télécharger en tant que fichier JSON
-   const blob = new Blob([JSON.stringify(debugInfo, null, 2)], { type: 'application/json' });
-   const url = URL.createObjectURL(blob);
-   const a = document.createElement('a');
-   a.href = url;
-   a.download = `debug_historique_${this.getFormattedDate()}.json`;
-   a.click();
-   URL.revokeObjectURL(url);
-   
-   this.showNotification('🔧 Informations de débogage exportées', 'info');
- }
-
- // 🚀 MÉTHODES D'OPTIMISATION FINALE
- optimizePerformance(): void {
-   // Nettoyer les listeners inutiles
-   if (this.searchSubject) {
-     this.searchSubject.unsubscribe();
-     this.setupSearchDebounce();
-   }
-   
-   // Forcer le garbage collection des objets inutiles
-   this.lignesSelectionnees.clear();
-   
-   // Réinitialiser les filtres si trop de données
-   if (this.historique.length > 1000 && this.hasActiveFilters()) {
-     this.clearAllFilters();
-     this.showNotification('🚀 Performance optimisée - Filtres réinitialisés', 'info');
-   }
  }
 }
